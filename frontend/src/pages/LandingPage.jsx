@@ -288,14 +288,14 @@ function LandingPage({ dark, setDark }) {
             </div>
 
             {/* DESCRIPTION */}
+            {/* DESCRIPTION */}
             <p
               className={`
-                mt-5 max-w-xl text-sm leading-7
-                transition-colors duration-500
-                ${dark ? "text-white/50" : "text-[#77736b]"}
-              `}
+    mt-5 max-w-xl text-sm leading-7
+    transition-colors duration-500
+    ${dark ? "text-white/50" : "text-[#77736b]"}
+  `}
             >
-            <p className="mt-5 max-w-xl text-sm leading-7 text-[#77736b]">
               Discover active opportunities, contribute your skills, and work
               toward earning rewards through the Arc-powered bounty experience.
             </p>
@@ -481,12 +481,11 @@ function LandingPage({ dark, setDark }) {
 
               <p
                 className={`
-                  mt-2 max-w-md text-sm leading-6
-                  transition-colors duration-500
-                  ${dark ? "text-white/45" : "text-[#77736b]"}
-                `}
+    mt-2 max-w-md text-sm leading-6
+    transition-colors duration-500
+    ${dark ? "text-white/45" : "text-[#77736b]"}
+  `}
               >
-              <p className="mt-2 max-w-md text-sm leading-6 text-[#77736b]">
                 There are no featured opportunities available right now. New
                 bounties will appear here as they are posted.
               </p>

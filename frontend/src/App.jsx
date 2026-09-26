@@ -13,40 +13,31 @@ import ContactUs from "./pages/ContactUs";
 import Setting from "./pages/Setting";
 
 import LoadingScreen from "./components/LoadingScreen";
+import { useTheme } from "./context/ThemeContext";
 
 function App() {
   const [loading, setLoading] = useState(true);
+  const { dark } = useTheme();
 
-  // Remember the user's theme after refresh
-  const [dark, setDark] = useState(() => {
-    return localStorage.getItem("theme") === "dark";
-  });
-
+  // Safety: ensure the "dark" class stays in sync with context
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
-
-    // Save the current theme
-    localStorage.setItem("theme", dark ? "dark" : "light");
   }, [dark]);
 
   return (
     <div
       className={`min-h-screen transition-colors duration-300 ${
-        dark
-          ? "bg-[#080908] text-white"
-          : "bg-[#f6f5ef] text-[#111111]"
+        dark ? "bg-[#080908] text-white" : "bg-[#f6f5ef] text-[#111111]"
       }`}
     >
-      {loading && (
-        <LoadingScreen onComplete={() => setLoading(false)} />
-      )}
+      {loading && <LoadingScreen onComplete={() => setLoading(false)} />}
 
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="profile" element={<Profile />} />
-          <Route path="create" element={<Create />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/create" element={<Create />} />
           <Route path="/faqs" element={<FAQPage />} />
           <Route path="/whitepaper" element={<WhitepaperPage />} />
           <Route path="/contact" element={<ContactUs />} />

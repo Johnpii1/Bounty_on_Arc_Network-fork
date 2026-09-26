@@ -244,19 +244,15 @@ function Features() {
               <span className="text-[#B28B20]">Earn</span>
             </h2>
 
-            <p
-              className={`mx-auto mt-5 max-w-2xl text-sm leading-7 transition-colors duration-500 md:text-base ${
-                dark ? "text-white/50" : "text-[#77736b]"
-              }`}
-            >
-              Fresh Bounty connects creators and contributors through
-              on-chain opportunities, with Arc and USDC powering a
-              faster way to fund, complete, and reward Web3 work.
-            <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-[#77736b] md:text-base">
-              Fresh Bounty connects creators and contributors through on-chain
-              opportunities, with Arc and USDC powering a faster way to fund,
-              complete, and reward Web3 work.
-            </p>
+<p
+  className={`mx-auto mt-5 max-w-2xl text-sm leading-7 transition-colors duration-500 md:text-base ${
+    dark ? "text-white/50" : "text-[#77736b]"
+  }`}
+>
+  Fresh Bounty connects creators and contributors through on-chain
+  opportunities, with Arc and USDC powering a faster way to fund,
+  complete, and reward Web3 work.
+</p>
           </div>
 
           {/* =========================================
@@ -303,18 +299,14 @@ function Features() {
 
                   <div className="mt-4 h-px w-10 bg-[#D4AF37]/70 transition-all duration-500 group-hover:w-16" />
 
-                  <p
-                    className={`mt-4 text-sm leading-6 transition-colors duration-500 ${
-                      dark ? "text-white/50" : "text-[#77736b]"
-                    }`}
-                  >
-                    Complete approved bounties and work toward earning
-                    rewards through a USDC-powered bounty experience.
-                  <p className="mt-4 text-sm leading-6 text-[#77736b]">
-                    Complete approved bounties and work toward earning rewards
-                    through a USDC-powered bounty experience.
-
-                  </p>
+      <p
+  className={`mt-4 text-sm leading-6 transition-colors duration-500 ${
+    dark ? "text-white/50" : "text-[#77736b]"
+  }`}
+>
+  Complete approved bounties and work toward earning rewards
+  through a USDC-powered bounty experience.
+</p>
                 </div>
 
                 <div
@@ -369,18 +361,14 @@ function Features() {
 
                   <div className="mt-4 h-px w-10 bg-[#D4AF37]/70 transition-all duration-500 group-hover:w-16" />
 
-                  <p
-                    className={`mt-4 text-sm leading-6 transition-colors duration-500 ${
-                      dark ? "text-white/50" : "text-[#77736b]"
-                    }`}
-                  >
-                    A bounty experience designed around Arc, giving
-                    creators and contributors a focused on-chain
-                    environment for Web3 work.
-                  <p className="mt-4 text-sm leading-6 text-[#77736b]">
-                    A bounty experience designed around Arc, giving creators and
-                    contributors a focused on-chain environment for Web3 work.
-                  </p>
+         <p
+  className={`mt-4 text-sm leading-6 transition-colors duration-500 ${
+    dark ? "text-white/50" : "text-[#77736b]"
+  }`}
+>
+  A bounty experience designed around Arc, giving creators and
+  contributors a focused on-chain environment for Web3 work.
+</p>
                 </div>
 
                 <div
@@ -497,17 +485,14 @@ function Features() {
 
                   <div className="mt-4 h-px w-10 bg-[#D4AF37]/70 transition-all duration-500 group-hover:w-16" />
 
-                  <p
-                    className={`mt-4 text-sm leading-6 transition-colors duration-500 ${
-                      dark ? "text-white/50" : "text-[#77736b]"
-                    }`}
-                  >
-                    Keep bounty activity, submissions, and reward flows
-                    visible through a transparent Web3 experience.
-                  <p className="mt-4 text-sm leading-6 text-[#77736b]">
-                    Keep bounty activity, submissions, and reward flows visible
-                    through a transparent Web3 experience.
-                  </p>
+            <p
+  className={`mt-4 text-sm leading-6 transition-colors duration-500 ${
+    dark ? "text-white/50" : "text-[#77736b]"
+  }`}
+>
+  Keep bounty activity, submissions, and reward flows visible
+  through a transparent Web3 experience.
+</p>
                 </div>
 
                 <div
@@ -569,23 +554,21 @@ function Features() {
               </div>
             </div>
 
-            <Link
-              to="/dashboard"
-              className={`group flex items-center gap-2 rounded-xl border px-5 py-2.5 text-sm font-semibold transition-all duration-300 hover:border-[#D4AF37] hover:bg-[#D4AF37] hover:text-white hover:shadow-[0_10px_30px_rgba(212,175,55,0.18)] ${
-                dark
-                  ? "border-[#D4AF37]/30 bg-[#151715] text-[#D4AF37]"
-                  : "border-[#D4AF37]/30 bg-white text-[#B28B20]"
-              }`}
-              onClick={(e) => {
-                e.preventDefault();
-                handleNavigate("/dashboard");
-              }}
-              className="group flex items-center gap-2 rounded-xl border border-[#D4AF37]/30 bg-white px-5 py-2.5 text-sm font-semibold text-[#B28B20] transition-all duration-300 hover:border-[#D4AF37] hover:bg-[#D4AF37] hover:text-white hover:shadow-[0_10px_30px_rgba(212,175,55,0.18)]"
-            >
-              <span>Explore Opportunities</span>
-
-              <FiArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-            </Link>
+         <Link
+  to="/dashboard"
+  onClick={(e) => {
+    e.preventDefault();
+    handleNavigate("/dashboard");
+  }}
+  className={`group flex items-center gap-2 rounded-xl border px-5 py-2.5 text-sm font-semibold transition-all duration-300 hover:border-[#D4AF37] hover:bg-[#D4AF37] hover:text-white hover:shadow-[0_10px_30px_rgba(212,175,55,0.18)] ${
+    dark
+      ? "border-[#D4AF37]/30 bg-[#151715] text-[#D4AF37]"
+      : "border-[#D4AF37]/30 bg-white text-[#B28B20]"
+  }`}
+>
+  <span>Explore Opportunities</span>
+  <FiArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+</Link>
           </div>
 
           {/* =========================================
@@ -636,5 +619,4 @@ function Features() {
   );
 }
 
-export default Features;
 export default Features;

@@ -1,6 +1,8 @@
 import { FiMoon, FiSun } from "react-icons/fi";
+import { useTheme } from "../../context/ThemeContext";
 
-export default function Theme({ dark, setDark }) {
+export default function Theme() {
+  const { dark, setDark } = useTheme();
   return (
     <button
       onClick={() => setDark((prev) => !prev)}
@@ -34,11 +36,7 @@ export default function Theme({ dark, setDark }) {
         className={`
           relative z-10 flex items-center justify-center
           transition-all duration-500 ease-out
-          ${
-            dark
-              ? "rotate-0 scale-100"
-              : "rotate-[180deg] scale-100"
-          }
+          ${dark ? "rotate-0 scale-100" : "rotate-[180deg] scale-100"}
         `}
       >
         {dark ? (
