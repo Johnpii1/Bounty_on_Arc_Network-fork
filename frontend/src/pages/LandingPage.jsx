@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
-import { useNav } from "../hooks/useNav";
 import axios from "axios";
 import {
   FiZap,
@@ -18,6 +17,7 @@ import HowItWorks from "./Howitwork";
 import PlatformStats from "./PlatformStats";
 import Features from "./Features";
 import Testimonials from "./Testimonials";
+
 import CallToAction from "./CallToAction";
 import BuiltForWeb3 from "./BuiltForWeb3";
 import Footer from "../components/Layout/Footer";
@@ -25,7 +25,6 @@ import Footer from "../components/Layout/Footer";
 function LandingPage({ dark, setDark }) {
   const [featuredBounties, setFeaturedBounties] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { handleNavigate } = useNav();
 
   const [stats, setStats] = useState({
     totalBounties: 0,
@@ -48,7 +47,7 @@ function LandingPage({ dark, setDark }) {
   const statsRef = useRef(null);
   const testimonialsRef = useRef(null);
 
-  const API_URL = import.meta.env.VITE_API_URL;
+  const API_URL = "https://fresh-bounty.onrender.com/api";
 
   // HERO TEXT ROTATION
   useEffect(() => {
@@ -63,7 +62,7 @@ function LandingPage({ dark, setDark }) {
   useEffect(() => {
     const fetchFeaturedBounties = async () => {
       try {
-        const response = await axios.get(`${API_URL}/bounty/bounties`, {
+        const response = await axios.get(`${API_URL}/task`, {
           params: {
             status: "active",
             limit: 3,
@@ -81,13 +80,14 @@ function LandingPage({ dark, setDark }) {
 
     const fetchStats = async () => {
       try {
-        const allBounties = await axios.get(`${API_URL}/bounty/bounties`, {
+        const allBounties = await axios.get(`${API_URL}/task`, {
           params: {
             limit: 1,
           },
         });
 
-        const totalBounties = allBounties.data.pagination?.total || 0;
+        const totalBounties =
+          allBounties.data.pagination?.total || 0;
 
         setStats({
           totalBounties,
@@ -109,9 +109,15 @@ function LandingPage({ dark, setDark }) {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.classList.add("opacity-100", "translate-y-0");
+            entry.target.classList.add(
+              "opacity-100",
+              "translate-y-0"
+            );
 
-            entry.target.classList.remove("opacity-0", "translate-y-10");
+            entry.target.classList.remove(
+              "opacity-0",
+              "translate-y-10"
+            );
 
             observer.unobserve(entry.target);
           }
@@ -119,7 +125,7 @@ function LandingPage({ dark, setDark }) {
       },
       {
         threshold: 0.3,
-      },
+      }
     );
 
     if (card1Ref.current) observer.observe(card1Ref.current);
@@ -157,7 +163,7 @@ function LandingPage({ dark, setDark }) {
       {/* =========================================
           LIVE TICKER
       ========================================== */}
-      <LiveTricker dark={dark} setDark={setDark} />
+      <LiveTricker />
 
       {/* =========================================
           HERO SECTION
@@ -278,20 +284,51 @@ function LandingPage({ dark, setDark }) {
             </div>
 
             {/* DESCRIPTION */}
-            <p className="mt-5 max-w-xl text-sm leading-7 text-[#77736b]">
-              Discover active opportunities, contribute your skills, and work
-              toward earning rewards through the Arc-powered bounty experience.
+            <p
+              className={`
+                mt-5 max-w-xl text-sm leading-7
+                transition-colors duration-500
+                ${dark ? "text-white/50" : "text-[#77736b]"}
+              `}
+            >
+              Discover active opportunities, contribute your skills,
+              and work toward earning rewards through the Arc-powered
+              bounty experience.
             </p>
           </div>
 
           {/* VIEW ALL */}
           <Link
             to="/dashboard"
-            onClick={(e) => {
-              e.preventDefault();
-              handleNavigate("/dashboard");
-            }}
-            className="group inline-flex w-fit items-center gap-2 rounded-xl border border-black/[0.08] bg-white/75 px-4 py-2.5 text-sm font-semibold text-[#383631] shadow-[0_8px_30px_rgba(35,31,22,0.04)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:border-[#D4AF37]/35 hover:bg-white hover:text-[#B28B20]"
+            className={`
+              group inline-flex w-fit items-center gap-2
+              rounded-xl border px-4 py-2.5
+              text-sm font-semibold
+              backdrop-blur-xl
+              transition-all duration-300
+              hover:-translate-y-0.5
+              ${
+                dark
+                  ? `
+                    border-white/[0.08]
+                    bg-[#121212]/80
+                    text-white/80
+                    shadow-[0_8px_30px_rgba(0,0,0,0.25)]
+                    hover:border-[#D4AF37]/35
+                    hover:bg-[#181818]
+                    hover:text-[#D4AF37]
+                  `
+                  : `
+                    border-black/[0.08]
+                    bg-white/75
+                    text-[#383631]
+                    shadow-[0_8px_30px_rgba(35,31,22,0.04)]
+                    hover:border-[#D4AF37]/35
+                    hover:bg-white
+                    hover:text-[#B28B20]
+                  `
+              }
+            `}
           >
             <span>View all bounties</span>
 
@@ -466,20 +503,47 @@ function LandingPage({ dark, setDark }) {
                 No active bounties
               </h3>
 
-              <p className="mt-2 max-w-md text-sm leading-6 text-[#77736b]">
-                There are no featured opportunities available right now. New
-                bounties will appear here as they are posted.
+              <p
+                className={`
+                  mt-2 max-w-md text-sm leading-6
+                  transition-colors duration-500
+                  ${dark ? "text-white/45" : "text-[#77736b]"}
+                `}
+              >
+                There are no featured opportunities available right now.
+                New bounties will appear here as they are posted.
               </p>
 
               <Link
                 to="/dashboard"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleNavigate("/dashboard");
-                }}
-                className="mt-6 inline-flex items-center gap-2 rounded-xl border border-[#D4AF37]/40 bg-white px-5 py-2.5 text-sm font-semibold text-[#8F6D12] shadow-[0_10px_25px_rgba(0,0,0,0.08)] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#D4AF37] hover:text-[#B28B20]"
+                className={`
+                  mt-6 inline-flex items-center gap-2
+                  rounded-xl border px-5 py-2.5
+                  text-sm font-semibold
+                  transition-all duration-300
+                  hover:-translate-y-0.5
+                  ${
+                    dark
+                      ? `
+                        border-[#D4AF37]/40
+                        bg-[#181818]
+                        text-[#D4AF37]
+                        shadow-[0_10px_25px_rgba(0,0,0,0.25)]
+                        hover:border-[#D4AF37]
+                      `
+                      : `
+                        border-[#D4AF37]/40
+                        bg-white
+                        text-[#8F6D12]
+                        shadow-[0_10px_25px_rgba(0,0,0,0.08)]
+                        hover:border-[#D4AF37]
+                        hover:text-[#B28B20]
+                      `
+                  }
+                `}
               >
                 Browse bounties
+
                 <FiArrowRight className="h-4 w-4" />
               </Link>
             </div>

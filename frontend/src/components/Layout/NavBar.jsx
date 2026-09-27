@@ -1,3 +1,4 @@
+
 import HappyBounty from "../../assets/images/HappyBounty.png";
 import Themes from "./Themes";
 import Connect from "../Connect";
@@ -26,20 +27,12 @@ function NavBar({ dark, setDark }) {
 
   // Redirect when connected
   useEffect(() => {
-    if (pathname === "/") {
-      const timer = setTimeout(() => {
-        if (address && isConnected) {
-          navigate("/dashboard");
-          console.log(`Connected account: ${address}`);
-        }
-      }, 1000);
+    if (pathname !== "/") return;
 
-      return () => clearTimeout(timer);
-    }
     const timer = setTimeout(() => {
-      if (!address && !isConnected) {
-        navigate("/");
-        // console.log(`User signed out`);
+      if (address && isConnected) {
+        navigate("/dashboard");
+        console.log(`Connected account: ${address}`);
       }
     }, 1000);
 

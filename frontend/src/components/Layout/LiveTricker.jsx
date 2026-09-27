@@ -1,5 +1,7 @@
 
-function LiveTricker({ dark }) {
+import { useEffect, useState } from "react";
+
+function LiveTricker() {
   const items = [
     { label: "Built for Arc", type: "ARC" },
     { label: "Earn USDC Rewards", type: "USDC" },
@@ -8,12 +10,29 @@ function LiveTricker({ dark }) {
     { label: "New Bounties Added Daily", type: "NEW" },
   ];
 
+  const [dark, setDark] = useState(
+    document.documentElement.classList.contains("dark")
+  );
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setDark(document.documentElement.classList.contains("dark"));
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div
       className={`
         relative mt-1 w-full overflow-hidden
         border-y
-        transition-colors duration-500
+        transition-all duration-500
         ${
           dark
             ? "border-white/[0.07] bg-[#080908]"
@@ -37,13 +56,13 @@ function LiveTricker({ dark }) {
         <span className="ticker-bg-dot dot-9" />
         <span className="ticker-bg-dot dot-10" />
 
-        {/* Very subtle center warmth */}
         <div
           className={`
             absolute inset-0
+            transition-all duration-500
             ${
               dark
-                ? "bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.045),transparent_65%)]"
+                ? "bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.055),transparent_65%)]"
                 : "bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.025),transparent_65%)]"
             }
           `}
@@ -61,6 +80,7 @@ function LiveTricker({ dark }) {
           z-30 w-24
           bg-gradient-to-r
           to-transparent
+          transition-all duration-500
           ${
             dark
               ? "from-[#080908] via-[#080908]/95"
@@ -80,6 +100,7 @@ function LiveTricker({ dark }) {
           z-30 w-24
           bg-gradient-to-l
           to-transparent
+          transition-all duration-500
           ${
             dark
               ? "from-[#080908] via-[#080908]/95"
@@ -100,10 +121,8 @@ function LiveTricker({ dark }) {
           -translate-x-1/2
           -translate-y-1/2
           rounded-full
-          bg-[#D4AF37]/[0.025]
+          bg-[#D4AF37]/[0.04]
           blur-3xl
-          transition-opacity duration-500
-          ${dark ? "opacity-100" : "opacity-100"}
         `}
       />
 
@@ -122,15 +141,21 @@ function LiveTricker({ dark }) {
 
                 {/* MAIN LABEL */}
 
-                <span className="ticker-label">{item.label}</span>
+                <span className="ticker-label">
+                  {item.label}
+                </span>
 
                 {/* CATEGORY */}
 
-                <span className="ticker-category">{item.type}</span>
+                <span className="ticker-category">
+                  {item.type}
+                </span>
 
                 {/* SEPARATOR */}
 
-                <span className="ticker-separator">/</span>
+                <span className="ticker-separator">
+                  /
+                </span>
               </div>
             ))}
           </div>
@@ -188,15 +213,17 @@ function LiveTricker({ dark }) {
           border-radius: 9999px;
 
           color: ${dark ? "#D4AF37" : "#8a6b16"};
+
           background: ${
             dark
-              ? "rgba(212, 175, 55, 0.09)"
+              ? "rgba(212, 175, 55, 0.10)"
               : "rgba(212, 175, 55, 0.055)"
           };
+
           border: 1px solid ${
             dark
-              ? "rgba(212, 175, 55, 0.28)"
-              : "rgba(212, 175, 55, 0.2)"
+              ? "rgba(212, 175, 55, 0.30)"
+              : "rgba(212, 175, 55, 0.20)"
           };
 
           font-size: 9px;
@@ -215,9 +242,16 @@ function LiveTricker({ dark }) {
 
         .ticker-separator {
           margin-left: 8px;
-          color: rgba(212, 175, 55, ${dark ? "0.4" : "0.3"});
+
+          color: ${
+            dark
+              ? "rgba(212, 175, 55, 0.45)"
+              : "rgba(212, 175, 55, 0.30)"
+          };
+
           font-size: 18px;
           font-weight: 500;
+
           transition: color 0.5s ease;
         }
 
@@ -251,9 +285,12 @@ function LiveTricker({ dark }) {
           border-radius: 50%;
           background: #D4AF37;
 
-          box-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
+          box-shadow:
+            0 0 8px rgba(212, 175, 55, 0.3);
 
-          opacity: ${dark ? "0.22" : "0.18"};
+          opacity: ${dark ? "0.25" : "0.18"};
+
+          transition: opacity 0.5s ease;
         }
 
         .dot-1 {
@@ -414,5 +451,3 @@ function LiveTricker({ dark }) {
 }
 
 export default LiveTricker;
-
-

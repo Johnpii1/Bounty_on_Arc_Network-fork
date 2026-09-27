@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from "react";
 import {
   FiCheck,
@@ -17,6 +16,24 @@ function Testimonials() {
   const testimonialsRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
 
+  const [dark, setDark] = useState(
+    document.documentElement.classList.contains("dark"),
+  );
+
+  // Detect global theme changes from <html class="dark">
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setDark(document.documentElement.classList.contains("dark"));
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   useEffect(() => {
     const section = testimonialsRef.current;
 
@@ -31,7 +48,7 @@ function Testimonials() {
       },
       {
         threshold: 0.15,
-      }
+      },
     );
 
     observer.observe(section);
@@ -128,8 +145,16 @@ function Testimonials() {
 
           .testimonial-card:hover {
             transform: translateY(-7px);
+          }
+
+          .testimonial-card-light:hover {
             border-color: rgba(212, 175, 55, 0.45);
             box-shadow: 0 25px 70px rgba(35, 31, 22, 0.1);
+          }
+
+          .testimonial-card-dark:hover {
+            border-color: rgba(212, 175, 55, 0.45);
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.45);
           }
 
           @media (max-width: 768px) {
@@ -162,7 +187,9 @@ function Testimonials() {
 
       <section
         ref={testimonialsRef}
-        className="relative z-10 mx-6  overflow-hidden bg-[#f6f5ef] md:mx-10 lg:mx-16"
+        className={`relative z-10 mx-6 overflow-hidden transition-colors duration-300 md:mx-10 lg:mx-16 ${
+          dark ? "bg-[#080908]" : "bg-[#f6f5ef]"
+        }`}
       >
         {/* BACKGROUND GRID */}
 
@@ -171,18 +198,19 @@ function Testimonials() {
           style={{
             backgroundImage: `
               linear-gradient(
-                rgba(105,82,35,0.025) 1px,
+                ${
+                  dark ? "rgba(212,175,55,0.025)" : "rgba(105,82,35,0.025)"
+                } 1px,
                 transparent 1px
               ),
               linear-gradient(
                 90deg,
-                rgba(105,82,35,0.02) 1px,
+                ${dark ? "rgba(212,175,55,0.02)" : "rgba(105,82,35,0.02)"} 1px,
                 transparent 1px
               )
             `,
             backgroundSize: "64px 32px",
-            maskImage:
-              "linear-gradient(to bottom, black, transparent 88%)",
+            maskImage: "linear-gradient(to bottom, black, transparent 88%)",
             WebkitMaskImage:
               "linear-gradient(to bottom, black, transparent 88%)",
           }}
@@ -196,33 +224,54 @@ function Testimonials() {
               isVisible ? "visible" : ""
             } mx-auto mb-14 max-w-3xl px-4 text-center`}
           >
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-black/[0.08] bg-white/80 px-4 py-2 shadow-[0_8px_25px_rgba(35,31,22,0.035)] backdrop-blur-xl">
+            <div
+              className={`mb-5 inline-flex items-center gap-2 rounded-full border px-4 py-2 backdrop-blur-xl transition-colors duration-300 ${
+                dark
+                  ? "border-white/[0.08] bg-[#111311]/90 shadow-[0_8px_25px_rgba(0,0,0,0.25)]"
+                  : "border-black/[0.08] bg-white/80 shadow-[0_8px_25px_rgba(35,31,22,0.035)]"
+              }`}
+            >
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#D4AF37] opacity-30" />
 
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-[#D4AF37]" />
               </span>
 
-              <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#77736b]">
+              <span
+                className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${
+                  dark ? "text-white/55" : "text-[#77736b]"
+                }`}
+              >
                 Built Around Real Work
               </span>
 
-              <span className="h-1 w-1 rounded-full bg-black/20" />
+              <span
+                className={`h-1 w-1 rounded-full ${
+                  dark ? "bg-white/20" : "bg-black/20"
+                }`}
+              />
 
               <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#B28B20]">
                 Arc / USDC
               </span>
             </div>
 
-            <h2 className="text-4xl font-bold tracking-[-0.04em] text-[#111111] md:text-5xl">
-              Built for People Who{" "}
-              <span className="text-[#B28B20]">Build</span>
+            <h2
+              className={`text-4xl font-bold tracking-[-0.04em] transition-colors duration-300 md:text-5xl ${
+                dark ? "text-white" : "text-[#111111]"
+              }`}
+            >
+              Built for People Who <span className="text-[#B28B20]">Build</span>
             </h2>
 
-            <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-[#77736b] md:text-base">
-              Fresh Bounty is designed for creators who need quality work
-              and contributors looking for meaningful Web3 opportunities
-              with transparent reward flows.
+            <p
+              className={`mx-auto mt-5 max-w-2xl text-sm leading-7 transition-colors duration-300 md:text-base ${
+                dark ? "text-white/55" : "text-[#77736b]"
+              }`}
+            >
+              Fresh Bounty is designed for creators who need quality work and
+              contributors looking for meaningful Web3 opportunities with
+              transparent reward flows.
             </p>
           </div>
 
@@ -231,19 +280,26 @@ function Testimonials() {
           <div className="relative w-full overflow-hidden">
             {/* LEFT FADE */}
 
-            <div className="pointer-events-none absolute left-0 top-0 z-20 h-full w-16 bg-gradient-to-r from-[#f6f5ef] to-transparent md:w-32" />
+            <div
+              className={`pointer-events-none absolute left-0 top-0 z-20 h-full w-16 bg-gradient-to-r to-transparent md:w-32 ${
+                dark ? "from-[#080908]" : "from-[#f6f5ef]"
+              }`}
+            />
 
             {/* RIGHT FADE */}
 
-            <div className="pointer-events-none absolute right-0 top-0 z-20 h-full w-16 bg-gradient-to-l from-[#f6f5ef] to-transparent md:w-32" />
+            <div
+              className={`pointer-events-none absolute right-0 top-0 z-20 h-full w-16 bg-gradient-to-l to-transparent md:w-32 ${
+                dark ? "from-[#080908]" : "from-[#f6f5ef]"
+              }`}
+            />
 
             <div className="testimonial-marquee">
               {/* FIRST SET */}
 
               <div className="flex">
-                {/* CARD 1 */}
-
                 <TestimonialCard
+                  dark={dark}
                   icon={<FiCode />}
                   role="Bounty Creator"
                   type="Web3 Project Builder"
@@ -254,9 +310,8 @@ function Testimonials() {
                   status="Funded on-chain"
                 />
 
-                {/* CARD 2 */}
-
                 <TestimonialCard
+                  dark={dark}
                   icon={<FiPenTool />}
                   role="Bounty Contributor"
                   type="Web3 Creative"
@@ -267,9 +322,8 @@ function Testimonials() {
                   status="USDC rewards"
                 />
 
-                {/* CARD 3 */}
-
                 <TestimonialCard
+                  dark={dark}
                   icon={<FiLayers />}
                   role="Product Builder"
                   type="Web3 Developer"
@@ -280,9 +334,8 @@ function Testimonials() {
                   status="On-chain workflow"
                 />
 
-                {/* CARD 4 */}
-
                 <TestimonialCard
+                  dark={dark}
                   icon={<FiDollarSign />}
                   role="Project Founder"
                   type="Startup Builder"
@@ -293,9 +346,8 @@ function Testimonials() {
                   status="Reward funded"
                 />
 
-                {/* CARD 5 */}
-
                 <TestimonialCard
+                  dark={dark}
                   icon={<FiGlobe />}
                   role="Web3 Contributor"
                   type="Remote Builder"
@@ -306,9 +358,8 @@ function Testimonials() {
                   status="Global access"
                 />
 
-                {/* CARD 6 */}
-
                 <TestimonialCard
+                  dark={dark}
                   icon={<FiUsers />}
                   role="Community Builder"
                   type="Web3 Community"
@@ -319,9 +370,8 @@ function Testimonials() {
                   status="Transparent rewards"
                 />
 
-                {/* CARD 7 */}
-
                 <TestimonialCard
+                  dark={dark}
                   icon={<FiZap />}
                   role="Protocol Builder"
                   type="Blockchain Team"
@@ -332,9 +382,8 @@ function Testimonials() {
                   status="Built on-chain"
                 />
 
-                {/* CARD 8 */}
-
                 <TestimonialCard
+                  dark={dark}
                   icon={<FiShield />}
                   role="Independent Builder"
                   type="Bounty Contributor"
@@ -350,6 +399,7 @@ function Testimonials() {
 
               <div className="flex">
                 <TestimonialCard
+                  dark={dark}
                   icon={<FiCode />}
                   role="Bounty Creator"
                   type="Web3 Project Builder"
@@ -361,6 +411,7 @@ function Testimonials() {
                 />
 
                 <TestimonialCard
+                  dark={dark}
                   icon={<FiPenTool />}
                   role="Bounty Contributor"
                   type="Web3 Creative"
@@ -372,6 +423,7 @@ function Testimonials() {
                 />
 
                 <TestimonialCard
+                  dark={dark}
                   icon={<FiLayers />}
                   role="Product Builder"
                   type="Web3 Developer"
@@ -383,6 +435,7 @@ function Testimonials() {
                 />
 
                 <TestimonialCard
+                  dark={dark}
                   icon={<FiDollarSign />}
                   role="Project Founder"
                   type="Startup Builder"
@@ -394,6 +447,7 @@ function Testimonials() {
                 />
 
                 <TestimonialCard
+                  dark={dark}
                   icon={<FiGlobe />}
                   role="Web3 Contributor"
                   type="Remote Builder"
@@ -405,6 +459,7 @@ function Testimonials() {
                 />
 
                 <TestimonialCard
+                  dark={dark}
                   icon={<FiUsers />}
                   role="Community Builder"
                   type="Web3 Community"
@@ -416,6 +471,7 @@ function Testimonials() {
                 />
 
                 <TestimonialCard
+                  dark={dark}
                   icon={<FiZap />}
                   role="Protocol Builder"
                   type="Blockchain Team"
@@ -427,6 +483,7 @@ function Testimonials() {
                 />
 
                 <TestimonialCard
+                  dark={dark}
                   icon={<FiShield />}
                   role="Independent Builder"
                   type="Bounty Contributor"
@@ -445,28 +502,42 @@ function Testimonials() {
           <div
             className={`testimonial-header ${
               isVisible ? "visible" : ""
-            } mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 px-5 py-4 text-xs text-[#8b8880]`}
+            } mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 px-5 py-4 text-xs transition-colors duration-300 ${
+              dark ? "text-white/45" : "text-[#8b8880]"
+            }`}
           >
             <span className="flex items-center gap-2">
               <FiShield className="h-3.5 w-3.5 text-[#B28B20]" />
               Transparent workflows
             </span>
 
-            <span className="h-1 w-1 rounded-full bg-black/20" />
+            <span
+              className={`h-1 w-1 rounded-full ${
+                dark ? "bg-white/20" : "bg-black/20"
+              }`}
+            />
 
             <span className="flex items-center gap-2">
               <FiZap className="h-3.5 w-3.5 text-[#B28B20]" />
               Open opportunities
             </span>
 
-            <span className="h-1 w-1 rounded-full bg-black/20" />
+            <span
+              className={`h-1 w-1 rounded-full ${
+                dark ? "bg-white/20" : "bg-black/20"
+              }`}
+            />
 
             <span className="flex items-center gap-2">
               <FiCheck className="h-3.5 w-3.5 text-[#B28B20]" />
               On-chain reward flow
             </span>
 
-            <span className="h-1 w-1 rounded-full bg-black/20" />
+            <span
+              className={`h-1 w-1 rounded-full ${
+                dark ? "bg-white/20" : "bg-black/20"
+              }`}
+            />
 
             <span className="flex items-center gap-2">
               <FiArrowUpRight className="h-3.5 w-3.5 text-[#B28B20]" />
@@ -480,6 +551,7 @@ function Testimonials() {
 }
 
 function TestimonialCard({
+  dark,
   icon,
   role,
   type,
@@ -490,7 +562,13 @@ function TestimonialCard({
   status,
 }) {
   return (
-    <div className="testimonial-card group mx-3 w-[310px] shrink-0 rounded-[28px] border border-black/[0.08] bg-white p-6 shadow-[0_18px_55px_rgba(35,31,22,0.05)] md:w-[390px] md:p-8">
+    <div
+      className={`testimonial-card group mx-3 w-[310px] shrink-0 rounded-[28px] border p-6 transition-colors duration-300 md:w-[390px] md:p-8 ${
+        dark
+          ? "testimonial-card-dark border-white/[0.08] bg-[#111311] shadow-[0_18px_55px_rgba(0,0,0,0.3)]"
+          : "testimonial-card-light border-black/[0.08] bg-white shadow-[0_18px_55px_rgba(35,31,22,0.05)]"
+      }`}
+    >
       {/* USER */}
 
       <div className="mb-6 flex items-center justify-between">
@@ -500,14 +578,22 @@ function TestimonialCard({
               <span className="h-5 w-5">{icon}</span>
             </div>
 
-            <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full border border-white bg-white">
+            <span
+              className={`absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full border ${
+                dark ? "border-[#111311] bg-[#111311]" : "border-white bg-white"
+              }`}
+            >
               <span className="testimonial-status h-2 w-2 rounded-full bg-[#D4AF37] shadow-[0_0_8px_rgba(212,175,55,0.5)]" />
             </span>
           </div>
 
           <div>
             <div className="flex items-center gap-1.5">
-              <p className="text-sm font-semibold text-[#171717]">
+              <p
+                className={`text-sm font-semibold transition-colors duration-300 ${
+                  dark ? "text-white" : "text-[#171717]"
+                }`}
+              >
                 {role}
               </p>
 
@@ -516,13 +602,21 @@ function TestimonialCard({
               </span>
             </div>
 
-            <p className="mt-1 text-[11px] text-[#8b8880]">
+            <p
+              className={`mt-1 text-[11px] transition-colors duration-300 ${
+                dark ? "text-white/45" : "text-[#8b8880]"
+              }`}
+            >
               {type}
             </p>
           </div>
         </div>
 
-        <span className="text-[9px] uppercase tracking-[0.18em] text-[#aaa69d]">
+        <span
+          className={`text-[9px] uppercase tracking-[0.18em] transition-colors duration-300 ${
+            dark ? "text-white/30" : "text-[#aaa69d]"
+          }`}
+        >
           {network}
         </span>
       </div>
@@ -538,15 +632,27 @@ function TestimonialCard({
           {tag}
         </span>
 
-        <p className="relative z-10 min-h-[110px] text-sm leading-7 text-[#4f4c46] md:text-[15px]">
+        <p
+          className={`relative z-10 min-h-[110px] text-sm leading-7 transition-colors duration-300 md:text-[15px] ${
+            dark ? "text-white/65" : "text-[#4f4c46]"
+          }`}
+        >
           “{message}”
         </p>
       </div>
 
       {/* FOOTER */}
 
-      <div className="mt-6 flex items-center justify-between border-t border-black/[0.06] pt-5">
-        <span className="text-[11px] text-[#99958c]">
+      <div
+        className={`mt-6 flex items-center justify-between border-t pt-5 transition-colors duration-300 ${
+          dark ? "border-white/[0.07]" : "border-black/[0.06]"
+        }`}
+      >
+        <span
+          className={`text-[11px] transition-colors duration-300 ${
+            dark ? "text-white/35" : "text-[#99958c]"
+          }`}
+        >
           {footer}
         </span>
 
@@ -560,4 +666,3 @@ function TestimonialCard({
 }
 
 export default Testimonials;
-

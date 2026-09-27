@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   FiArrowUpRight,
   FiCheckCircle,
@@ -36,11 +37,32 @@ const features = [
 ];
 
 export default function BuiltForWeb3() {
+  const [dark, setDark] = useState(
+    document.documentElement.classList.contains("dark")
+  );
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setDark(document.documentElement.classList.contains("dark"));
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <section
-      className="relative overflow-hidden bg-[#f6f5ef] px-5 py-20 text-[#111111] sm:px-8 lg:px-10"
+      className={`relative overflow-hidden px-5 py-20 transition-colors duration-500 sm:px-8 lg:px-10 ${
+        dark
+          ? "bg-[#080908] text-white"
+          : "bg-[#f6f5ef] text-[#111111]"
+      }`}
       style={{
-        backgroundColor: "#f6f5ef",
+        backgroundColor: dark ? "#080908" : "#f6f5ef",
       }}
     >
       {/* =====================================================
@@ -52,12 +74,20 @@ export default function BuiltForWeb3() {
         style={{
           backgroundImage: `
             linear-gradient(
-              rgba(105,82,35,0.025) 1px,
+              ${
+                dark
+                  ? "rgba(212,175,55,0.025)"
+                  : "rgba(105,82,35,0.025)"
+              } 1px,
               transparent 1px
             ),
             linear-gradient(
               90deg,
-              rgba(105,82,35,0.02) 1px,
+              ${
+                dark
+                  ? "rgba(212,175,55,0.018)"
+                  : "rgba(105,82,35,0.02)"
+              } 1px,
               transparent 1px
             )
           `,
@@ -82,10 +112,17 @@ export default function BuiltForWeb3() {
           {/* BADGE */}
 
           <div
-            className="mb-4 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 shadow-[0_8px_25px_rgba(35,31,22,0.035)] backdrop-blur-xl"
+            className="mb-4 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 backdrop-blur-xl transition-colors duration-500"
             style={{
-              borderColor: "rgba(35,31,22,0.08)",
-              backgroundColor: "rgba(255,255,255,0.82)",
+              borderColor: dark
+                ? "rgba(212,175,55,0.18)"
+                : "rgba(35,31,22,0.08)",
+              backgroundColor: dark
+                ? "rgba(255,255,255,0.035)"
+                : "rgba(255,255,255,0.82)",
+              boxShadow: dark
+                ? "0 8px 25px rgba(0,0,0,0.18)"
+                : "0 8px 25px rgba(35,31,22,0.035)",
             }}
           >
             <FiZap
@@ -93,11 +130,19 @@ export default function BuiltForWeb3() {
               className="text-[#B28B20]"
             />
 
-            <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#77736b]">
+            <span
+              className={`text-[10px] font-semibold uppercase tracking-[0.18em] ${
+                dark ? "text-white/55" : "text-[#77736b]"
+              }`}
+            >
               Arc Infrastructure
             </span>
 
-            <span className="h-1 w-1 rounded-full bg-black/20" />
+            <span
+              className={`h-1 w-1 rounded-full ${
+                dark ? "bg-white/20" : "bg-black/20"
+              }`}
+            />
 
             <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#B28B20]">
               USDC
@@ -106,7 +151,11 @@ export default function BuiltForWeb3() {
 
           {/* TITLE */}
 
-          <h2 className="text-3xl font-bold tracking-[-0.04em] text-[#111111] sm:text-4xl lg:text-5xl">
+          <h2
+            className={`text-3xl font-bold tracking-[-0.04em] transition-colors duration-500 sm:text-4xl lg:text-5xl ${
+              dark ? "text-white" : "text-[#111111]"
+            }`}
+          >
             Built for{" "}
             <span className="text-[#B28B20]">
               Web3 Work
@@ -115,7 +164,11 @@ export default function BuiltForWeb3() {
 
           {/* DESCRIPTION */}
 
-          <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-[#77736b] sm:text-base">
+          <p
+            className={`mx-auto mt-4 max-w-xl text-sm leading-relaxed transition-colors duration-500 sm:text-base ${
+              dark ? "text-white/55" : "text-[#77736b]"
+            }`}
+          >
             Fresh Bounty combines bounty discovery, wallet interaction,
             and on-chain reward flows into a practical marketplace
             designed around Arc and USDC.
@@ -137,9 +190,17 @@ export default function BuiltForWeb3() {
                   className="group relative"
                 >
                   <div
-                    className="relative h-full overflow-hidden rounded-[22px] border bg-white p-5 shadow-[0_14px_40px_rgba(35,31,22,0.045)] transition-all duration-500 hover:-translate-y-1.5 hover:border-[#D4AF37]/40 hover:shadow-[0_20px_50px_rgba(35,31,22,0.08)]"
+                    className="relative h-full overflow-hidden rounded-[22px] border p-5 transition-all duration-500 hover:-translate-y-1.5"
                     style={{
-                      borderColor: "rgba(35,31,22,0.08)",
+                      backgroundColor: dark
+                        ? "#111311"
+                        : "#ffffff",
+                      borderColor: dark
+                        ? "rgba(255,255,255,0.07)"
+                        : "rgba(35,31,22,0.08)",
+                      boxShadow: dark
+                        ? "0 14px 40px rgba(0,0,0,0.28)"
+                        : "0 14px 40px rgba(35,31,22,0.045)",
                     }}
                   >
                     {/* TOP GOLD ACCENT */}
@@ -160,7 +221,13 @@ export default function BuiltForWeb3() {
 
                     {/* NUMBER */}
 
-                    <div className="absolute right-4 top-4 text-[10px] font-semibold tracking-widest text-black/[0.14]">
+                    <div
+                      className={`absolute right-4 top-4 text-[10px] font-semibold tracking-widest transition-colors duration-500 ${
+                        dark
+                          ? "text-white/[0.16]"
+                          : "text-black/[0.14]"
+                      }`}
+                    >
                       0{index + 1}
                     </div>
 
@@ -180,13 +247,21 @@ export default function BuiltForWeb3() {
 
                     {/* TITLE */}
 
-                    <h3 className="relative text-base font-semibold text-[#171717]">
+                    <h3
+                      className={`relative text-base font-semibold transition-colors duration-500 ${
+                        dark ? "text-white" : "text-[#171717]"
+                      }`}
+                    >
                       {feature.title}
                     </h3>
 
                     {/* DESCRIPTION */}
 
-                    <p className="relative mt-2 text-xs leading-relaxed text-[#77736b]">
+                    <p
+                      className={`relative mt-2 text-xs leading-relaxed transition-colors duration-500 ${
+                        dark ? "text-white/50" : "text-[#77736b]"
+                      }`}
+                    >
                       {feature.description}
                     </p>
 
@@ -198,7 +273,13 @@ export default function BuiltForWeb3() {
                         className="text-[#B28B20]"
                       />
 
-                      <span className="text-[9px] uppercase tracking-[0.12em] text-[#99958c]">
+                      <span
+                        className={`text-[9px] uppercase tracking-[0.12em] transition-colors duration-500 ${
+                          dark
+                            ? "text-white/35"
+                            : "text-[#99958c]"
+                        }`}
+                      >
                         Arc / Web3 enabled
                       </span>
                     </div>
@@ -215,9 +296,17 @@ export default function BuiltForWeb3() {
 
         <div className="mx-auto mt-6 max-w-5xl">
           <div
-            className="relative overflow-hidden rounded-[22px] border bg-white p-5 shadow-[0_15px_50px_rgba(35,31,22,0.05)] sm:p-6"
+            className="relative overflow-hidden rounded-[22px] border p-5 transition-all duration-500 sm:p-6"
             style={{
-              borderColor: "rgba(35,31,22,0.08)",
+              backgroundColor: dark
+                ? "#111311"
+                : "#ffffff",
+              borderColor: dark
+                ? "rgba(255,255,255,0.07)"
+                : "rgba(35,31,22,0.08)",
+              boxShadow: dark
+                ? "0 15px 50px rgba(0,0,0,0.3)"
+                : "0 15px 50px rgba(35,31,22,0.05)",
             }}
           >
             {/* GOLD ARCHITECTURAL LINE */}
@@ -247,11 +336,19 @@ export default function BuiltForWeb3() {
                 </div>
 
                 <div>
-                  <p className="text-sm font-semibold text-[#171717]">
+                  <p
+                    className={`text-sm font-semibold transition-colors duration-500 ${
+                      dark ? "text-white" : "text-[#171717]"
+                    }`}
+                  >
                     Transparent by design
                   </p>
 
-                  <p className="mt-1 max-w-xl text-xs leading-relaxed text-[#77736b]">
+                  <p
+                    className={`mt-1 max-w-xl text-xs leading-relaxed transition-colors duration-500 ${
+                      dark ? "text-white/50" : "text-[#77736b]"
+                    }`}
+                  >
                     Bounty activity and blockchain transactions can be
                     independently verified instead of relying entirely
                     on a centralized payment record.
@@ -275,7 +372,11 @@ export default function BuiltForWeb3() {
                   }}
                 />
 
-                <span className="text-[9px] font-semibold uppercase tracking-[0.14em] text-[#77736b]">
+                <span
+                  className={`text-[9px] font-semibold uppercase tracking-[0.14em] transition-colors duration-500 ${
+                    dark ? "text-white/50" : "text-[#77736b]"
+                  }`}
+                >
                   Arc / USDC
                 </span>
 
@@ -297,21 +398,45 @@ export default function BuiltForWeb3() {
             ARC
           </span>
 
-          <span className="h-1 w-1 rounded-full bg-black/20" />
+          <span
+            className={`h-1 w-1 rounded-full ${
+              dark ? "bg-white/20" : "bg-black/20"
+            }`}
+          />
 
-          <span className="text-[9px] font-semibold uppercase tracking-[0.18em] text-[#8b8880]">
+          <span
+            className={`text-[9px] font-semibold uppercase tracking-[0.18em] ${
+              dark ? "text-white/40" : "text-[#8b8880]"
+            }`}
+          >
             USDC
           </span>
 
-          <span className="h-1 w-1 rounded-full bg-black/20" />
+          <span
+            className={`h-1 w-1 rounded-full ${
+              dark ? "bg-white/20" : "bg-black/20"
+            }`}
+          />
 
-          <span className="text-[9px] font-semibold uppercase tracking-[0.18em] text-[#8b8880]">
+          <span
+            className={`text-[9px] font-semibold uppercase tracking-[0.18em] ${
+              dark ? "text-white/40" : "text-[#8b8880]"
+            }`}
+          >
             BOUNTY INFRASTRUCTURE
           </span>
 
-          <span className="h-1 w-1 rounded-full bg-black/20" />
+          <span
+            className={`h-1 w-1 rounded-full ${
+              dark ? "bg-white/20" : "bg-black/20"
+            }`}
+          />
 
-          <span className="text-[9px] font-semibold uppercase tracking-[0.18em] text-[#8b8880]">
+          <span
+            className={`text-[9px] font-semibold uppercase tracking-[0.18em] ${
+              dark ? "text-white/40" : "text-[#8b8880]"
+            }`}
+          >
             ON-CHAIN
           </span>
         </div>

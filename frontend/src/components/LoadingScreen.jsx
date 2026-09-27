@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import Usdc from "../assets/images/usdc.png";
 
@@ -77,7 +76,6 @@ function LoadingScreen({ onComplete }) {
       duration: "9s",
       rotate: "8deg",
     },
-
     {
       left: "28%",
       top: "10%",
@@ -110,7 +108,6 @@ function LoadingScreen({ onComplete }) {
       duration: "12s",
       rotate: "10deg",
     },
-
     {
       left: "58%",
       top: "9%",
@@ -143,7 +140,6 @@ function LoadingScreen({ onComplete }) {
       duration: "12s",
       rotate: "9deg",
     },
-
     {
       left: "82%",
       top: "12%",
@@ -176,7 +172,6 @@ function LoadingScreen({ onComplete }) {
       duration: "12s",
       rotate: "8deg",
     },
-
     {
       left: "48%",
       top: "5%",
@@ -197,7 +192,7 @@ function LoadingScreen({ onComplete }) {
 
   return (
     <div
-      className={`fixed inset-0 z-[9999] flex min-h-screen items-center justify-center overflow-hidden bg-[#f6f5ef] text-black transition-opacity duration-500 ${
+      className={`loading-screen fixed inset-0 z-[9999] flex min-h-screen items-center justify-center overflow-hidden transition-opacity duration-500 ${
         fadeOut ? "pointer-events-none opacity-0" : "opacity-100"
       }`}
     >
@@ -206,22 +201,22 @@ function LoadingScreen({ onComplete }) {
       ===================================================== */}
 
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        {/* Extremely subtle central warmth */}
+        {/* Central warmth */}
 
-        <div className="absolute left-1/2 top-1/2 h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#D4AF37]/[0.025] blur-[120px]" />
+        <div className="loading-center-glow absolute left-1/2 top-1/2 h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[120px]" />
 
-        {/* Subtle gold corner accents */}
+        {/* Corner accents */}
 
-        <div className="absolute left-[10%] top-[16%] h-32 w-32 rounded-full bg-[#D4AF37]/[0.018] blur-[90px]" />
+        <div className="loading-corner-glow absolute left-[10%] top-[16%] h-32 w-32 rounded-full blur-[90px]" />
 
-        <div className="absolute bottom-[12%] right-[10%] h-40 w-40 rounded-full bg-[#D4AF37]/[0.018] blur-[100px]" />
+        <div className="loading-corner-glow absolute bottom-[12%] right-[10%] h-40 w-40 rounded-full blur-[100px]" />
 
         {/* =================================================
             SOFT ARCHITECTURAL BRICK
         ================================================= */}
 
         <div
-          className="absolute -inset-20 scale-110 opacity-[0.025]"
+          className="loading-brick absolute -inset-20 scale-110"
           style={{
             backgroundImage: `
               linear-gradient(
@@ -243,7 +238,7 @@ function LoadingScreen({ onComplete }) {
         {/* Soft architectural depth */}
 
         <div
-          className="absolute -inset-20 scale-110 opacity-[0.012] blur-[8px]"
+          className="loading-depth absolute -inset-20 scale-110 blur-[8px]"
           style={{
             backgroundImage: `
               radial-gradient(
@@ -260,7 +255,7 @@ function LoadingScreen({ onComplete }) {
 
         {/* Clean center */}
 
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(246,245,239,0.92)_0%,rgba(246,245,239,0.62)_45%,rgba(246,245,239,0.2)_100%)]" />
+        <div className="loading-center absolute inset-0" />
 
         {/* =================================================
             FLOATING USDC COINS
@@ -286,8 +281,7 @@ function LoadingScreen({ onComplete }) {
                 width: `${coin.size}px`,
                 height: `${coin.size}px`,
                 transform: `rotate(${coin.rotate})`,
-                filter:
-                  "drop-shadow(0 5px 10px rgba(39,117,202,0.08))",
+                filter: "drop-shadow(0 5px 10px rgba(39,117,202,0.08))",
               }}
             />
           </div>
@@ -298,14 +292,7 @@ function LoadingScreen({ onComplete }) {
           SUBTLE GRID
       ===================================================== */}
 
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.014]"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(0,0,0,0.25) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.25) 1px, transparent 1px)",
-          backgroundSize: "70px 70px",
-        }}
-      />
+      <div className="loading-grid pointer-events-none absolute inset-0" />
 
       {/* =====================================================
           SCAN LINE
@@ -325,15 +312,15 @@ function LoadingScreen({ onComplete }) {
         <div className="relative mb-8 flex h-32 w-32 items-center justify-center">
           {/* Outer gold ring */}
 
-          <div className="absolute inset-0 animate-[spin_10s_linear_infinite] rounded-full border border-black/[0.06] border-t-[#D4AF37]/70" />
+          <div className="loading-ring-outer absolute inset-0 animate-[spin_10s_linear_infinite] rounded-full border border-t-[#D4AF37]/70" />
 
           {/* Inner gold ring */}
 
-          <div className="absolute inset-3 animate-[spin_7s_linear_infinite_reverse] rounded-full border border-black/[0.05] border-b-[#B28B20]/50" />
+          <div className="loading-ring-inner absolute inset-3 animate-[spin_7s_linear_infinite_reverse] rounded-full border border-b-[#B28B20]/50" />
 
           {/* Subtle gold glow */}
 
-          <div className="absolute h-24 w-24 rounded-full bg-[#D4AF37]/[0.07] blur-2xl" />
+          <div className="loading-coin-glow absolute h-24 w-24 rounded-full blur-2xl" />
 
           {/* USDC image */}
 
@@ -350,7 +337,7 @@ function LoadingScreen({ onComplete }) {
 
           <span className="absolute right-1 top-7 h-2 w-2 animate-pulse rounded-full bg-[#D4AF37] shadow-[0_0_12px_rgba(212,175,55,0.45)]" />
 
-          {/* Small secondary dot */}
+          {/* Secondary dot */}
 
           <span className="absolute bottom-5 left-3 h-1.5 w-1.5 animate-pulse rounded-full bg-[#B28B20] shadow-[0_0_10px_rgba(178,139,32,0.35)]" />
         </div>
@@ -359,11 +346,11 @@ function LoadingScreen({ onComplete }) {
             BRAND
         ================================================= */}
 
-        <h1 className="text-center text-2xl font-bold tracking-[0.2em] text-black">
+        <h1 className="loading-title text-center text-2xl font-bold tracking-[0.2em]">
           HAPPY BOUNTY
         </h1>
 
-        <p className="mt-2 text-center text-[10px] font-medium uppercase tracking-[0.35em] text-black/35">
+        <p className="loading-subtitle mt-2 text-center text-[10px] font-medium uppercase tracking-[0.35em]">
           The Future of Web3 Work
         </p>
 
@@ -371,14 +358,14 @@ function LoadingScreen({ onComplete }) {
             ARC BADGE
         ================================================= */}
 
-        <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-black/[0.05] bg-white/60 px-3 py-1.5 shadow-sm">
+        <div className="loading-badge mt-5 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 shadow-sm">
           <span className="relative flex h-1.5 w-1.5">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#D4AF37] opacity-40" />
 
             <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#D4AF37]" />
           </span>
 
-          <span className="text-[9px] font-semibold uppercase tracking-[0.2em] text-black/45">
+          <span className="loading-badge-text text-[9px] font-semibold uppercase tracking-[0.2em]">
             Built for Arc
           </span>
         </div>
@@ -389,7 +376,7 @@ function LoadingScreen({ onComplete }) {
 
         <div className="mt-10 w-full">
           <div className="mb-3 flex items-center justify-between">
-            <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-black/40">
+            <span className="loading-label text-[10px] font-medium uppercase tracking-[0.2em]">
               Initializing Network
             </span>
 
@@ -398,7 +385,7 @@ function LoadingScreen({ onComplete }) {
             </span>
           </div>
 
-          <div className="h-[3px] w-full overflow-hidden rounded-full bg-black/[0.07]">
+          <div className="loading-progress-track h-[3px] w-full overflow-hidden rounded-full">
             <div
               className="h-full rounded-full bg-[#D4AF37] transition-[width] duration-100"
               style={{
@@ -412,7 +399,7 @@ function LoadingScreen({ onComplete }) {
             STATUS
         ================================================= */}
 
-        <div className="mt-6 flex w-full items-center justify-between text-[9px] uppercase tracking-[0.18em] text-black/30">
+        <div className="loading-status mt-6 flex w-full items-center justify-between text-[9px] uppercase tracking-[0.18em]">
           <span>
             {progress < 35
               ? "Connecting"
@@ -425,7 +412,6 @@ function LoadingScreen({ onComplete }) {
 
           <span className="flex items-center gap-2">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#D4AF37]" />
-
             Network Online
           </span>
         </div>
@@ -434,14 +420,14 @@ function LoadingScreen({ onComplete }) {
             BOTTOM TEXT
         ================================================= */}
 
-        <div className="mt-10 flex items-center gap-3 text-[9px] uppercase tracking-[0.25em] text-black/20">
+        <div className="loading-bottom mt-10 flex items-center gap-3 text-[9px] uppercase tracking-[0.25em]">
           <span>Find</span>
 
-          <span className="h-px w-5 bg-black/10" />
+          <span className="loading-divider h-px w-5" />
 
           <span>Build</span>
 
-          <span className="h-px w-5 bg-black/10" />
+          <span className="loading-divider h-px w-5" />
 
           <span>Earn</span>
         </div>
@@ -451,19 +437,222 @@ function LoadingScreen({ onComplete }) {
           CORNER DETAILS
       ===================================================== */}
 
-      <div className="absolute left-6 top-6 text-[8px] uppercase tracking-[0.25em] text-black/20">
+      <div className="loading-corner-text absolute left-6 top-6 text-[8px] uppercase tracking-[0.25em]">
         HB // 001
       </div>
 
-      <div className="absolute bottom-6 right-6 text-[8px] uppercase tracking-[0.25em] text-black/20">
+      <div className="loading-corner-text absolute bottom-6 right-6 text-[8px] uppercase tracking-[0.25em]">
         ARC // USDC NETWORK
       </div>
 
       {/* =====================================================
-          ANIMATIONS
+          THEME STYLES
       ===================================================== */}
 
       <style>{`
+        .loading-screen {
+          background: #f6f5ef;
+          color: #111111;
+        }
+
+        .loading-center-glow {
+          background: rgba(212, 175, 55, 0.025);
+        }
+
+        .loading-corner-glow {
+          background: rgba(212, 175, 55, 0.018);
+        }
+
+        .loading-brick {
+          opacity: 0.025;
+        }
+
+        .loading-depth {
+          opacity: 0.012;
+        }
+
+        .loading-center {
+          background: radial-gradient(
+            circle at center,
+            rgba(246, 245, 239, 0.92) 0%,
+            rgba(246, 245, 239, 0.62) 45%,
+            rgba(246, 245, 239, 0.2) 100%
+          );
+        }
+
+        .loading-grid {
+          opacity: 0.014;
+          background-image:
+            linear-gradient(
+              rgba(0, 0, 0, 0.25) 1px,
+              transparent 1px
+            ),
+            linear-gradient(
+              90deg,
+              rgba(0, 0, 0, 0.25) 1px,
+              transparent 1px
+            );
+          background-size: 70px 70px;
+        }
+
+        .loading-ring-outer {
+          border-color: rgba(0, 0, 0, 0.06);
+        }
+
+        .loading-ring-inner {
+          border-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .loading-coin-glow {
+          background: rgba(212, 175, 55, 0.07);
+        }
+
+        .loading-title {
+          color: #111111;
+        }
+
+        .loading-subtitle {
+          color: rgba(0, 0, 0, 0.35);
+        }
+
+        .loading-badge {
+          border-color: rgba(0, 0, 0, 0.05);
+          background: rgba(255, 255, 255, 0.6);
+        }
+
+        .loading-badge-text {
+          color: rgba(0, 0, 0, 0.45);
+        }
+
+        .loading-label {
+          color: rgba(0, 0, 0, 0.4);
+        }
+
+        .loading-progress-track {
+          background: rgba(0, 0, 0, 0.07);
+        }
+
+        .loading-status {
+          color: rgba(0, 0, 0, 0.3);
+        }
+
+        .loading-bottom {
+          color: rgba(0, 0, 0, 0.2);
+        }
+
+        .loading-divider {
+          background: rgba(0, 0, 0, 0.1);
+        }
+
+        .loading-corner-text {
+          color: rgba(0, 0, 0, 0.2);
+        }
+
+        /* =====================================================
+           DARK MODE
+        ===================================================== */
+
+        .dark .loading-screen {
+          background: #080908;
+          color: #ffffff;
+        }
+
+        .dark .loading-center-glow {
+          background: rgba(212, 175, 55, 0.035);
+        }
+
+        .dark .loading-corner-glow {
+          background: rgba(212, 175, 55, 0.025);
+        }
+
+        .dark .loading-brick {
+          opacity: 0.045;
+        }
+
+        .dark .loading-depth {
+          opacity: 0.025;
+        }
+
+        .dark .loading-center {
+          background: radial-gradient(
+            circle at center,
+            rgba(8, 9, 8, 0.78) 0%,
+            rgba(8, 9, 8, 0.48) 45%,
+            rgba(8, 9, 8, 0.08) 100%
+          );
+        }
+
+        .dark .loading-grid {
+          opacity: 0.025;
+          background-image:
+            linear-gradient(
+              rgba(255, 255, 255, 0.08) 1px,
+              transparent 1px
+            ),
+            linear-gradient(
+              90deg,
+              rgba(255, 255, 255, 0.08) 1px,
+              transparent 1px
+            );
+        }
+
+        .dark .loading-ring-outer {
+          border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .dark .loading-ring-inner {
+          border-color: rgba(255, 255, 255, 0.06);
+        }
+
+        .dark .loading-coin-glow {
+          background: rgba(212, 175, 55, 0.09);
+        }
+
+        .dark .loading-title {
+          color: #ffffff;
+        }
+
+        .dark .loading-subtitle {
+          color: rgba(255, 255, 255, 0.4);
+        }
+
+        .dark .loading-badge {
+          border-color: rgba(212, 175, 55, 0.18);
+          background: rgba(18, 18, 18, 0.72);
+        }
+
+        .dark .loading-badge-text {
+          color: rgba(255, 255, 255, 0.52);
+        }
+
+        .dark .loading-label {
+          color: rgba(255, 255, 255, 0.45);
+        }
+
+        .dark .loading-progress-track {
+          background: rgba(255, 255, 255, 0.1);
+        }
+
+        .dark .loading-status {
+          color: rgba(255, 255, 255, 0.35);
+        }
+
+        .dark .loading-bottom {
+          color: rgba(255, 255, 255, 0.25);
+        }
+
+        .dark .loading-divider {
+          background: rgba(255, 255, 255, 0.12);
+        }
+
+        .dark .loading-corner-text {
+          color: rgba(255, 255, 255, 0.25);
+        }
+
+        /* =====================================================
+           ANIMATIONS
+        ===================================================== */
+
         @keyframes scan {
           0% {
             transform: translateY(-10vh);
@@ -515,8 +704,9 @@ function LoadingScreen({ onComplete }) {
         }
 
         @media (prefers-reduced-motion: reduce) {
-          * {
+          .loading-screen * {
             animation: none !important;
+            transition: none !important;
           }
         }
       `}</style>
@@ -525,4 +715,3 @@ function LoadingScreen({ onComplete }) {
 }
 
 export default LoadingScreen;
-
