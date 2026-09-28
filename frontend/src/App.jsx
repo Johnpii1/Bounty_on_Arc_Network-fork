@@ -111,7 +111,7 @@ function App() {
           />
 
           <Route
-            path="/task/:id"
+            path="/bounty/:id"
             element={
               <BountyDetail
                 dark={dark}
