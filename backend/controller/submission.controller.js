@@ -81,20 +81,8 @@ const submit = async (req, res) => {
 
 // GET /submissions/user/:wallet
 const getUserSubmission = async (req, res) => {
-  console.log("getting user submissions")
   const wallet = req.params.wallet.toLowerCase();
-  if(!wallet) return res.status(400).json({ message: "User not found" });
-
-//   const getUserSubmission = async (req, res) => {
-//   const wallet = req.params.wallet.toLowerCase();
-
-//   const submissions = await Submission.find({ user: wallet })
-//     .sort({ submittedAt: -1 })
-//     .populate("bountyId", "title reward token deadline category") // projection is optional
-//     .lean();
-
-//   res.status(200).json({ submissions });
-// };
+  if (!wallet) return res.status(400).json({ message: "User not found" });
 
   try {
     const submissions = await Submission.find({ user: wallet })
@@ -123,4 +111,29 @@ const getUserSubmission = async (req, res) => {
   }
 };
 
-module.exports = { submit, getUserSubmission };
+const getBountySubmissions = async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ error: "Invalid bounty id" });
+  }
+
+  try {
+    const submissions = await Submission.find({ bountyId: id })
+      .sort({ submittedAt: -1 })
+      .lean();
+
+    const formatted = submissions.map((sub) => ({
+      ...sub,
+      _id: sub._id.toString(),
+      bountyId: sub.bountyId.toString(),
+    }));
+
+    return res.status(200).json({ submissions: formatted });
+  } catch (err) {
+    console.error("Failed to fetch submissions:", err);
+    return res.status(500).json({ error: "Failed to fetch submissions" });
+  }
+};
+
+module.exports = { submit, getUserSubmission, getBountySubmissions };
