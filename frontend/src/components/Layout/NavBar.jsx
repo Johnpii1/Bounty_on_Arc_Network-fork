@@ -344,6 +344,15 @@ function NavBar() {
                     ? "visible translate-y-0 scale-100 opacity-100"
                     : "invisible -translate-y-2 scale-[0.98] opacity-0"
                 }
+
+                max-md:fixed
+                max-md:left-1/2
+                max-md:right-auto
+                max-md:top-[86px]
+                max-md:mt-0
+                max-md:w-[calc(100vw-2rem)]
+                max-md:max-w-[230px]
+                max-md:-translate-x-1/2
               `}
             >
               {/* =================================================
