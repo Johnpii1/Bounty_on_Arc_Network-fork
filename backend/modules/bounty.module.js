@@ -13,10 +13,10 @@ const submissionSchema = new mongoose.Schema(
       default: 100,
       min: 1,
     },
-    ids: {
-      type: [String], // Array of submission IDs
-      default: [],
-    },
+    // ids: {
+    //   type: [String], // Array of submission IDs
+    //   default: []
+    // },
   },
   { _id: false },
 );
@@ -90,6 +90,28 @@ const bountySchema = new mongoose.Schema(
         message: (props) =>
           `${props.value} is not a valid Ethereum wallet address!`,
       },
+    },
+    blockchainId: {
+      type: Number,
+      default: null,
+      index: true,
+    },
+    txHash: {
+      type: String,
+      default: null,
+      trim: true,
+      validate: {
+        validator: (v) => !v || /^0x[a-fA-F0-9]{64}$/.test(v),
+        message: (props) => `${props.value} is not a valid transaction hash`,
+      },
+    },
+    isOnChain: {
+      type: Boolean,
+      default: false,
+    },
+    rewardsAssignedOnChain: {
+      type: Boolean,
+      default: false,
     },
     lifecycleStatus: {
       type: String,
@@ -174,7 +196,7 @@ const bountySchema = new mongoose.Schema(
       default: [],
       validate: {
         validator: function (v) {
-          if (this.payoutType === "percentage") {
+          if (this.payoutType === "MULTI_PERCENTAGE") {
             if (v.length !== this.winnersAllowed) {
               return false;
             }
@@ -270,7 +292,7 @@ bountySchema.index({ status: 1, category: 1, deadline: 1 });
 
 // Middleware: Validate percentages when payoutType is 'percentage'
 bountySchema.pre("validate", function () {
-  if (this.payoutType !== "percentage") return;
+  if (this.payoutType !== "MULTI_PERCENTAGE") return;
 
   const p = this.percentages || [];
 
@@ -322,19 +344,21 @@ bountySchema.methods.removeSubmission = function (submissionId) {
 };
 
 // Instance method: Assigning winners closes the bounty
-bountySchema.methods.assignWinner = function (walletAddress) {
-  if (this.winners.assigned.includes(walletAddress)) {
-    throw new Error("Winner already assigned");
-  }
+// bountySchema.methods.assignWinner = function (walletAddress) {
+//   if (this.winners.assigned.includes(walletAddress)) {
+//     throw new Error("Winner already assigned");
+//   }
 
-  if (this.winners.assigned.length >= this.winnersAllowed) {
-    throw new Error("Maximum winners reached");
-  }
+//   if (this.winners.assigned.length >= this.winnersAllowed) {
+//     throw new Error("Maximum winners reached");
+//   }
 
-  this.winners.assigned.push(walletAddress);
-  this.lifecycleStatus = "completed";
-  return this.save();
-};
+//   this.winners.assigned.push(walletAddress);
+//   if (this.winners.assigned.length === this.winnersAllowed) {
+//     this.lifecycleStatus = "completed";
+//   }
+//   return this.save();
+// };
 
 // Instance method: Claim reward
 bountySchema.methods.claimReward = function (walletAddress) {

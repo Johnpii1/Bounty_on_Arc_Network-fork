@@ -61,17 +61,19 @@ function Create() {
     description: "",
     category: "",
     network: "",
-    tags: [],
+    tags: [], // string for input (will convert later)
     startDate: "",
     deadline: "",
     originLink: "",
     reward: 0,
-    token: "INJ",
+    token: "USDC", // pick your default
+    // payout logic (needed for contract/backend)
     winnersAllowed: 1,
     payoutType: "",
     percentages: [],
+    // UI-specific logic
     rewardType: "self-fund",
-    creator: "",
+    creator: "", // will be filled from wallet
   });
 
   // Multi-winner state
@@ -505,17 +507,18 @@ function Create() {
         percentages: finalPercentages,
       });
 
-      let blockchainId = eventData?.bountyId
-        ? Number(eventData.bountyId)
-        : null;
+      let blockchainId =
+        eventData?.bountyId != null ? Number(eventData.bountyId) : null;
 
       console.log(
         `Token type ${bountyData.token} reward ${bountyData.reward} total amount ${totalAmount} in wei`,
       );
 
       console.log("Full eventData:", eventData);
-
-      if (!blockchainId) {
+      // This blockchainId is currently causeing error on various networks...
+      if (blockchainId === null || blockchainId === undefined) {
+        // Fallback chain — handles Injective's sparse logs and Creditcoin's
+        // log-less receipts via explorer API + bountyCounter() contract read.
         blockchainId = await fetchBountyIdFromTx(hash);
       }
 
@@ -527,20 +530,19 @@ function Create() {
 
         return;
       }
-
+      if (!hash || !/^0x[a-fA-F0-9]{64}$/.test(hash)) {
+        showToast.error("Invalid transaction hash — cannot link bounty");
+        return;
+      }
+      // 8. Save to backend with blockchain info
       console.log("posting to db");
-
-      const saveResponse = await axios.post(
-        `${API_URL}/bounty/create`,
-        {
-          ...backendData,
-          blockchainId: blockchainId,
-          txHash: hash,
-          isOnChain: true,
-          creator: address,
-        },
-      );
-
+      const saveResponse = await axios.post(`${API_URL}/bounty/create`, {
+        ...backendData,
+        blockchainId,
+        txHash: hash,
+        isOnChain: true,
+        // creator: address,
+      });
       console.log("posting sucess");
 
       if (saveResponse.status === 201) {

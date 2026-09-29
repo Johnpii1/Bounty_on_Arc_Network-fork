@@ -68,6 +68,8 @@ const BountyDetail = () => {
   const [winnerAddresses, setWinnerAddresses] = useState([]);
 
   const [enrollmentStatus, setEnrollmentStatus] = useState("checking");
+  const [allSubmissions, setAllSubmissions] = useState([]);
+  const [selectedWinners, setSelectedWinners] = useState([]);
 
   const API_URL = import.meta.env.VITE_API_URL;
 
@@ -180,7 +182,7 @@ const BountyDetail = () => {
   const checkUserSubmission = async (wallet, bountyId) => {
     try {
       const { data } = await axios.get(
-        `${API_URL}/bounty/submissions/${wallet}`,
+        `${API_URL}/bounty/user/submissions/${wallet}`,
       );
 
       const existing = (data.submissions || []).find(
@@ -234,11 +236,31 @@ const BountyDetail = () => {
     }
   };
 
+  const loadAllSubmissions = async (bountyId) => {
+    try {
+      const { data } = await axios.get(
+        `${API_URL}/bounty/submissions/${bountyId}`,
+      );
+      setAllSubmissions(data.submissions || []);
+    } catch (err) {
+      console.error("Error loading submissions:", err);
+    }
+  };
+
   /* ---------------- Fetch bounty ---------------- */
 
   useEffect(() => {
     const fetchBounty = async () => {
       if (!id) return;
+      setEnrollmentStatus("checking");
+      setIsCreator(false);
+      setHasUserSubmitted(false);
+      setUserSubmission(null);
+      setWinnersData(null);
+      setOffChainClaimable("0");
+      setHasUserClaimedOffChain(false);
+      setAllSubmissions([]);
+      setSelectedWinners([]);
 
       try {
         const { data } = await axios.get(`${API_URL}/bounty/${id}`);
@@ -279,10 +301,9 @@ const BountyDetail = () => {
         setBounty(bountyData);
 
         if (address) {
-          setIsCreator(
-            bountyData.creator?.toLowerCase() ===
-              address.toLowerCase(),
-          );
+          const creator =
+            bountyData.creator?.toLowerCase() === address.toLowerCase();
+          setIsCreator(creator);
 
           try {
             const enrolled = await checkUserEnrollment(
@@ -299,6 +320,10 @@ const BountyDetail = () => {
 
           await checkUserSubmission(address, id);
           await loadWinnersData(id);
+
+          if (creator) {
+            await loadAllSubmissions(id);
+          }
         }
 
         await loadComments(id);
@@ -602,6 +627,8 @@ const BountyDetail = () => {
         id: loadingshowToast,
       });
 
+      showToast.success("Distributed!", { id: loadingshowToast });
+      setSelectedWinners([]);
       setShowDistributeModal(false);
 
       await loadWinnersData(id);
@@ -619,15 +646,59 @@ const BountyDetail = () => {
     }
   };
 
-  const openDistributeModal = () => {
-    const count =
-      bounty?.payoutType === "SINGLE"
-        ? 1
-        : bounty?.winnersAllowed || 1;
+  const toggleWinnerSelection = (submission) => {
+    const addr = submission.user.toLowerCase();
 
-    setWinnerAddresses(Array(count).fill(""));
+    setSelectedWinners((prev) => {
+      const exists = prev.find((s) => s.address === addr);
+      if (exists) {
+        return prev.filter((s) => s.address !== addr);
+      }
+
+      // SINGLE: replace whatever was there before
+      if (bounty.payoutType === "SINGLE") {
+        return [{ address: addr, submissionId: submission._id }];
+      }
+
+      // MULTI: cap at winnersAllowed
+      if (prev.length >= bounty.winnersAllowed) {
+        showToast.error(
+          `You can only select ${bounty.winnersAllowed} winner${
+            bounty.winnersAllowed > 1 ? "s" : ""
+          }`,
+        );
+        return prev;
+      }
+
+      return [...prev, { address: addr, submissionId: submission._id }];
+    });
+  };
+
+  const isSelected = (addr) =>
+    selectedWinners.some((s) => s.address === addr.toLowerCase());
+
+  const hasEnoughSelections = () => {
+    if (selectedWinners.length === 0) return true; // allow manual entry via the button
+    return selectedWinners.length === bounty.winnersAllowed;
+  };
+
+  const openDistributeModal = () => {
+    if (selectedWinners.length > 0) {
+      setWinnerAddresses(selectedWinners.map((s) => s.address));
+    } else {
+      const count =
+        bounty?.payoutType === "SINGLE" ? 1 : bounty?.winnersAllowed || 1;
+      setWinnerAddresses(Array(count).fill(""));
+    }
     setShowDistributeModal(true);
   };
+
+  // const openDistributeModal = () => {
+  //   const count =
+  //     bounty?.payoutType === "SINGLE" ? 1 : bounty?.winnersAllowed || 1;
+  //   setWinnerAddresses(Array(count).fill(""));
+  //   setShowDistributeModal(true);
+  // };
 
   /* ---------------- Comments ---------------- */
 
@@ -666,6 +737,9 @@ const BountyDetail = () => {
   };
 
   /* ---------------- Derived ---------------- */
+
+  // const canSubmit = () =>
+  !isCreator && isEnrolled && !hasUserSubmitted && bounty?.status === "active";
 
   const canClaim = () => {
     if (isCreator || hasUserClaimedOffChain) {
@@ -992,9 +1066,22 @@ const BountyDetail = () => {
                 {canDistribute() && (
                   <button
                     onClick={openDistributeModal}
-                    className="px-5 py-2.5 rounded-xl bg-[#171714] dark:bg-[#D4AF37] text-white dark:text-[#171714] font-semibold hover:bg-[#292922] dark:hover:bg-[#B8962E] transition"
+                    disabled={!hasEnoughSelections()}
+                    title={
+                      hasEnoughSelections()
+                        ? ""
+                        : `Select exactly ${bounty.winnersAllowed} winner${
+                            bounty.winnersAllowed > 1 ? "s" : ""
+                          }`
+                    }
+                    className="px-5 py-2.5 rounded-xl bg-[#171714] text-white font-semibold hover:bg-[#292922] transition disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Distribute Reward
+                    {selectedWinners.length > 0 && (
+                      <span className="ml-2 text-xs text-[#d4af37]">
+                        ({selectedWinners.length}/{bounty.winnersAllowed})
+                      </span>
+                    )}
                   </button>
                 )}
 
@@ -1146,6 +1233,126 @@ const BountyDetail = () => {
                 </div>
               </div>
             )}
+
+          {/* Submissions — creator only */}
+          {isCreator && allSubmissions.length > 0 && (
+            <div className={cardClass}>
+              <div className="p-6 md:p-8">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-bold text-[#171714]">
+                    Submissions ({allSubmissions.length})
+                  </h3>
+                  {selectedWinners.length > 0 && (
+                    <span className="text-xs font-semibold text-[#8f6c12] bg-[#f4ecd5] border border-[#e5d9b8] px-3 py-1 rounded-full">
+                      {selectedWinners.length} / {bounty.winnersAllowed}{" "}
+                      selected
+                    </span>
+                  )}
+                </div>
+
+                {/* Selection order — critical for MULTI_PERCENTAGE */}
+                {selectedWinners.length > 0 &&
+                  bounty.payoutType === "MULTI_PERCENTAGE" &&
+                  bounty.percentages?.length > 0 && (
+                    <div className="mb-5 p-3 rounded-xl bg-[#fbfaf6] border border-[#e7e3da]">
+                      <p className="text-xs uppercase tracking-wider text-[#8b8579] mb-2">
+                        Selection order (maps to percentages)
+                      </p>
+                      <div className="space-y-1">
+                        {selectedWinners.map((s, idx) => (
+                          <div
+                            key={s.address}
+                            className="flex justify-between text-xs text-[#4f4b43]"
+                          >
+                            <span className="font-mono">
+                              {idx + 1}. {shortenAddress(s.address)}
+                            </span>
+                            <span className="font-semibold text-[#8f6c12]">
+                              {bounty.percentages[idx]}%
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                <div className="space-y-3">
+                  {allSubmissions.map((submission) => {
+                    const selected = isSelected(submission.user);
+                    const selectionIndex = selectedWinners.findIndex(
+                      (s) => s.address === submission.user.toLowerCase(),
+                    );
+                    return (
+                      <div
+                        key={submission._id}
+                        className={`p-4 rounded-xl border transition ${
+                          selected
+                            ? "bg-[#fbf7e9] border-[#d4af37]"
+                            : "bg-[#fbfaf6] border-[#e7e3da]"
+                        }`}
+                      >
+                        <div className="flex justify-between items-start gap-4">
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-mono text-sm text-[#171714] font-semibold">
+                                {shortenAddress(submission.user)}
+                              </span>
+                              {selected && (
+                                <span className="text-[10px] font-bold text-[#8f6c12] bg-[#f4ecd5] border border-[#e5d9b8] px-2 py-0.5 rounded-full">
+                                  #{selectionIndex + 1}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-sm text-[#4f4b43] mb-1">
+                              {submission.description}
+                            </p>
+                            <a
+                              href={submission.projectLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs text-[#9a7619] hover:underline break-all"
+                            >
+                              {submission.projectLink}
+                            </a>
+                            {submission.image && (
+                              <a
+                                href={submission.image}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block text-xs text-[#9a7619] hover:underline mt-1"
+                              >
+                                View Image
+                              </a>
+                            )}
+                          </div>
+
+                          <button
+                            onClick={() => toggleWinnerSelection(submission)}
+                            className={`shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
+                              selected
+                                ? "bg-[#171714] text-[#d4af37] border border-[#171714]"
+                                : "bg-white border border-[#d8d3c6] text-[#4f4b43] hover:border-[#c49b2c] hover:text-[#8f6c12]"
+                            }`}
+                          >
+                            {selected ? "Selected" : "Select"}
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {selectedWinners.length > 0 && (
+                  <button
+                    onClick={() => setSelectedWinners([])}
+                    className="mt-4 text-xs text-[#8b8579] hover:text-[#c62828] transition"
+                  >
+                    Clear selection
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Comments */}
           <div className={cardClass}>

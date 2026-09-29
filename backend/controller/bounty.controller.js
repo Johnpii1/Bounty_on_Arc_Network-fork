@@ -21,6 +21,10 @@ const createBounty = async (req, res) => {
       winnersAllowed,
       payoutType,
       percentages,
+      // ── on-chain linkage ──
+      blockchainId,
+      txHash,
+      isOnChain,
     } = req.body;
 
     if (!title) return res.status(400).json({ message: "Title is required" });
@@ -51,6 +55,10 @@ const createBounty = async (req, res) => {
       winnersAllowed,
       payoutType,
       percentages,
+      // ── persist the linkage ──
+      blockchainId: blockchainId ?? null,
+      txHash: txHash ?? null,
+      isOnChain: isOnChain ?? false,
     });
 
     res.status(201).json({
@@ -59,6 +67,7 @@ const createBounty = async (req, res) => {
         _id: bounty.id,
         title: bounty.title,
         creator: bounty.creator,
+        blockchainId: bounty.blockchainId,
       },
     });
   } catch (error) {
