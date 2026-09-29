@@ -6,7 +6,7 @@ import SignUp from "../SignUp";
 import { useAccount } from "wagmi";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { FiArrowRight, FiChevronDown } from "react-icons/fi";
+import { FiArrowRight, FiBookOpen, FiChevronDown } from "react-icons/fi";
 import { useTheme } from "../../context/ThemeContext";
 
 function NavBar() {
@@ -248,6 +248,7 @@ function NavBar() {
               type="button"
               onClick={handleResourcesClick}
               aria-label="Resources"
+              aria-expanded={isOpen}
               className={`
                 group flex h-10 items-center
                 justify-center
@@ -275,15 +276,9 @@ function NavBar() {
                     : "md:w-10 md:gap-0"
                 }
 
-                max-md:px-3
-                max-md:gap-2
-                max-md:w-auto
-
-                ${
-                  scrolled
-                    ? "max-md:h-10 max-md:w-10 max-md:gap-0 max-md:px-0"
-                    : ""
-                }
+                max-md:w-10
+                max-md:gap-0
+                max-md:px-0
               `}
             >
               <span
@@ -296,17 +291,20 @@ function NavBar() {
                       : "md:max-w-0 md:opacity-0"
                   }
 
-                  ${scrolled ? "max-md:hidden" : ""}
+                  max-md:hidden
                 `}
               >
                 Resources
               </span>
 
+              <FiBookOpen className="hidden h-4 w-4 max-md:block" />
+
               <FiChevronDown
                 className={`
-                  h-4 w-4
+                  hidden h-4 w-4
                   shrink-0
                   transition-all duration-300
+                  md:block
 
                   ${
                     isOpen
@@ -346,6 +344,15 @@ function NavBar() {
                     ? "visible translate-y-0 scale-100 opacity-100"
                     : "invisible -translate-y-2 scale-[0.98] opacity-0"
                 }
+
+                max-md:fixed
+                max-md:left-1/2
+                max-md:right-auto
+                max-md:top-[86px]
+                max-md:mt-0
+                max-md:w-[calc(100vw-2rem)]
+                max-md:max-w-[230px]
+                max-md:-translate-x-1/2
               `}
             >
               {/* =================================================
