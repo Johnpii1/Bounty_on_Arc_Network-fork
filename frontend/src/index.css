@@ -427,3 +427,74 @@ body {
     animation: none !important;
   }
 }
+
+/* Theme changes are deliberately animated so switching modes feels like one
+   interface rather than a sudden flash.  The reduced-motion rule keeps this
+   respectful of users who opt out of motion. */
+html {
+  color-scheme: light;
+  transition: background-color 280ms ease, color 280ms ease;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+body,
+#root {
+  transition: background-color 280ms ease, color 280ms ease;
+}
+
+/* Informational routes were originally authored with light-only utilities.
+   Scope their dark palette to these pages so the theme toggle remains
+   consistent without altering their content or any API/backend behavior. */
+html.dark .theme-page {
+  background-color: #080908;
+  color: #f7f8f4;
+  transition: background-color 280ms ease, color 280ms ease;
+}
+
+html.dark .theme-page [class*="bg-white"] {
+  background-color: #171a17 !important;
+}
+
+html.dark .theme-page [class*="bg-[#f7f6f0]"] {
+  background-color: #20231f !important;
+}
+
+html.dark .theme-page [class*="bg-[#fffaf0]"] {
+  background-color: #24261f !important;
+}
+
+html.dark .theme-page [class*="border-black"] {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+html.dark .theme-page [class*="text-[#171714]"] {
+  color: #f7f8f4 !important;
+}
+
+html.dark .theme-page [class*="text-black/"] {
+  color: rgba(255, 255, 255, 0.62) !important;
+}
+
+.theme-page,
+.theme-page [class*="bg-"],
+.theme-page [class*="border-"],
+.theme-page [class*="text-"] {
+  transition-property: background-color, border-color, color, box-shadow;
+  transition-duration: 280ms;
+  transition-timing-function: ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html,
+  body,
+  #root,
+  .theme-page,
+  .theme-page [class*="bg-"],
+  .theme-page [class*="border-"],
+  .theme-page [class*="text-"] {
+    transition-duration: 0.01ms;
+  }
+}

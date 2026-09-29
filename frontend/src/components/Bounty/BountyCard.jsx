@@ -167,7 +167,7 @@ const BountyCard = ({ bounty }) => {
 
         border border-slate-200 dark:border-white/[0.08]
 
-        bg-white dark:bg-[#111311]
+        bg-white dark:bg-[#171a17]
 
         shadow-[0_8px_30px_rgba(15,23,42,0.06)]
         dark:shadow-[0_8px_30px_rgba(0,0,0,0.32)]
@@ -404,7 +404,7 @@ const BountyCard = ({ bounty }) => {
             dark:border-white/[0.08]
 
             bg-[#fbfaf6]
-            dark:bg-[#151715]
+            dark:bg-[#20231f]
 
             p-3
           "
