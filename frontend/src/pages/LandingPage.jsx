@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
-import { useNav } from "../hooks/useNav";
 import axios from "axios";
 import {
   FiZap,
@@ -18,14 +17,14 @@ import HowItWorks from "./Howitwork";
 import PlatformStats from "./PlatformStats";
 import Features from "./Features";
 import Testimonials from "./Testimonials";
+
 import CallToAction from "./CallToAction";
 import BuiltForWeb3 from "./BuiltForWeb3";
 import Footer from "../components/Layout/Footer";
 
-function LandingPage() {
+function LandingPage({ dark, setDark }) {
   const [featuredBounties, setFeaturedBounties] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { handleNavigate } = useNav();
 
   const [stats, setStats] = useState({
     totalBounties: 0,
@@ -48,7 +47,7 @@ function LandingPage() {
   const statsRef = useRef(null);
   const testimonialsRef = useRef(null);
 
-  const API_URL = import.meta.env.VITE_API_URL;
+  const API_URL = "https://fresh-bounty.onrender.com/api";
 
   // HERO TEXT ROTATION
   useEffect(() => {
@@ -63,7 +62,7 @@ function LandingPage() {
   useEffect(() => {
     const fetchFeaturedBounties = async () => {
       try {
-        const response = await axios.get(`${API_URL}/bounty/bounties`, {
+        const response = await axios.get(`${API_URL}/task`, {
           params: {
             status: "active",
             limit: 3,
@@ -81,13 +80,14 @@ function LandingPage() {
 
     const fetchStats = async () => {
       try {
-        const allBounties = await axios.get(`${API_URL}/bounty/bounties`, {
+        const allBounties = await axios.get(`${API_URL}/task`, {
           params: {
             limit: 1,
           },
         });
 
-        const totalBounties = allBounties.data.pagination?.total || 0;
+        const totalBounties =
+          allBounties.data.pagination?.total || 0;
 
         setStats({
           totalBounties,
@@ -109,9 +109,15 @@ function LandingPage() {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.classList.add("opacity-100", "translate-y-0");
+            entry.target.classList.add(
+              "opacity-100",
+              "translate-y-0"
+            );
 
-            entry.target.classList.remove("opacity-0", "translate-y-10");
+            entry.target.classList.remove(
+              "opacity-0",
+              "translate-y-10"
+            );
 
             observer.unobserve(entry.target);
           }
@@ -119,7 +125,7 @@ function LandingPage() {
       },
       {
         threshold: 0.3,
-      },
+      }
     );
 
     if (card1Ref.current) observer.observe(card1Ref.current);
@@ -135,12 +141,23 @@ function LandingPage() {
   }, []);
 
   return (
-    <div className="relative z-10 flex min-h-screen flex-col overflow-x-hidden bg-[#f6f5ef] text-[#111111]">
+    <div
+      className={`
+        relative z-10 flex min-h-screen flex-col
+        overflow-x-hidden
+        transition-colors duration-500
+        ${
+          dark
+            ? "bg-[#080908] text-white"
+            : "bg-[#f6f5ef] text-[#111111]"
+        }
+      `}
+    >
       {/* =========================================
           NAVIGATION
       ========================================== */}
       <div className="relative z-50 mt-5 w-full py-6">
-        <NavBar />
+        <NavBar dark={dark} setDark={setDark} />
       </div>
 
       {/* =========================================
@@ -151,13 +168,27 @@ function LandingPage() {
       {/* =========================================
           HERO SECTION
       ========================================== */}
-      <div className="relative z-10 mx-4 my-2 mt-5 overflow-hidden rounded-xl md:mx-8 lg:mx-14">
-        {/* Clean background */}
-        <div className="absolute inset-0 bg-[#f6f5ef]" />
+      <div
+        className={`
+          relative z-10 mx-4 my-2 mt-5
+          overflow-hidden rounded-xl
+          transition-colors duration-500
+          md:mx-8 lg:mx-14
+          ${dark ? "bg-[#080908]" : "bg-[#f6f5ef]"}
+        `}
+      >
+        {/* HERO BACKGROUND */}
+        <div
+          className={`
+            absolute inset-0
+            transition-colors duration-500
+            ${dark ? "bg-[#080908]" : "bg-[#f6f5ef]"}
+          `}
+        />
 
         {/* HERO CONTENT */}
         <div className="relative z-10">
-          <Hero />
+          <Hero dark={dark} setDark={setDark} />
         </div>
       </div>
 
@@ -178,7 +209,14 @@ function LandingPage() {
       {/* =========================================
           FEATURED BOUNTIES
       ========================================== */}
-      <section className="relative z-10 my-16 overflow-hidden px-6 md:px-10 lg:px-16">
+      <section
+        className={`
+          relative z-10 my-16
+          overflow-hidden px-6
+          transition-colors duration-500
+          md:px-10 lg:px-16
+        `}
+      >
         {/* =========================================
             HEADER
         ========================================== */}
@@ -186,7 +224,18 @@ function LandingPage() {
           <div>
             {/* ARC LABEL */}
             <div className="mb-4 flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl border border-[#D4AF37]/20 bg-white text-[#B28B20]">
+              <div
+                className={`
+                  flex h-8 w-8 items-center justify-center
+                  rounded-xl border
+                  transition-all duration-500
+                  ${
+                    dark
+                      ? "border-[#D4AF37]/25 bg-[#121212] text-[#D4AF37]"
+                      : "border-[#D4AF37]/20 bg-white text-[#B28B20]"
+                  }
+                `}
+              >
                 <FiZap className="h-4 w-4" />
               </div>
 
@@ -195,9 +244,21 @@ function LandingPage() {
                   Arc Opportunities
                 </span>
 
-                <span className="h-1 w-1 rounded-full bg-black/20" />
+                <span
+                  className={`
+                    h-1 w-1 rounded-full
+                    transition-colors duration-500
+                    ${dark ? "bg-white/20" : "bg-black/20"}
+                  `}
+                />
 
-                <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#8b8880]">
+                <span
+                  className={`
+                    text-[10px] font-semibold uppercase tracking-[0.16em]
+                    transition-colors duration-500
+                    ${dark ? "text-white/45" : "text-[#8b8880]"}
+                  `}
+                >
                   USDC Bounties
                 </span>
               </div>
@@ -205,7 +266,15 @@ function LandingPage() {
 
             {/* TITLE */}
             <div className="flex flex-wrap items-center gap-3 md:gap-4">
-              <h2 className="text-[42px] font-black leading-none tracking-[-0.055em] text-[#111111] sm:text-[52px] md:text-[58px] lg:text-[64px]">
+              <h2
+                className={`
+                  text-[42px] font-black
+                  leading-none tracking-[-0.055em]
+                  transition-colors duration-500
+                  sm:text-[52px] md:text-[58px] lg:text-[64px]
+                  ${dark ? "text-white" : "text-[#111111]"}
+                `}
+              >
                 Featured
               </h2>
 
@@ -215,20 +284,51 @@ function LandingPage() {
             </div>
 
             {/* DESCRIPTION */}
-            <p className="mt-5 max-w-xl text-sm leading-7 text-[#77736b]">
-              Discover active opportunities, contribute your skills, and work
-              toward earning rewards through the Arc-powered bounty experience.
+            <p
+              className={`
+                mt-5 max-w-xl text-sm leading-7
+                transition-colors duration-500
+                ${dark ? "text-white/50" : "text-[#77736b]"}
+              `}
+            >
+              Discover active opportunities, contribute your skills,
+              and work toward earning rewards through the Arc-powered
+              bounty experience.
             </p>
           </div>
 
           {/* VIEW ALL */}
           <Link
             to="/dashboard"
-            onClick={(e) => {
-              e.preventDefault();
-              handleNavigate("/dashboard");
-            }}
-            className="group inline-flex w-fit items-center gap-2 rounded-xl border border-black/[0.08] bg-white/75 px-4 py-2.5 text-sm font-semibold text-[#383631] shadow-[0_8px_30px_rgba(35,31,22,0.04)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:border-[#D4AF37]/35 hover:bg-white hover:text-[#B28B20]"
+            className={`
+              group inline-flex w-fit items-center gap-2
+              rounded-xl border px-4 py-2.5
+              text-sm font-semibold
+              backdrop-blur-xl
+              transition-all duration-300
+              hover:-translate-y-0.5
+              ${
+                dark
+                  ? `
+                    border-white/[0.08]
+                    bg-[#121212]/80
+                    text-white/80
+                    shadow-[0_8px_30px_rgba(0,0,0,0.25)]
+                    hover:border-[#D4AF37]/35
+                    hover:bg-[#181818]
+                    hover:text-[#D4AF37]
+                  `
+                  : `
+                    border-black/[0.08]
+                    bg-white/75
+                    text-[#383631]
+                    shadow-[0_8px_30px_rgba(35,31,22,0.04)]
+                    hover:border-[#D4AF37]/35
+                    hover:bg-white
+                    hover:text-[#B28B20]
+                  `
+              }
+            `}
           >
             <span>View all bounties</span>
 
@@ -244,39 +344,144 @@ function LandingPage() {
             {[1, 2, 3].map((item) => (
               <div
                 key={item}
-                className="relative h-[280px] overflow-hidden rounded-[24px] border border-black/[0.07] bg-white/65 p-5 shadow-[0_15px_45px_rgba(35,31,22,0.05)] backdrop-blur-xl"
+                className={`
+                  relative h-[280px]
+                  overflow-hidden rounded-[24px]
+                  border p-5
+                  backdrop-blur-xl
+                  transition-colors duration-500
+                  ${
+                    dark
+                      ? `
+                        border-white/[0.07]
+                        bg-[#121212]/80
+                        shadow-[0_15px_45px_rgba(0,0,0,0.25)]
+                      `
+                      : `
+                        border-black/[0.07]
+                        bg-white/65
+                        shadow-[0_15px_45px_rgba(35,31,22,0.05)]
+                      `
+                  }
+                `}
               >
-                <div className="absolute inset-0 -translate-x-full animate-[featuredLoading_1.8s_ease-in-out_infinite] bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+                <div
+                  className={`
+                    absolute inset-0
+                    -translate-x-full
+                    animate-[featuredLoading_1.8s_ease-in-out_infinite]
+                    bg-gradient-to-r
+                    from-transparent
+                    ${
+                      dark
+                        ? "via-white/[0.04]"
+                        : "via-white/60"
+                    }
+                    to-transparent
+                  `}
+                />
 
                 <div className="relative">
                   <div className="mb-6 flex justify-between">
-                    <div className="h-10 w-10 rounded-xl bg-black/[0.055]" />
+                    <div
+                      className={`
+                        h-10 w-10 rounded-xl
+                        ${dark ? "bg-white/[0.06]" : "bg-black/[0.055]"}
+                      `}
+                    />
 
-                    <div className="h-6 w-20 rounded-full bg-black/[0.045]" />
+                    <div
+                      className={`
+                        h-6 w-20 rounded-full
+                        ${dark ? "bg-white/[0.05]" : "bg-black/[0.045]"}
+                      `}
+                    />
                   </div>
 
-                  <div className="mb-3 h-5 w-3/4 rounded bg-black/[0.055]" />
+                  <div
+                    className={`
+                      mb-3 h-5 w-3/4 rounded
+                      ${dark ? "bg-white/[0.06]" : "bg-black/[0.055]"}
+                    `}
+                  />
 
-                  <div className="mb-2 h-3 w-full rounded bg-black/[0.035]" />
+                  <div
+                    className={`
+                      mb-2 h-3 w-full rounded
+                      ${dark ? "bg-white/[0.04]" : "bg-black/[0.035]"}
+                    `}
+                  />
 
-                  <div className="mb-6 h-3 w-5/6 rounded bg-black/[0.035]" />
+                  <div
+                    className={`
+                      mb-6 h-3 w-5/6 rounded
+                      ${dark ? "bg-white/[0.04]" : "bg-black/[0.035]"}
+                    `}
+                  />
 
                   <div className="flex gap-2">
-                    <div className="h-7 w-16 rounded-lg bg-black/[0.04]" />
+                    <div
+                      className={`
+                        h-7 w-16 rounded-lg
+                        ${dark ? "bg-white/[0.05]" : "bg-black/[0.04]"}
+                      `}
+                    />
 
-                    <div className="h-7 w-20 rounded-lg bg-black/[0.04]" />
+                    <div
+                      className={`
+                        h-7 w-20 rounded-lg
+                        ${dark ? "bg-white/[0.05]" : "bg-black/[0.04]"}
+                      `}
+                    />
                   </div>
 
-                  <div className="mt-8 h-9 w-full rounded-xl bg-black/[0.045]" />
+                  <div
+                    className={`
+                      mt-8 h-9 w-full rounded-xl
+                      ${dark ? "bg-white/[0.05]" : "bg-black/[0.045]"}
+                    `}
+                  />
                 </div>
               </div>
             ))}
           </div>
         ) : featuredBounties.length === 0 ? (
           /* EMPTY STATE */
-          <div className="relative z-10 mx-auto max-w-7xl overflow-hidden rounded-[26px] border border-black/[0.07] bg-white/75 shadow-[0_20px_60px_rgba(35,31,22,0.06)] backdrop-blur-xl">
+          <div
+            className={`
+              relative z-10 mx-auto max-w-7xl
+              overflow-hidden rounded-[26px]
+              border backdrop-blur-xl
+              transition-all duration-500
+              ${
+                dark
+                  ? `
+                    border-white/[0.07]
+                    bg-[#121212]/80
+                    shadow-[0_20px_60px_rgba(0,0,0,0.3)]
+                  `
+                  : `
+                    border-black/[0.07]
+                    bg-white/75
+                    shadow-[0_20px_60px_rgba(35,31,22,0.06)]
+                  `
+              }
+            `}
+          >
             <div className="relative flex flex-col items-center justify-center px-6 py-20 text-center">
-              <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl border border-[#D4AF37]/20 bg-white text-[#B28B20] shadow-[0_12px_35px_rgba(35,31,22,0.06)]">
+              <div
+                className={`
+                  mb-5 flex h-16 w-16
+                  items-center justify-center
+                  rounded-2xl border
+                  transition-all duration-500
+                  ${
+                    dark
+                      ? "border-[#D4AF37]/25 bg-[#181818] text-[#D4AF37] shadow-[0_12px_35px_rgba(0,0,0,0.25)]"
+                      : "border-[#D4AF37]/20 bg-white text-[#B28B20] shadow-[0_12px_35px_rgba(35,31,22,0.06)]"
+                  }
+                `}
+              >
                 <FiBriefcase className="h-7 w-7" />
               </div>
 
@@ -288,24 +493,57 @@ function LandingPage() {
                 </span>
               </div>
 
-              <h3 className="text-lg font-bold text-[#171717]">
+              <h3
+                className={`
+                  text-lg font-bold
+                  transition-colors duration-500
+                  ${dark ? "text-white" : "text-[#171717]"}
+                `}
+              >
                 No active bounties
               </h3>
 
-              <p className="mt-2 max-w-md text-sm leading-6 text-[#77736b]">
-                There are no featured opportunities available right now. New
-                bounties will appear here as they are posted.
+              <p
+                className={`
+                  mt-2 max-w-md text-sm leading-6
+                  transition-colors duration-500
+                  ${dark ? "text-white/45" : "text-[#77736b]"}
+                `}
+              >
+                There are no featured opportunities available right now.
+                New bounties will appear here as they are posted.
               </p>
 
               <Link
                 to="/dashboard"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleNavigate("/dashboard");
-                }}
-                className="mt-6 inline-flex items-center gap-2 rounded-xl border border-[#D4AF37]/40 bg-white px-5 py-2.5 text-sm font-semibold text-[#8F6D12] shadow-[0_10px_25px_rgba(0,0,0,0.08)] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#D4AF37] hover:text-[#B28B20]"
+                className={`
+                  mt-6 inline-flex items-center gap-2
+                  rounded-xl border px-5 py-2.5
+                  text-sm font-semibold
+                  transition-all duration-300
+                  hover:-translate-y-0.5
+                  ${
+                    dark
+                      ? `
+                        border-[#D4AF37]/40
+                        bg-[#181818]
+                        text-[#D4AF37]
+                        shadow-[0_10px_25px_rgba(0,0,0,0.25)]
+                        hover:border-[#D4AF37]
+                      `
+                      : `
+                        border-[#D4AF37]/40
+                        bg-white
+                        text-[#8F6D12]
+                        shadow-[0_10px_25px_rgba(0,0,0,0.08)]
+                        hover:border-[#D4AF37]
+                        hover:text-[#B28B20]
+                      `
+                  }
+                `}
               >
                 Browse bounties
+
                 <FiArrowRight className="h-4 w-4" />
               </Link>
             </div>
@@ -335,7 +573,23 @@ function LandingPage() {
                 </div>
 
                 {/* ARC / USDC LABEL */}
-                <div className="pointer-events-none absolute bottom-3 right-3 z-30 flex items-center gap-1.5 rounded-full border border-[#D4AF37]/15 bg-white/90 px-2 py-1 opacity-0 shadow-sm backdrop-blur-md transition-all duration-300 group-hover:opacity-100">
+                <div
+                  className={`
+                    pointer-events-none absolute bottom-3 right-3 z-30
+                    flex items-center gap-1.5
+                    rounded-full border
+                    px-2 py-1
+                    opacity-0 shadow-sm
+                    backdrop-blur-md
+                    transition-all duration-300
+                    group-hover:opacity-100
+                    ${
+                      dark
+                        ? "border-[#D4AF37]/20 bg-[#121212]/90"
+                        : "border-[#D4AF37]/15 bg-white/90"
+                    }
+                  `}
+                >
                   <span className="h-1.5 w-1.5 rounded-full bg-[#D4AF37]" />
 
                   <span className="text-[7px] font-bold uppercase tracking-[0.14em] text-[#B28B20]">
@@ -350,11 +604,33 @@ function LandingPage() {
         {/* =========================================
             BOTTOM MICRO INFO
         ========================================== */}
-        <div className="relative z-10 mx-auto mt-6 flex max-w-7xl flex-wrap items-center justify-between gap-3 border-t border-black/[0.06] pt-5">
+        <div
+          className={`
+            relative z-10 mx-auto mt-6
+            flex max-w-7xl flex-wrap
+            items-center justify-between gap-3
+            border-t pt-5
+            transition-colors duration-500
+            ${
+              dark
+                ? "border-white/[0.07]"
+                : "border-black/[0.06]"
+            }
+          `}
+        >
           <div className="flex items-center gap-2">
-            <FiGlobe className="h-3.5 w-3.5 text-[#8b8880]" />
+            <FiGlobe
+              className={`h-3.5 w-3.5 ${
+                dark ? "text-white/35" : "text-[#8b8880]"
+              }`}
+            />
 
-            <span className="text-[9px] font-semibold uppercase tracking-[0.16em] text-[#97938a]">
+            <span
+              className={`
+                text-[9px] font-semibold uppercase tracking-[0.16em]
+                ${dark ? "text-white/35" : "text-[#97938a]"}
+              `}
+            >
               Open Web3 Opportunities
             </span>
           </div>
@@ -362,7 +638,12 @@ function LandingPage() {
           <div className="flex items-center gap-2">
             <FiShield className="h-3.5 w-3.5 text-[#B28B20]" />
 
-            <span className="text-[9px] font-semibold uppercase tracking-[0.16em] text-[#97938a]">
+            <span
+              className={`
+                text-[9px] font-semibold uppercase tracking-[0.16em]
+                ${dark ? "text-white/35" : "text-[#97938a]"}
+              `}
+            >
               On-chain • USDC • Arc
             </span>
           </div>

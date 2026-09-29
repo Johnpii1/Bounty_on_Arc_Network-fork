@@ -14,6 +14,27 @@ export default function HowItWorks() {
   const sectionRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
 
+  // Detect global dark mode from <html class="dark">
+  const [dark, setDark] = useState(
+    document.documentElement.classList.contains("dark")
+  );
+
+  /* =====================================================
+     DARK MODE OBSERVER
+  ===================================================== */
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setDark(document.documentElement.classList.contains("dark"));
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   /* =====================================================
      SCROLL REVEAL
   ===================================================== */
@@ -389,15 +410,17 @@ export default function HowItWorks() {
           padding: 95px 24px 85px;
           overflow: hidden;
 
-          background:
-            linear-gradient(
-              180deg,
-              #faf9f5 0%,
-              #ffffff 48%,
-              #f7f3e7 100%
-            );
+          background: ${
+            dark
+              ? "linear-gradient(180deg, #080908 0%, #0d0d0d 48%, #0a0b0a 100%)"
+              : "linear-gradient(180deg, #faf9f5 0%, #ffffff 48%, #f7f3e7 100%)"
+          };
 
-          color: #111111;
+          color: ${dark ? "#ffffff" : "#111111"};
+
+          transition:
+            background 0.4s ease,
+            color 0.4s ease;
         }
 
         /* =====================================================
@@ -416,7 +439,12 @@ export default function HowItWorks() {
           left: -160px;
           width: 430px;
           height: 430px;
-          background: rgba(212, 175, 55, 0.055);
+
+          background: ${
+            dark
+              ? "rgba(212, 175, 55, 0.035)"
+              : "rgba(212, 175, 55, 0.055)"
+          };
         }
 
         .section-glow-gold {
@@ -424,23 +452,36 @@ export default function HowItWorks() {
           bottom: -130px;
           width: 430px;
           height: 430px;
-          background: rgba(212, 175, 55, 0.065);
+
+          background: ${
+            dark
+              ? "rgba(212, 175, 55, 0.045)"
+              : "rgba(212, 175, 55, 0.065)"
+          };
         }
 
         .section-grid-pattern {
           position: absolute;
           inset: 0;
           pointer-events: none;
-          opacity: 0.35;
+          opacity: ${dark ? "0.65" : "0.35"};
 
           background-image:
             linear-gradient(
-              rgba(20, 20, 20, 0.035) 1px,
+              ${
+                dark
+                  ? "rgba(255, 255, 255, 0.025)"
+                  : "rgba(20, 20, 20, 0.035)"
+              } 1px,
               transparent 1px
             ),
             linear-gradient(
               90deg,
-              rgba(20, 20, 20, 0.035) 1px,
+              ${
+                dark
+                  ? "rgba(255, 255, 255, 0.025)"
+                  : "rgba(20, 20, 20, 0.035)"
+              } 1px,
               transparent 1px
             );
 
@@ -474,20 +515,40 @@ export default function HowItWorks() {
 
           padding: 8px 14px;
 
-          border: 1px solid rgba(20, 20, 20, 0.1);
+          border: 1px solid ${
+            dark
+              ? "rgba(255, 255, 255, 0.08)"
+              : "rgba(20, 20, 20, 0.1)"
+          };
+
           border-radius: 999px;
 
-          background: rgba(255, 255, 255, 0.78);
+          background: ${
+            dark
+              ? "rgba(255, 255, 255, 0.035)"
+              : "rgba(255, 255, 255, 0.78)"
+          };
 
-          color: #6b6b6b;
+          color: ${dark ? "#a8ada8" : "#6b6b6b"};
 
           font-size: 10px;
           font-weight: 700;
           letter-spacing: 0.17em;
 
           box-shadow:
-            0 8px 25px rgba(0, 0, 0, 0.035),
-            inset 0 1px rgba(255, 255, 255, 0.8);
+            0 8px 25px ${
+              dark ? "rgba(0, 0, 0, 0.22)" : "rgba(0, 0, 0, 0.035)"
+            },
+            inset 0 1px ${
+              dark
+                ? "rgba(255, 255, 255, 0.035)"
+                : "rgba(255, 255, 255, 0.8)"
+            };
+
+          transition:
+            background 0.35s ease,
+            border-color 0.35s ease,
+            color 0.35s ease;
         }
 
         .label-dot {
@@ -511,14 +572,16 @@ export default function HowItWorks() {
           font-weight: 800;
           letter-spacing: -0.055em;
 
-          color: #101010;
+          color: ${dark ? "#f5f5f5" : "#101010"};
+
+          transition: color 0.35s ease;
         }
 
         .how-it-works-header h2 span {
           background:
             linear-gradient(
               90deg,
-              #a98218,
+              ${dark ? "#c79d24" : "#a98218"},
               #d4af37,
               #e3c765
             );
@@ -529,7 +592,7 @@ export default function HowItWorks() {
         }
 
         .how-it-works-header h2 strong {
-          color: #a98218;
+          color: ${dark ? "#d4af37" : "#a98218"};
           font-weight: 800;
         }
 
@@ -537,10 +600,12 @@ export default function HowItWorks() {
           max-width: 610px;
           margin: 0 auto;
 
-          color: #6e6e6e;
+          color: ${dark ? "#9a9f9a" : "#6e6e6e"};
 
           font-size: 14px;
           line-height: 1.75;
+
+          transition: color 0.35s ease;
         }
 
         /* =====================================================
@@ -572,19 +637,29 @@ export default function HowItWorks() {
 
           overflow: hidden;
 
-          border: 1px solid rgba(25, 25, 25, 0.11);
+          border: 1px solid ${
+            dark
+              ? "rgba(255, 255, 255, 0.07)"
+              : "rgba(25, 25, 25, 0.11)"
+          };
+
           border-radius: 22px;
 
-          background:
-            linear-gradient(
-              145deg,
-              rgba(255, 255, 255, 0.96),
-              rgba(249, 248, 243, 0.8)
-            );
+          background: ${
+            dark
+              ? "linear-gradient(145deg, rgba(21, 23, 21, 0.97), rgba(17, 19, 17, 0.9))"
+              : "linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(249, 248, 243, 0.8))"
+          };
 
           box-shadow:
-            0 10px 35px rgba(0, 0, 0, 0.045),
-            inset 0 1px rgba(255, 255, 255, 0.95);
+            0 10px 35px ${
+              dark ? "rgba(0, 0, 0, 0.28)" : "rgba(0, 0, 0, 0.045)"
+            },
+            inset 0 1px ${
+              dark
+                ? "rgba(255, 255, 255, 0.025)"
+                : "rgba(255, 255, 255, 0.95)"
+            };
 
           transition:
             transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
@@ -604,7 +679,7 @@ export default function HowItWorks() {
           background:
             radial-gradient(
               circle at 50% 20%,
-              rgba(212, 175, 55, 0.065),
+              rgba(212, 175, 55, ${dark ? "0.075" : "0.065"}),
               transparent 45%
             );
 
@@ -619,9 +694,11 @@ export default function HowItWorks() {
           border-color: rgba(212, 175, 55, 0.3);
 
           box-shadow:
-            0 22px 55px rgba(0, 0, 0, 0.08),
+            0 22px 55px ${
+              dark ? "rgba(0, 0, 0, 0.42)" : "rgba(0, 0, 0, 0.08)"
+            },
             0 0 0 1px rgba(212, 175, 55, 0.045),
-            0 10px 35px rgba(212, 175, 55, 0.055);
+            0 10px 35px rgba(212, 175, 55, ${dark ? "0.045" : "0.055"});
         }
 
         .how-it-works-card:hover::before {
@@ -656,7 +733,11 @@ export default function HowItWorks() {
           top: 17px;
           right: 18px;
 
-          color: rgba(20, 20, 20, 0.28);
+          color: ${
+            dark
+              ? "rgba(255, 255, 255, 0.28)"
+              : "rgba(20, 20, 20, 0.28)"
+          };
 
           font-size: 10px;
           font-weight: 700;
@@ -692,7 +773,7 @@ export default function HowItWorks() {
         .card-step {
           margin-bottom: 5px;
 
-          color: #99948a;
+          color: ${dark ? "#858b85" : "#99948a"};
 
           font-size: 8px;
           font-weight: 700;
@@ -727,7 +808,7 @@ export default function HowItWorks() {
         .gold-icon {
           border: 1px solid rgba(212, 175, 55, 0.22);
           background: rgba(212, 175, 55, 0.075);
-          color: #b08a1e;
+          color: ${dark ? "#d4af37" : "#b08a1e"};
 
           box-shadow:
             0 5px 20px rgba(212, 175, 55, 0.06);
@@ -736,20 +817,24 @@ export default function HowItWorks() {
         .card-content h3 {
           margin: 0 0 8px;
 
-          color: #151515;
+          color: ${dark ? "#f4f4f4" : "#151515"};
 
           font-size: 16px;
           font-weight: 700;
           letter-spacing: -0.015em;
+
+          transition: color 0.35s ease;
         }
 
         .card-content p {
           margin: 0;
 
-          color: #737373;
+          color: ${dark ? "#9a9f9a" : "#737373"};
 
           font-size: 12px;
           line-height: 1.7;
+
+          transition: color 0.35s ease;
         }
 
         /* =====================================================
@@ -776,14 +861,25 @@ export default function HowItWorks() {
 
           transform: translate(-50%, -50%);
 
-          border: 1px solid rgba(20, 20, 20, 0.1);
+          border: 1px solid ${
+            dark
+              ? "rgba(255, 255, 255, 0.08)"
+              : "rgba(20, 20, 20, 0.1)"
+          };
+
           border-radius: 13px;
 
-          background: rgba(255, 255, 255, 0.94);
+          background: ${
+            dark
+              ? "rgba(17, 19, 17, 0.96)"
+              : "rgba(255, 255, 255, 0.94)"
+          };
 
           box-shadow:
-            0 20px 35px rgba(0, 0, 0, 0.08),
-            0 0 30px rgba(212, 175, 55, 0.06);
+            0 20px 35px ${
+              dark ? "rgba(0, 0, 0, 0.35)" : "rgba(0, 0, 0, 0.08)"
+            },
+            0 0 30px rgba(212, 175, 55, ${dark ? "0.045" : "0.06"});
 
           backdrop-filter: blur(15px);
         }
@@ -796,7 +892,11 @@ export default function HowItWorks() {
           height: 18px;
           padding: 0 8px;
 
-          border-bottom: 1px solid rgba(20, 20, 20, 0.06);
+          border-bottom: 1px solid ${
+            dark
+              ? "rgba(255, 255, 255, 0.055)"
+              : "rgba(20, 20, 20, 0.06)"
+          };
         }
 
         .wallet-top span {
@@ -805,7 +905,11 @@ export default function HowItWorks() {
 
           border-radius: 50%;
 
-          background: rgba(20, 20, 20, 0.22);
+          background: ${
+            dark
+              ? "rgba(255, 255, 255, 0.2)"
+              : "rgba(20, 20, 20, 0.22)"
+          };
         }
 
         .wallet-screen {
@@ -841,7 +945,11 @@ export default function HowItWorks() {
 
           border-radius: 999px;
 
-          background: rgba(20, 20, 20, 0.15);
+          background: ${
+            dark
+              ? "rgba(255, 255, 255, 0.16)"
+              : "rgba(20, 20, 20, 0.15)"
+          };
         }
 
         .wallet-lines {
@@ -855,7 +963,11 @@ export default function HowItWorks() {
 
           border-radius: 999px;
 
-          background: rgba(20, 20, 20, 0.08);
+          background: ${
+            dark
+              ? "rgba(255, 255, 255, 0.075)"
+              : "rgba(20, 20, 20, 0.08)"
+          };
         }
 
         .wallet-lines span:nth-child(1) {
@@ -996,13 +1108,24 @@ export default function HowItWorks() {
 
           transform: translate(-50%, -50%);
 
-          border: 1px solid rgba(20, 20, 20, 0.1);
+          border: 1px solid ${
+            dark
+              ? "rgba(255, 255, 255, 0.08)"
+              : "rgba(20, 20, 20, 0.1)"
+          };
+
           border-radius: 11px;
 
-          background: rgba(255, 255, 255, 0.94);
+          background: ${
+            dark
+              ? "rgba(17, 19, 17, 0.96)"
+              : "rgba(255, 255, 255, 0.94)"
+          };
 
           box-shadow:
-            0 18px 35px rgba(0, 0, 0, 0.08),
+            0 18px 35px ${
+              dark ? "rgba(0, 0, 0, 0.36)" : "rgba(0, 0, 0, 0.08)"
+            },
             0 0 25px rgba(212, 175, 55, 0.055);
 
           backdrop-filter: blur(15px);
@@ -1018,7 +1141,11 @@ export default function HowItWorks() {
           height: 18px;
           padding: 0 7px;
 
-          border-bottom: 1px solid rgba(20, 20, 20, 0.06);
+          border-bottom: 1px solid ${
+            dark
+              ? "rgba(255, 255, 255, 0.055)"
+              : "rgba(20, 20, 20, 0.06)"
+          };
         }
 
         .dashboard-header > span {
@@ -1027,7 +1154,11 @@ export default function HowItWorks() {
 
           border-radius: 50%;
 
-          background: rgba(20, 20, 20, 0.2);
+          background: ${
+            dark
+              ? "rgba(255, 255, 255, 0.18)"
+              : "rgba(20, 20, 20, 0.2)"
+          };
         }
 
         .dashboard-status {
@@ -1037,7 +1168,7 @@ export default function HowItWorks() {
 
           margin-left: auto;
 
-          color: #b08a1e;
+          color: ${dark ? "#d4af37" : "#b08a1e"};
 
           font-size: 5px;
           font-weight: 700;
@@ -1071,7 +1202,11 @@ export default function HowItWorks() {
 
           padding: 8px 7px;
 
-          border-right: 1px solid rgba(20, 20, 20, 0.05);
+          border-right: 1px solid ${
+            dark
+              ? "rgba(255, 255, 255, 0.045)"
+              : "rgba(20, 20, 20, 0.05)"
+          };
         }
 
         .dashboard-sidebar span {
@@ -1080,7 +1215,11 @@ export default function HowItWorks() {
 
           border-radius: 999px;
 
-          background: rgba(20, 20, 20, 0.08);
+          background: ${
+            dark
+              ? "rgba(255, 255, 255, 0.075)"
+              : "rgba(20, 20, 20, 0.08)"
+          };
         }
 
         .dashboard-sidebar .active {
@@ -1100,7 +1239,11 @@ export default function HowItWorks() {
 
           border-radius: 999px;
 
-          background: rgba(20, 20, 20, 0.14);
+          background: ${
+            dark
+              ? "rgba(255, 255, 255, 0.14)"
+              : "rgba(20, 20, 20, 0.14)"
+          };
         }
 
         .dashboard-cards {
@@ -1115,10 +1258,19 @@ export default function HowItWorks() {
 
           height: 22px;
 
-          border: 1px solid rgba(20, 20, 20, 0.055);
+          border: 1px solid ${
+            dark
+              ? "rgba(255, 255, 255, 0.055)"
+              : "rgba(20, 20, 20, 0.055)"
+          };
+
           border-radius: 5px;
 
-          background: rgba(20, 20, 20, 0.025);
+          background: ${
+            dark
+              ? "rgba(255, 255, 255, 0.025)"
+              : "rgba(20, 20, 20, 0.025)"
+          };
         }
 
         .dashboard-cards span:first-child {
@@ -1134,7 +1286,11 @@ export default function HowItWorks() {
 
           border-radius: 999px;
 
-          background: rgba(20, 20, 20, 0.07);
+          background: ${
+            dark
+              ? "rgba(255, 255, 255, 0.07)"
+              : "rgba(20, 20, 20, 0.07)"
+          };
         }
 
         .dashboard-line.short {
@@ -1156,14 +1312,20 @@ export default function HowItWorks() {
           border: 1px solid rgba(212, 175, 55, 0.22);
           border-radius: 50%;
 
-          background: rgba(255, 255, 255, 0.97);
+          background: ${
+            dark
+              ? "rgba(21, 23, 21, 0.98)"
+              : "rgba(255, 255, 255, 0.97)"
+          };
 
-          color: #b08a1e;
+          color: ${dark ? "#d4af37" : "#b08a1e"};
 
           font-size: 11px;
 
           box-shadow:
-            0 8px 18px rgba(0, 0, 0, 0.08),
+            0 8px 18px ${
+              dark ? "rgba(0, 0, 0, 0.3)" : "rgba(0, 0, 0, 0.08)"
+            },
             0 0 15px rgba(212, 175, 55, 0.1);
         }
 
@@ -1178,7 +1340,7 @@ export default function HowItWorks() {
           right: -3px;
           bottom: 14px;
 
-          color: #b08a1e;
+          color: ${dark ? "#d4af37" : "#b08a1e"};
 
           border-color: rgba(212, 175, 55, 0.22);
 
@@ -1275,13 +1437,24 @@ export default function HowItWorks() {
 
           transform: translate(-50%, -50%);
 
-          border: 1px solid rgba(20, 20, 20, 0.1);
+          border: 1px solid ${
+            dark
+              ? "rgba(255, 255, 255, 0.08)"
+              : "rgba(20, 20, 20, 0.1)"
+          };
+
           border-radius: 11px;
 
-          background: rgba(255, 255, 255, 0.94);
+          background: ${
+            dark
+              ? "rgba(17, 19, 17, 0.96)"
+              : "rgba(255, 255, 255, 0.94)"
+          };
 
           box-shadow:
-            0 18px 35px rgba(0, 0, 0, 0.08),
+            0 18px 35px ${
+              dark ? "rgba(0, 0, 0, 0.36)" : "rgba(0, 0, 0, 0.08)"
+            },
             0 0 25px rgba(212, 175, 55, 0.06);
 
           backdrop-filter: blur(15px);
@@ -1294,7 +1467,7 @@ export default function HowItWorks() {
           align-items: center;
           justify-content: space-between;
 
-          color: #8b8b8b;
+          color: ${dark ? "#8f958f" : "#8b8b8b"};
 
           font-size: 7px;
           font-weight: 600;
@@ -1307,7 +1480,7 @@ export default function HowItWorks() {
           align-items: center;
           gap: 4px;
 
-          color: #777;
+          color: ${dark ? "#898f89" : "#777"};
 
           font-size: 6px;
         }
@@ -1339,7 +1512,11 @@ export default function HowItWorks() {
 
           border-radius: 999px;
 
-          background: rgba(20, 20, 20, 0.13);
+          background: ${
+            dark
+              ? "rgba(255, 255, 255, 0.13)"
+              : "rgba(20, 20, 20, 0.13)"
+          };
         }
 
         .task-title span:last-child {
@@ -1356,7 +1533,11 @@ export default function HowItWorks() {
 
           border-radius: 999px;
 
-          background: rgba(20, 20, 20, 0.06);
+          background: ${
+            dark
+              ? "rgba(255, 255, 255, 0.06)"
+              : "rgba(20, 20, 20, 0.06)"
+          };
         }
 
         .task-progress div {
@@ -1384,13 +1565,13 @@ export default function HowItWorks() {
 
           margin-top: 7px;
 
-          color: #777;
+          color: ${dark ? "#858a85" : "#777"};
 
           font-size: 6px;
         }
 
         .task-bottom svg {
-          color: #b08a1e;
+          color: ${dark ? "#d4af37" : "#b08a1e"};
           font-size: 9px;
         }
 
@@ -1448,7 +1629,7 @@ export default function HowItWorks() {
 
           background: rgba(212, 175, 55, 0.08);
 
-          color: #b08a1e;
+          color: ${dark ? "#d4af37" : "#b08a1e"};
 
           font-size: 11px;
 
@@ -1473,15 +1654,22 @@ export default function HowItWorks() {
           border: 1px solid rgba(212, 175, 55, 0.2);
           border-radius: 999px;
 
-          background: rgba(255, 255, 255, 0.94);
+          background: ${
+            dark
+              ? "rgba(17, 19, 17, 0.96)"
+              : "rgba(255, 255, 255, 0.94)"
+          };
 
-          color: #a17c16;
+          color: ${dark ? "#d4af37" : "#a17c16"};
 
           font-size: 5px;
           font-weight: 700;
           letter-spacing: 0.08em;
 
-          box-shadow: 0 7px 18px rgba(0, 0, 0, 0.055);
+          box-shadow:
+            0 7px 18px ${
+              dark ? "rgba(0, 0, 0, 0.3)" : "rgba(0, 0, 0, 0.055)"
+            };
 
           animation: badgeFloat 3.5s ease-in-out infinite;
         }
@@ -1523,10 +1711,16 @@ export default function HowItWorks() {
           border: 1px solid rgba(212, 175, 55, 0.2);
           border-radius: 12px;
 
-          background: rgba(255, 255, 255, 0.94);
+          background: ${
+            dark
+              ? "rgba(17, 19, 17, 0.96)"
+              : "rgba(255, 255, 255, 0.94)"
+          };
 
           box-shadow:
-            0 18px 35px rgba(0, 0, 0, 0.08),
+            0 18px 35px ${
+              dark ? "rgba(0, 0, 0, 0.36)" : "rgba(0, 0, 0, 0.08)"
+            },
             0 0 30px rgba(212, 175, 55, 0.065);
 
           backdrop-filter: blur(15px);
@@ -1549,7 +1743,7 @@ export default function HowItWorks() {
 
           background: rgba(212, 175, 55, 0.085);
 
-          color: #b08a1e;
+          color: ${dark ? "#d4af37" : "#b08a1e"};
 
           box-shadow:
             0 0 18px rgba(212, 175, 55, 0.08);
@@ -1567,7 +1761,7 @@ export default function HowItWorks() {
         }
 
         .earning-info span {
-          color: #8a8a8a;
+          color: ${dark ? "#858a85" : "#8a8a8a"};
 
           font-size: 7px;
           font-weight: 600;
@@ -1576,7 +1770,7 @@ export default function HowItWorks() {
         }
 
         .earning-info strong {
-          color: #171717;
+          color: ${dark ? "#f5f5f5" : "#171717"};
 
           font-size: 12px;
           font-weight: 800;
@@ -1596,7 +1790,7 @@ export default function HowItWorks() {
 
           background: rgba(212, 175, 55, 0.11);
 
-          color: #b08a1e;
+          color: ${dark ? "#d4af37" : "#b08a1e"};
 
           font-size: 9px;
         }
@@ -1743,12 +1937,14 @@ export default function HowItWorks() {
           align-items: center;
           gap: 7px;
 
-          color: #76736c;
+          color: ${dark ? "#8e938e" : "#76736c"};
 
           font-size: 8px;
           font-weight: 700;
 
           letter-spacing: 0.14em;
+
+          transition: color 0.35s ease;
         }
 
         .arc-strip-dot {
@@ -1771,7 +1967,11 @@ export default function HowItWorks() {
           width: 1px;
           height: 13px;
 
-          background: rgba(20, 20, 20, 0.1);
+          background: ${
+            dark
+              ? "rgba(255, 255, 255, 0.08)"
+              : "rgba(20, 20, 20, 0.1)"
+          };
         }
 
         /* =====================================================
@@ -2090,7 +2290,7 @@ export default function HowItWorks() {
             animation: none !important;
           }
 
-          .how-it-works-card * ,
+          .how-it-works-card *,
           .how-it-works-card::before {
             animation: none !important;
           }

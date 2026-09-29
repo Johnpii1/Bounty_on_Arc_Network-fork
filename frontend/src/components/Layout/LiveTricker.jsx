@@ -1,4 +1,6 @@
 
+import { useEffect, useState } from "react";
+
 function LiveTricker() {
   const items = [
     { label: "Built for Arc", type: "ARC" },
@@ -8,8 +10,36 @@ function LiveTricker() {
     { label: "New Bounties Added Daily", type: "NEW" },
   ];
 
+  const [dark, setDark] = useState(
+    document.documentElement.classList.contains("dark")
+  );
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setDark(document.documentElement.classList.contains("dark"));
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className="relative mt-1 w-full overflow-hidden border-y border-black/[0.07] bg-white">
+    <div
+      className={`
+        relative mt-1 w-full overflow-hidden
+        border-y
+        transition-all duration-500
+        ${
+          dark
+            ? "border-white/[0.07] bg-[#080908]"
+            : "border-black/[0.07] bg-white"
+        }
+      `}
+    >
       {/* =====================================================
           SUBTLE BACKGROUND DOTS
       ====================================================== */}
@@ -26,27 +56,75 @@ function LiveTricker() {
         <span className="ticker-bg-dot dot-9" />
         <span className="ticker-bg-dot dot-10" />
 
-        {/* Very subtle center warmth */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.025),transparent_65%)]" />
+        <div
+          className={`
+            absolute inset-0
+            transition-all duration-500
+            ${
+              dark
+                ? "bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.055),transparent_65%)]"
+                : "bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.025),transparent_65%)]"
+            }
+          `}
+        />
       </div>
 
       {/* =====================================================
           LEFT FADE
       ====================================================== */}
 
-      <div className="pointer-events-none absolute bottom-0 left-0 top-0 z-30 w-24 bg-gradient-to-r from-white via-white/95 to-transparent" />
+      <div
+        className={`
+          pointer-events-none absolute
+          bottom-0 left-0 top-0
+          z-30 w-24
+          bg-gradient-to-r
+          to-transparent
+          transition-all duration-500
+          ${
+            dark
+              ? "from-[#080908] via-[#080908]/95"
+              : "from-white via-white/95"
+          }
+        `}
+      />
 
       {/* =====================================================
           RIGHT FADE
       ====================================================== */}
 
-      <div className="pointer-events-none absolute bottom-0 right-0 top-0 z-30 w-24 bg-gradient-to-l from-white via-white/95 to-transparent" />
+      <div
+        className={`
+          pointer-events-none absolute
+          bottom-0 right-0 top-0
+          z-30 w-24
+          bg-gradient-to-l
+          to-transparent
+          transition-all duration-500
+          ${
+            dark
+              ? "from-[#080908] via-[#080908]/95"
+              : "from-white via-white/95"
+          }
+        `}
+      />
 
       {/* =====================================================
           SUBTLE CENTER ACCENT
       ====================================================== */}
 
-      <div className="pointer-events-none absolute left-1/2 top-1/2 z-0 h-8 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#D4AF37]/[0.025] blur-3xl" />
+      <div
+        className={`
+          pointer-events-none absolute
+          left-1/2 top-1/2
+          z-0 h-8 w-96
+          -translate-x-1/2
+          -translate-y-1/2
+          rounded-full
+          bg-[#D4AF37]/[0.04]
+          blur-3xl
+        `}
+      />
 
       {/* =====================================================
           TICKER
@@ -75,7 +153,9 @@ function LiveTricker() {
 
                 {/* SEPARATOR */}
 
-                <span className="ticker-separator">/</span>
+                <span className="ticker-separator">
+                  /
+                </span>
               </div>
             ))}
           </div>
@@ -117,10 +197,11 @@ function LiveTricker() {
         ====================================================== */
 
         .ticker-label {
-          color: #111111;
+          color: ${dark ? "#ffffff" : "#111111"};
           font-size: 13px;
           font-weight: 800;
           letter-spacing: 0.015em;
+          transition: color 0.5s ease;
         }
 
         /* =====================================================
@@ -131,13 +212,28 @@ function LiveTricker() {
           padding: 3px 7px;
           border-radius: 9999px;
 
-          color: #8a6b16;
-          background: rgba(212, 175, 55, 0.055);
-          border: 1px solid rgba(212, 175, 55, 0.2);
+          color: ${dark ? "#D4AF37" : "#8a6b16"};
+
+          background: ${
+            dark
+              ? "rgba(212, 175, 55, 0.10)"
+              : "rgba(212, 175, 55, 0.055)"
+          };
+
+          border: 1px solid ${
+            dark
+              ? "rgba(212, 175, 55, 0.30)"
+              : "rgba(212, 175, 55, 0.20)"
+          };
 
           font-size: 9px;
           font-weight: 900;
           letter-spacing: 0.12em;
+
+          transition:
+            color 0.5s ease,
+            background 0.5s ease,
+            border-color 0.5s ease;
         }
 
         /* =====================================================
@@ -146,9 +242,17 @@ function LiveTricker() {
 
         .ticker-separator {
           margin-left: 8px;
-          color: rgba(212, 175, 55, 0.3);
+
+          color: ${
+            dark
+              ? "rgba(212, 175, 55, 0.45)"
+              : "rgba(212, 175, 55, 0.30)"
+          };
+
           font-size: 18px;
           font-weight: 500;
+
+          transition: color 0.5s ease;
         }
 
         /* =====================================================
@@ -181,9 +285,12 @@ function LiveTricker() {
           border-radius: 50%;
           background: #D4AF37;
 
-          box-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
+          box-shadow:
+            0 0 8px rgba(212, 175, 55, 0.3);
 
-          opacity: 0.18;
+          opacity: ${dark ? "0.25" : "0.18"};
+
+          transition: opacity 0.5s ease;
         }
 
         .dot-1 {

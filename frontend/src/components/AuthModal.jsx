@@ -1,5 +1,5 @@
-
 import { useEffect } from "react";
+import { FiX } from "react-icons/fi";
 import ConnectConfig from "./ConnectConfig";
 
 function AuthModal({ isOpen, onClose }) {
@@ -21,11 +21,11 @@ function AuthModal({ isOpen, onClose }) {
   return (
     <div
       className="
+        auth-modal-overlay
         fixed inset-0 z-[100]
         flex min-h-screen
         items-center justify-center
         overflow-y-auto
-        bg-black/10
         p-4
         backdrop-blur-md
         sm:p-6
@@ -34,13 +34,10 @@ function AuthModal({ isOpen, onClose }) {
     >
       <div
         className="
+          auth-modal-card
           relative w-full max-w-sm
           rounded-2xl
-          border border-black/[0.08]
-          bg-white
           px-5 py-5
-          text-[#111111]
-          shadow-[0_25px_80px_rgba(0,0,0,0.22)]
           sm:px-6 sm:py-6
           animate-[modalIn_0.25s_ease-out]
         "
@@ -52,16 +49,15 @@ function AuthModal({ isOpen, onClose }) {
           onClick={onClose}
           aria-label="Close modal"
           className="
+            auth-modal-close
             absolute right-3.5 top-3.5
             flex h-8 w-8 items-center justify-center
             rounded-full
-            text-sm text-black/40
+            text-sm
             transition-all duration-200
-            hover:bg-[#D4AF37]/10
-            hover:text-[#D4AF37]
           "
         >
-          ✕
+          <FiX className="text-base" />
         </button>
 
         {/* HEADER */}
@@ -79,11 +75,11 @@ function AuthModal({ isOpen, onClose }) {
             <span className="text-sm font-black">HB</span>
           </div>
 
-          <h2 className="text-xl font-black tracking-tight text-[#111111] sm:text-2xl">
+          <h2 className="auth-modal-title text-xl font-black tracking-tight sm:text-2xl">
             Welcome to Happy Bounty
           </h2>
 
-          <p className="mt-1.5 text-xs font-medium text-black/50 sm:text-sm">
+          <p className="auth-modal-subtitle mt-1.5 text-xs font-medium sm:text-sm">
             Connect your wallet to continue
           </p>
         </div>
@@ -95,19 +91,19 @@ function AuthModal({ isOpen, onClose }) {
 
         {/* DIVIDER */}
         <div className="my-4 flex items-center gap-3">
-          <div className="h-px flex-1 bg-black/[0.09]" />
+          <div className="auth-modal-divider h-px flex-1" />
 
-          <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-black/35">
+          <span className="auth-modal-muted text-[10px] font-bold uppercase tracking-[0.15em]">
             Or
           </span>
 
-          <div className="h-px flex-1 bg-black/[0.09]" />
+          <div className="auth-modal-divider h-px flex-1" />
         </div>
 
         {/* EMAIL LOGIN */}
         <form className="space-y-2.5">
           <div>
-            <label className="mb-1.5 block text-[11px] font-bold text-black/60">
+            <label className="auth-modal-label mb-1.5 block text-[11px] font-bold">
               Email
             </label>
 
@@ -116,13 +112,11 @@ function AuthModal({ isOpen, onClose }) {
               placeholder="Email login coming soon"
               disabled
               className="
+                auth-modal-input
                 w-full
                 rounded-xl
-                border border-black/[0.08]
-                bg-black/[0.025]
                 px-3.5 py-2.5
-                text-sm font-medium text-black/40
-                placeholder:text-black/25
+                text-sm font-medium
                 outline-none
                 cursor-not-allowed
               "
@@ -133,13 +127,11 @@ function AuthModal({ isOpen, onClose }) {
             type="button"
             disabled
             className="
+              auth-modal-coming-soon
               w-full
               rounded-xl
-              border border-black/[0.07]
-              bg-black/[0.045]
               py-2.5
               text-sm font-bold
-              text-black/35
               cursor-not-allowed
             "
           >
@@ -148,7 +140,7 @@ function AuthModal({ isOpen, onClose }) {
         </form>
 
         {/* FOOTER */}
-        <p className="mt-4 text-center text-[10px] font-medium leading-relaxed text-black/40 sm:text-xs">
+        <p className="auth-modal-footer mt-4 text-center text-[10px] font-medium leading-relaxed sm:text-xs">
           By connecting, you agree to Happy Bounty's terms and conditions.
         </p>
 
@@ -164,9 +156,166 @@ function AuthModal({ isOpen, onClose }) {
           "
         />
       </div>
+
+      {/* =====================================================
+          THEME + ANIMATION STYLES
+      ===================================================== */}
+
+      <style>{`
+        /* =====================================================
+           LIGHT MODE
+        ===================================================== */
+
+        .auth-modal-overlay {
+          background: rgba(0, 0, 0, 0.10);
+        }
+
+        .auth-modal-card {
+          border: 1px solid rgba(0, 0, 0, 0.08);
+          background: #ffffff;
+          color: #111111;
+          box-shadow: 0 25px 80px rgba(0, 0, 0, 0.22);
+        }
+
+        .auth-modal-close {
+          color: rgba(0, 0, 0, 0.40);
+        }
+
+        .auth-modal-close:hover {
+          background: rgba(212, 175, 55, 0.10);
+          color: #D4AF37;
+        }
+
+        .auth-modal-title {
+          color: #111111;
+        }
+
+        .auth-modal-subtitle {
+          color: rgba(0, 0, 0, 0.50);
+        }
+
+        .auth-modal-divider {
+          background: rgba(0, 0, 0, 0.09);
+        }
+
+        .auth-modal-muted {
+          color: rgba(0, 0, 0, 0.35);
+        }
+
+        .auth-modal-label {
+          color: rgba(0, 0, 0, 0.60);
+        }
+
+        .auth-modal-input {
+          border: 1px solid rgba(0, 0, 0, 0.08);
+          background: rgba(0, 0, 0, 0.025);
+          color: rgba(0, 0, 0, 0.40);
+        }
+
+        .auth-modal-input::placeholder {
+          color: rgba(0, 0, 0, 0.25);
+        }
+
+        .auth-modal-coming-soon {
+          border: 1px solid rgba(0, 0, 0, 0.07);
+          background: rgba(0, 0, 0, 0.045);
+          color: rgba(0, 0, 0, 0.35);
+        }
+
+        .auth-modal-footer {
+          color: rgba(0, 0, 0, 0.40);
+        }
+
+        /* =====================================================
+           DARK MODE
+        ===================================================== */
+
+        .dark .auth-modal-overlay {
+          background: rgba(0, 0, 0, 0.58);
+        }
+
+        .dark .auth-modal-card {
+          border-color: rgba(212, 175, 55, 0.16);
+          background: #111311;
+          color: #ffffff;
+          box-shadow:
+            0 25px 80px rgba(0, 0, 0, 0.55),
+            0 0 40px rgba(212, 175, 55, 0.04);
+        }
+
+        .dark .auth-modal-close {
+          color: rgba(255, 255, 255, 0.40);
+        }
+
+        .dark .auth-modal-close:hover {
+          background: rgba(212, 175, 55, 0.10);
+          color: #D4AF37;
+        }
+
+        .dark .auth-modal-title {
+          color: #ffffff;
+        }
+
+        .dark .auth-modal-subtitle {
+          color: rgba(255, 255, 255, 0.50);
+        }
+
+        .dark .auth-modal-divider {
+          background: rgba(255, 255, 255, 0.10);
+        }
+
+        .dark .auth-modal-muted {
+          color: rgba(255, 255, 255, 0.35);
+        }
+
+        .dark .auth-modal-label {
+          color: rgba(255, 255, 255, 0.62);
+        }
+
+        .dark .auth-modal-input {
+          border-color: rgba(255, 255, 255, 0.09);
+          background: rgba(255, 255, 255, 0.045);
+          color: rgba(255, 255, 255, 0.45);
+        }
+
+        .dark .auth-modal-input::placeholder {
+          color: rgba(255, 255, 255, 0.25);
+        }
+
+        .dark .auth-modal-coming-soon {
+          border-color: rgba(255, 255, 255, 0.08);
+          background: rgba(255, 255, 255, 0.05);
+          color: rgba(255, 255, 255, 0.35);
+        }
+
+        .dark .auth-modal-footer {
+          color: rgba(255, 255, 255, 0.40);
+        }
+
+        /* =====================================================
+           MODAL ANIMATION
+        ===================================================== */
+
+        @keyframes modalIn {
+          from {
+            opacity: 0;
+            transform: translateY(10px) scale(0.97);
+          }
+
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .auth-modal-card {
+            animation: none !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
 
 export default AuthModal;
-

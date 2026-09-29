@@ -1,8 +1,8 @@
+
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { FiArrowUpRight } from "react-icons/fi";
 import Usdc from "../assets/images/usdc.png";
-import { useNav } from "../hooks/useNav";
 
 const heroMessages = [
   "Earn USDC.",
@@ -11,11 +11,10 @@ const heroMessages = [
   "Get Rewarded.",
 ];
 
-export default function Hero() {
+export default function Hero({ dark }) {
   const [heroText, setHeroText] = useState(0);
   const [displayText, setDisplayText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
-  const { handleNavigate } = useNav();
 
   const visualRef = useRef(null);
 
@@ -72,7 +71,6 @@ export default function Hero() {
       const rotateX = (y / rect.height - 0.5) * -12;
 
       visual.style.setProperty("--rotate-x", `${rotateX}deg`);
-
       visual.style.setProperty("--rotate-y", `${rotateY}deg`);
     };
 
@@ -114,14 +112,31 @@ export default function Hero() {
   ];
 
   return (
-    <section className="relative min-h-[620px] w-full overflow-hidden bg-[#f6f5ef] text-black sm:min-h-[650px]">
+    <section
+      className={`
+        relative min-h-[620px] w-full overflow-hidden
+        transition-colors duration-500
+        sm:min-h-[650px]
+        ${
+          dark
+            ? "bg-[#080908] text-white"
+            : "bg-[#f6f5ef] text-black"
+        }
+      `}
+    >
       {/* =====================================================
           ARCHITECTURAL BRICK BACKGROUND
       ===================================================== */}
 
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        {/* Main architectural grid */}
+
         <div
-          className="absolute -inset-20 scale-110 opacity-[0.035]"
+          className={`
+            absolute -inset-20 scale-110
+            transition-opacity duration-500
+            ${dark ? "opacity-[0.055]" : "opacity-[0.035]"}
+          `}
           style={{
             backgroundImage: `
               linear-gradient(
@@ -140,8 +155,14 @@ export default function Hero() {
           }}
         />
 
+        {/* Gold architectural grid */}
+
         <div
-          className="absolute -inset-20 scale-110 opacity-[0.012]"
+          className={`
+            absolute -inset-20 scale-110
+            transition-opacity duration-500
+            ${dark ? "opacity-[0.025]" : "opacity-[0.012]"}
+          `}
           style={{
             backgroundImage: `
               linear-gradient(
@@ -161,8 +182,15 @@ export default function Hero() {
           }}
         />
 
+        {/* Soft architectural texture */}
+
         <div
-          className="absolute -inset-20 scale-110 opacity-[0.018] blur-[8px]"
+          className={`
+            absolute -inset-20 scale-110
+            blur-[8px]
+            transition-opacity duration-500
+            ${dark ? "opacity-[0.025]" : "opacity-[0.018]"}
+          `}
           style={{
             backgroundImage: `
               radial-gradient(
@@ -177,20 +205,62 @@ export default function Hero() {
           }}
         />
 
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(246,245,239,0.62)_0%,rgba(246,245,239,0.3)_48%,rgba(246,245,239,0.08)_100%)]" />
-
-        <div className="absolute left-[-180px] top-[8%] h-[380px] w-[380px] rounded-full bg-[#D4AF37]/[0.018] blur-[130px]" />
-
-        <div className="absolute bottom-[-180px] right-[-100px] h-[400px] w-[400px] rounded-full bg-[#D4AF37]/[0.018] blur-[140px]" />
+        {/* Main center lighting */}
 
         <div
-          className="absolute inset-0 opacity-[0.022]"
+          className={`
+            absolute inset-0 transition-all duration-500
+            ${
+              dark
+                ? "bg-[radial-gradient(circle_at_center,rgba(8,9,8,0.20)_0%,rgba(8,9,8,0.45)_48%,rgba(8,9,8,0.72)_100%)]"
+                : "bg-[radial-gradient(circle_at_center,rgba(246,245,239,0.62)_0%,rgba(246,245,239,0.3)_48%,rgba(246,245,239,0.08)_100%)]"
+            }
+          `}
+        />
+
+        {/* Gold glow — left */}
+
+        <div
+          className={`
+            absolute left-[-180px] top-[8%]
+            h-[380px] w-[380px]
+            rounded-full
+            bg-[#D4AF37]
+            blur-[130px]
+            transition-opacity duration-500
+            ${dark ? "opacity-[0.035]" : "opacity-[0.018]"}
+          `}
+        />
+
+        {/* Gold glow — right */}
+
+        <div
+          className={`
+            absolute bottom-[-180px] right-[-100px]
+            h-[400px] w-[400px]
+            rounded-full
+            bg-[#D4AF37]
+            blur-[140px]
+            transition-opacity duration-500
+            ${dark ? "opacity-[0.035]" : "opacity-[0.018]"}
+          `}
+        />
+
+        {/* Dot matrix */}
+
+        <div
+          className={`
+            absolute inset-0 transition-opacity duration-500
+            ${dark ? "opacity-[0.032]" : "opacity-[0.022]"}
+          `}
           style={{
             backgroundImage:
               "radial-gradient(circle, #D4AF37 1px, transparent 1px)",
             backgroundSize: "38px 38px",
           }}
         />
+
+        {/* Floating background dots */}
 
         {backgroundDots.map((dot, index) => (
           <span
@@ -206,7 +276,20 @@ export default function Hero() {
           />
         ))}
 
-        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#f6f5ef] to-transparent" />
+        {/* Bottom fade */}
+
+        <div
+          className={`
+            absolute inset-x-0 bottom-0 h-32
+            bg-gradient-to-t
+            transition-all duration-500
+            ${
+              dark
+                ? "from-[#080908] to-transparent"
+                : "from-[#f6f5ef] to-transparent"
+            }
+          `}
+        />
       </div>
 
       {/* =====================================================
@@ -222,14 +305,32 @@ export default function Hero() {
           <div className="mx-auto w-full min-w-0 max-w-2xl text-center sm:text-left">
             {/* BADGE */}
 
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#D4AF37]/25 bg-white px-4 py-2 shadow-[0_5px_20px_rgba(17,17,17,0.04)]">
+            <div
+              className={`
+                mb-5 inline-flex items-center gap-2
+                rounded-full border
+                px-4 py-2
+                transition-all duration-500
+                ${
+                  dark
+                    ? "border-[#D4AF37]/30 bg-[#121212] shadow-[0_5px_25px_rgba(0,0,0,0.25)]"
+                    : "border-[#D4AF37]/25 bg-white shadow-[0_5px_20px_rgba(17,17,17,0.04)]"
+                }
+              `}
+            >
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#D4AF37] opacity-40" />
 
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-[#D4AF37]" />
               </span>
 
-              <span className="text-xs font-bold tracking-wide text-black">
+              <span
+                className={`
+                  text-xs font-bold tracking-wide
+                  transition-colors duration-500
+                  ${dark ? "text-white" : "text-black"}
+                `}
+              >
                 Built for Arc
               </span>
             </div>
@@ -237,11 +338,33 @@ export default function Hero() {
             {/* HERO TITLE */}
 
             <div className="space-y-0">
-              <h1 className="text-4xl font-extrabold leading-[0.98] tracking-tight text-black sm:text-5xl md:text-6xl lg:text-[4.2rem]">
+              <h1
+                className={`
+                  text-4xl font-extrabold
+                  leading-[0.98]
+                  tracking-tight
+                  transition-colors duration-500
+                  sm:text-5xl
+                  md:text-6xl
+                  lg:text-[4.2rem]
+                  ${dark ? "text-white" : "text-black"}
+                `}
+              >
                 Make a
               </h1>
 
-              <h1 className="text-4xl font-extrabold leading-[0.98] tracking-tight text-black sm:text-5xl md:text-6xl lg:text-[4.2rem]">
+              <h1
+                className={`
+                  text-4xl font-extrabold
+                  leading-[0.98]
+                  tracking-tight
+                  transition-colors duration-500
+                  sm:text-5xl
+                  md:text-6xl
+                  lg:text-[4.2rem]
+                  ${dark ? "text-white" : "text-black"}
+                `}
+              >
                 living from
               </h1>
 
@@ -260,7 +383,16 @@ export default function Hero() {
 
             {/* DESCRIPTION */}
 
-            <p className="mx-auto mt-3 w-full min-w-0 max-w-xl text-sm font-semibold leading-relaxed text-black/65 sm:mx-0 sm:text-base md:mt-4">
+            <p
+              className={`
+                mx-auto mt-3 w-full min-w-0 max-w-xl
+                text-sm font-semibold
+                leading-relaxed
+                transition-colors duration-500
+                sm:mx-0 sm:text-base md:mt-4
+                ${dark ? "text-white/60" : "text-black/65"}
+              `}
+            >
               Complete quests and earn USDC, tokens, and digital rewards. Post
               bounties and get quality work done — fully on-chain.
             </p>
@@ -268,13 +400,23 @@ export default function Hero() {
             {/* BUTTONS */}
 
             <div className="mt-6 flex w-full flex-wrap justify-center gap-3 sm:justify-start">
+              {/* EXPLORE */}
+
               <Link
                 to="/dashboard"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleNavigate("/dashboard");
-                }}
-                className="group relative overflow-hidden rounded-lg bg-[#D4AF37] px-6 py-3 text-sm font-bold text-white shadow-[0_8px_25px_rgba(212,175,55,0.18)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#B8962E] hover:shadow-[0_12px_30px_rgba(212,175,55,0.28)]"
+                className={`
+                  group relative overflow-hidden
+                  rounded-lg
+                  px-6 py-3
+                  text-sm font-bold
+                  transition-all duration-300
+                  hover:-translate-y-0.5
+                  ${
+                    dark
+                      ? "bg-[#D4AF37] text-[#080908] shadow-[0_8px_25px_rgba(212,175,55,0.22)] hover:bg-[#E1BE4A] hover:shadow-[0_12px_30px_rgba(212,175,55,0.32)]"
+                      : "bg-[#D4AF37] text-white shadow-[0_8px_25px_rgba(212,175,55,0.18)] hover:bg-[#B8962E] hover:shadow-[0_12px_30px_rgba(212,175,55,0.28)]"
+                  }
+                `}
               >
                 <span className="relative z-10 flex items-center gap-2">
                   Explore Bounties
@@ -284,13 +426,25 @@ export default function Hero() {
                 <span className="absolute inset-0 translate-x-[-100%] bg-white/20 transition-transform duration-700 group-hover:translate-x-[100%]" />
               </Link>
 
+              {/* CREATE */}
+
               <Link
                 to="/create"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleNavigate("/create");
-                }}
-                className="group flex items-center gap-2 rounded-lg border-2 border-black/10 bg-white px-6 py-3 text-sm font-bold text-black shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[#D4AF37] hover:text-[#B8860B]"
+                className={`
+                  group flex items-center gap-2
+                  rounded-lg
+                  border-2
+                  px-6 py-3
+                  text-sm font-bold
+                  shadow-sm
+                  transition-all duration-300
+                  hover:-translate-y-0.5
+                  ${
+                    dark
+                      ? "border-white/[0.12] bg-[#121212] text-white hover:border-[#D4AF37] hover:text-[#D4AF37]"
+                      : "border-black/10 bg-white text-black hover:border-[#D4AF37] hover:text-[#B8860B]"
+                  }
+                `}
               >
                 Create a Bounty
                 <FiArrowUpRight className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -304,16 +458,28 @@ export default function Hero() {
                 {heroMessages.map((_, index) => (
                   <span
                     key={index}
-                    className={`h-1.5 rounded-full transition-all duration-500 ${
-                      index === heroText
-                        ? "w-7 bg-[#D4AF37] shadow-[0_0_10px_rgba(212,175,55,0.25)]"
-                        : "w-1.5 bg-black/15"
-                    }`}
+                    className={`
+                      h-1.5 rounded-full
+                      transition-all duration-500
+                      ${
+                        index === heroText
+                          ? "w-7 bg-[#D4AF37] shadow-[0_0_10px_rgba(212,175,55,0.25)]"
+                          : dark
+                            ? "w-1.5 bg-white/15"
+                            : "w-1.5 bg-black/15"
+                      }
+                    `}
                   />
                 ))}
               </div>
 
-              <span className="text-[11px] font-bold text-black/55">
+              <span
+                className={`
+                  text-[11px] font-bold
+                  transition-colors duration-500
+                  ${dark ? "text-white/45" : "text-black/55"}
+                `}
+              >
                 New opportunities every day
               </span>
             </div>
@@ -328,11 +494,49 @@ export default function Hero() {
             className="usdc-visual relative flex min-h-[360px] min-w-0 items-center justify-center overflow-visible sm:min-h-[430px] lg:min-h-[500px]"
           >
             <div className="usdc-scene relative flex h-[340px] w-[340px] max-w-full items-center justify-center sm:h-[430px] sm:w-[430px] lg:h-[500px] lg:w-[500px]">
-              <div className="absolute h-[230px] w-[230px] rounded-full bg-[#D4AF37]/10 blur-[75px] sm:h-[300px] sm:w-[300px]" />
+              <div
+                className={`
+                  absolute h-[230px] w-[230px]
+                  rounded-full
+                  bg-[#D4AF37]/10
+                  blur-[75px]
+                  transition-opacity duration-500
+                  sm:h-[300px] sm:w-[300px]
+                  ${dark ? "opacity-100" : "opacity-80"}
+                `}
+              />
 
-              <div className="absolute h-[270px] w-[270px] rounded-full border border-[#D4AF37]/15 sm:h-[350px] sm:w-[350px] lg:h-[410px] lg:w-[410px]" />
+              <div
+                className={`
+                  absolute h-[270px] w-[270px]
+                  rounded-full
+                  border
+                  transition-colors duration-500
+                  sm:h-[350px] sm:w-[350px]
+                  lg:h-[410px] lg:w-[410px]
+                  ${
+                    dark
+                      ? "border-[#D4AF37]/20"
+                      : "border-[#D4AF37]/15"
+                  }
+                `}
+              />
 
-              <div className="absolute h-[220px] w-[220px] rounded-full border border-[#D4AF37]/10 sm:h-[290px] sm:w-[290px] lg:h-[340px] lg:w-[340px]" />
+              <div
+                className={`
+                  absolute h-[220px] w-[220px]
+                  rounded-full
+                  border
+                  transition-colors duration-500
+                  sm:h-[290px] sm:w-[290px]
+                  lg:h-[340px] lg:w-[340px]
+                  ${
+                    dark
+                      ? "border-[#D4AF37]/15"
+                      : "border-[#D4AF37]/10"
+                  }
+                `}
+              />
 
               <div className="usdc-wrapper relative z-10">
                 <div className="usdc-image-container">
@@ -366,9 +570,10 @@ export default function Hero() {
 
       <style>{`
         .hero-bg-dot {
-          opacity: 0.14;
+          opacity: ${dark ? "0.20" : "0.14"};
           box-shadow: 0 0 7px rgba(212, 175, 55, 0.22);
           animation: heroDotFloat 5s ease-in-out infinite;
+          transition: opacity 0.5s ease;
         }
 
         @keyframes heroDotFloat {
@@ -444,7 +649,11 @@ export default function Hero() {
           width: 280px;
           height: 280px;
           border-radius: 50%;
-          border: 1px solid rgba(212, 175, 55, 0.12);
+          border: 1px solid ${
+            dark
+              ? "rgba(212, 175, 55, 0.18)"
+              : "rgba(212, 175, 55, 0.12)"
+          };
           animation: circleRotate 18s linear infinite;
         }
 
@@ -454,7 +663,11 @@ export default function Hero() {
           width: 365px;
           height: 365px;
           border-radius: 50%;
-          border: 1px dashed rgba(212, 175, 55, 0.1);
+          border: 1px dashed ${
+            dark
+              ? "rgba(212, 175, 55, 0.14)"
+              : "rgba(212, 175, 55, 0.1)"
+          };
           animation: circleRotateReverse 25s linear infinite;
         }
 

@@ -16,6 +16,25 @@ function Features() {
   const [isVisible, setIsVisible] = useState(false);
   const { handleNavigate } = useNav();
 
+  const [dark, setDark] = useState(
+    document.documentElement.classList.contains("dark"),
+  );
+
+  // Detect global dark mode from <html class="dark">
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setDark(document.documentElement.classList.contains("dark"));
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  // Section visibility animation
   useEffect(() => {
     const section = sectionRef.current;
 
@@ -149,13 +168,19 @@ function Features() {
 
       <section
         ref={sectionRef}
-        className="relative z-10 my-24 overflow-hidden bg-[#f6f5ef] px-6 py-4 md:px-10 lg:px-16"
+        className={`relative z-10 my-24 overflow-hidden px-6 py-4 transition-colors duration-500 md:px-10 lg:px-16 ${
+          dark ? "bg-[#080908]" : "bg-[#f6f5ef]"
+        }`}
       >
         {/* =========================================
-            CLEAN BACKGROUND
+            BACKGROUND
         ========================================== */}
 
-        <div className="pointer-events-none absolute inset-0 bg-[#f6f5ef]" />
+        <div
+          className={`pointer-events-none absolute inset-0 transition-colors duration-500 ${
+            dark ? "bg-[#080908]" : "bg-[#f6f5ef]"
+          }`}
+        />
 
         <div className="relative mx-auto max-w-7xl">
           {/* =========================================
@@ -169,18 +194,39 @@ function Features() {
           >
             {/* LABEL */}
 
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-black/[0.08] bg-white px-4 py-2 shadow-[0_8px_25px_rgba(35,31,22,0.035)]">
+            <div
+              className="mb-5 inline-flex items-center gap-2 rounded-full border px-4 py-2 shadow-[0_8px_25px_rgba(35,31,22,0.035)] backdrop-blur-xl transition-all duration-500"
+              style={{
+                borderColor: dark
+                  ? "rgba(255,255,255,0.08)"
+                  : "rgba(0,0,0,0.08)",
+                backgroundColor: dark
+                  ? "rgba(255,255,255,0.035)"
+                  : "#ffffff",
+                boxShadow: dark
+                  ? "0 8px 25px rgba(0,0,0,0.18)"
+                  : "0 8px 25px rgba(35,31,22,0.035)",
+              }}
+            >
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#D4AF37] opacity-30" />
 
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-[#D4AF37]" />
               </span>
 
-              <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#77736b]">
+              <span
+                className={`text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors duration-500 ${
+                  dark ? "text-white/45" : "text-[#77736b]"
+                }`}
+              >
                 Built for Arc
               </span>
 
-              <span className="h-1 w-1 rounded-full bg-black/20" />
+              <span
+                className={`h-1 w-1 rounded-full transition-colors duration-500 ${
+                  dark ? "bg-white/15" : "bg-black/20"
+                }`}
+              />
 
               <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#B28B20]">
                 USDC Native
@@ -189,16 +235,24 @@ function Features() {
 
             {/* TITLE */}
 
-            <h2 className="text-4xl font-bold tracking-[-0.04em] text-[#111111] md:text-5xl">
+            <h2
+              className={`text-4xl font-bold tracking-[-0.04em] transition-colors duration-500 md:text-5xl ${
+                dark ? "text-white" : "text-[#111111]"
+              }`}
+            >
               Everything You Need to{" "}
               <span className="text-[#B28B20]">Earn</span>
             </h2>
 
-            <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-[#77736b] md:text-base">
-              Fresh Bounty connects creators and contributors through on-chain
-              opportunities, with Arc and USDC powering a faster way to fund,
-              complete, and reward Web3 work.
-            </p>
+<p
+  className={`mx-auto mt-5 max-w-2xl text-sm leading-7 transition-colors duration-500 md:text-base ${
+    dark ? "text-white/50" : "text-[#77736b]"
+  }`}
+>
+  Fresh Bounty connects creators and contributors through on-chain
+  opportunities, with Arc and USDC powering a faster way to fund,
+  complete, and reward Web3 work.
+</p>
           </div>
 
           {/* =========================================
@@ -213,8 +267,17 @@ function Features() {
             <div
               className={`features-card-animation ${
                 isVisible ? "visible" : ""
-              } group relative overflow-hidden rounded-[26px] border border-black/[0.08] bg-white p-7 shadow-[0_15px_45px_rgba(35,31,22,0.045)] transition-all duration-500 hover:-translate-y-2 hover:border-[#D4AF37]/40 hover:shadow-[0_22px_65px_rgba(35,31,22,0.09)]`}
-              style={{ animationDelay: "150ms" }}
+              } group relative overflow-hidden rounded-[26px] border p-7 transition-all duration-500 hover:-translate-y-2`}
+              style={{
+                animationDelay: "150ms",
+                backgroundColor: dark ? "#111311" : "#ffffff",
+                borderColor: dark
+                  ? "rgba(255,255,255,0.07)"
+                  : "rgba(0,0,0,0.08)",
+                boxShadow: dark
+                  ? "0 15px 45px rgba(0,0,0,0.28)"
+                  : "0 15px 45px rgba(35,31,22,0.045)",
+              }}
             >
               <div className="features-shine" />
 
@@ -226,19 +289,33 @@ function Features() {
                 </div>
 
                 <div className="mt-7">
-                  <h3 className="text-lg font-semibold tracking-tight text-[#171717]">
+                  <h3
+                    className={`text-lg font-semibold tracking-tight transition-colors duration-500 ${
+                      dark ? "text-white" : "text-[#171717]"
+                    }`}
+                  >
                     USDC Rewards
                   </h3>
 
                   <div className="mt-4 h-px w-10 bg-[#D4AF37]/70 transition-all duration-500 group-hover:w-16" />
 
-                  <p className="mt-4 text-sm leading-6 text-[#77736b]">
-                    Complete approved bounties and work toward earning rewards
-                    through a USDC-powered bounty experience.
-                  </p>
+      <p
+  className={`mt-4 text-sm leading-6 transition-colors duration-500 ${
+    dark ? "text-white/50" : "text-[#77736b]"
+  }`}
+>
+  Complete approved bounties and work toward earning rewards
+  through a USDC-powered bounty experience.
+</p>
                 </div>
 
-                <div className="mt-7 flex items-center gap-2 border-t border-black/[0.06] pt-5 text-xs font-medium text-[#77736b]">
+                <div
+                  className={`mt-7 flex items-center gap-2 border-t pt-5 text-xs font-medium transition-colors duration-500 ${
+                    dark
+                      ? "border-white/[0.07] text-white/45"
+                      : "border-black/[0.06] text-[#77736b]"
+                  }`}
+                >
                   <FiCheck className="h-4 w-4 text-[#B28B20]" />
                   <span>USDC reward flow</span>
                 </div>
@@ -252,8 +329,17 @@ function Features() {
             <div
               className={`features-card-animation ${
                 isVisible ? "visible" : ""
-              } group relative overflow-hidden rounded-[26px] border border-black/[0.08] bg-white p-7 shadow-[0_15px_45px_rgba(35,31,22,0.045)] transition-all duration-500 hover:-translate-y-2 hover:border-[#D4AF37]/40 hover:shadow-[0_22px_65px_rgba(35,31,22,0.09)]`}
-              style={{ animationDelay: "300ms" }}
+              } group relative overflow-hidden rounded-[26px] border p-7 transition-all duration-500 hover:-translate-y-2`}
+              style={{
+                animationDelay: "300ms",
+                backgroundColor: dark ? "#111311" : "#ffffff",
+                borderColor: dark
+                  ? "rgba(255,255,255,0.07)"
+                  : "rgba(0,0,0,0.08)",
+                boxShadow: dark
+                  ? "0 15px 45px rgba(0,0,0,0.28)"
+                  : "0 15px 45px rgba(35,31,22,0.045)",
+              }}
             >
               <div className="features-shine" />
 
@@ -265,19 +351,33 @@ function Features() {
                 </div>
 
                 <div className="mt-7">
-                  <h3 className="text-lg font-semibold tracking-tight text-[#171717]">
+                  <h3
+                    className={`text-lg font-semibold tracking-tight transition-colors duration-500 ${
+                      dark ? "text-white" : "text-[#171717]"
+                    }`}
+                  >
                     Built on Arc
                   </h3>
 
                   <div className="mt-4 h-px w-10 bg-[#D4AF37]/70 transition-all duration-500 group-hover:w-16" />
 
-                  <p className="mt-4 text-sm leading-6 text-[#77736b]">
-                    A bounty experience designed around Arc, giving creators and
-                    contributors a focused on-chain environment for Web3 work.
-                  </p>
+         <p
+  className={`mt-4 text-sm leading-6 transition-colors duration-500 ${
+    dark ? "text-white/50" : "text-[#77736b]"
+  }`}
+>
+  A bounty experience designed around Arc, giving creators and
+  contributors a focused on-chain environment for Web3 work.
+</p>
                 </div>
 
-                <div className="mt-7 flex items-center gap-2 border-t border-black/[0.06] pt-5 text-xs font-medium text-[#77736b]">
+                <div
+                  className={`mt-7 flex items-center gap-2 border-t pt-5 text-xs font-medium transition-colors duration-500 ${
+                    dark
+                      ? "border-white/[0.07] text-white/45"
+                      : "border-black/[0.06] text-[#77736b]"
+                  }`}
+                >
                   <FiCheck className="h-4 w-4 text-[#B28B20]" />
                   <span>Arc-powered workflow</span>
                 </div>
@@ -291,8 +391,17 @@ function Features() {
             <div
               className={`features-card-animation ${
                 isVisible ? "visible" : ""
-              } group relative overflow-hidden rounded-[26px] border border-black/[0.08] bg-white p-7 shadow-[0_15px_45px_rgba(35,31,22,0.045)] transition-all duration-500 hover:-translate-y-2 hover:border-[#D4AF37]/40 hover:shadow-[0_22px_65px_rgba(35,31,22,0.09)]`}
-              style={{ animationDelay: "450ms" }}
+              } group relative overflow-hidden rounded-[26px] border p-7 transition-all duration-500 hover:-translate-y-2`}
+              style={{
+                animationDelay: "450ms",
+                backgroundColor: dark ? "#111311" : "#ffffff",
+                borderColor: dark
+                  ? "rgba(255,255,255,0.07)"
+                  : "rgba(0,0,0,0.08)",
+                boxShadow: dark
+                  ? "0 15px 45px rgba(0,0,0,0.28)"
+                  : "0 15px 45px rgba(35,31,22,0.045)",
+              }}
             >
               <div className="features-shine" />
 
@@ -304,19 +413,33 @@ function Features() {
                 </div>
 
                 <div className="mt-7">
-                  <h3 className="text-lg font-semibold tracking-tight text-[#171717]">
+                  <h3
+                    className={`text-lg font-semibold tracking-tight transition-colors duration-500 ${
+                      dark ? "text-white" : "text-[#171717]"
+                    }`}
+                  >
                     Secure Bounties
                   </h3>
 
                   <div className="mt-4 h-px w-10 bg-[#D4AF37]/70 transition-all duration-500 group-hover:w-16" />
 
-                  <p className="mt-4 text-sm leading-6 text-[#77736b]">
+                  <p
+                    className={`mt-4 text-sm leading-6 transition-colors duration-500 ${
+                      dark ? "text-white/50" : "text-[#77736b]"
+                    }`}
+                  >
                     Bounty funding and reward flows are designed to keep
                     contributors and creators aligned throughout the work.
                   </p>
                 </div>
 
-                <div className="mt-7 flex items-center gap-2 border-t border-black/[0.06] pt-5 text-xs font-medium text-[#77736b]">
+                <div
+                  className={`mt-7 flex items-center gap-2 border-t pt-5 text-xs font-medium transition-colors duration-500 ${
+                    dark
+                      ? "border-white/[0.07] text-white/45"
+                      : "border-black/[0.06] text-[#77736b]"
+                  }`}
+                >
                   <FiCheck className="h-4 w-4 text-[#B28B20]" />
                   <span>Protected workflow</span>
                 </div>
@@ -330,8 +453,17 @@ function Features() {
             <div
               className={`features-card-animation ${
                 isVisible ? "visible" : ""
-              } group relative overflow-hidden rounded-[26px] border border-black/[0.08] bg-white p-7 shadow-[0_15px_45px_rgba(35,31,22,0.045)] transition-all duration-500 hover:-translate-y-2 hover:border-[#D4AF37]/40 hover:shadow-[0_22px_65px_rgba(35,31,22,0.09)]`}
-              style={{ animationDelay: "600ms" }}
+              } group relative overflow-hidden rounded-[26px] border p-7 transition-all duration-500 hover:-translate-y-2`}
+              style={{
+                animationDelay: "600ms",
+                backgroundColor: dark ? "#111311" : "#ffffff",
+                borderColor: dark
+                  ? "rgba(255,255,255,0.07)"
+                  : "rgba(0,0,0,0.08)",
+                boxShadow: dark
+                  ? "0 15px 45px rgba(0,0,0,0.28)"
+                  : "0 15px 45px rgba(35,31,22,0.045)",
+              }}
             >
               <div className="features-shine" />
 
@@ -343,19 +475,33 @@ function Features() {
                 </div>
 
                 <div className="mt-7">
-                  <h3 className="text-lg font-semibold tracking-tight text-[#171717]">
+                  <h3
+                    className={`text-lg font-semibold tracking-tight transition-colors duration-500 ${
+                      dark ? "text-white" : "text-[#171717]"
+                    }`}
+                  >
                     On-Chain Transparency
                   </h3>
 
                   <div className="mt-4 h-px w-10 bg-[#D4AF37]/70 transition-all duration-500 group-hover:w-16" />
 
-                  <p className="mt-4 text-sm leading-6 text-[#77736b]">
-                    Keep bounty activity, submissions, and reward flows visible
-                    through a transparent Web3 experience.
-                  </p>
+            <p
+  className={`mt-4 text-sm leading-6 transition-colors duration-500 ${
+    dark ? "text-white/50" : "text-[#77736b]"
+  }`}
+>
+  Keep bounty activity, submissions, and reward flows visible
+  through a transparent Web3 experience.
+</p>
                 </div>
 
-                <div className="mt-7 flex items-center gap-2 border-t border-black/[0.06] pt-5 text-xs font-medium text-[#77736b]">
+                <div
+                  className={`mt-7 flex items-center gap-2 border-t pt-5 text-xs font-medium transition-colors duration-500 ${
+                    dark
+                      ? "border-white/[0.07] text-white/45"
+                      : "border-black/[0.06] text-[#77736b]"
+                  }`}
+                >
                   <FiCheck className="h-4 w-4 text-[#B28B20]" />
                   <span>Visible on-chain activity</span>
                 </div>
@@ -370,8 +516,17 @@ function Features() {
           <div
             className={`features-card-animation ${
               isVisible ? "visible" : ""
-            } mt-7 flex flex-col items-center justify-between gap-6 rounded-[24px] border border-black/[0.08] bg-white px-6 py-5 shadow-[0_15px_50px_rgba(35,31,22,0.055)] md:flex-row md:px-7`}
-            style={{ animationDelay: "750ms" }}
+            } mt-7 flex flex-col items-center justify-between gap-6 rounded-[24px] border px-6 py-5 shadow-[0_15px_50px_rgba(35,31,22,0.055)] transition-all duration-500 md:flex-row md:px-7`}
+            style={{
+              animationDelay: "750ms",
+              backgroundColor: dark ? "#111311" : "#ffffff",
+              borderColor: dark
+                ? "rgba(255,255,255,0.07)"
+                : "rgba(0,0,0,0.08)",
+              boxShadow: dark
+                ? "0 15px 50px rgba(0,0,0,0.28)"
+                : "0 15px 50px rgba(35,31,22,0.055)",
+            }}
           >
             <div className="flex items-center gap-4">
               <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#D4AF37]/20 bg-[#D4AF37]/[0.06] text-[#B28B20] transition-transform duration-300 hover:scale-110">
@@ -381,28 +536,39 @@ function Features() {
               </div>
 
               <div>
-                <p className="text-sm font-semibold text-[#171717]">
+                <p
+                  className={`text-sm font-semibold transition-colors duration-500 ${
+                    dark ? "text-white" : "text-[#171717]"
+                  }`}
+                >
                   Built for creators & contributors
                 </p>
 
-                <p className="mt-0.5 text-xs text-[#77736b]">
+                <p
+                  className={`mt-0.5 text-xs transition-colors duration-500 ${
+                    dark ? "text-white/45" : "text-[#77736b]"
+                  }`}
+                >
                   One platform. Arc-powered opportunities. USDC rewards.
                 </p>
               </div>
             </div>
 
-            <Link
-              to="/dashboard"
-              onClick={(e) => {
-                e.preventDefault();
-                handleNavigate("/dashboard");
-              }}
-              className="group flex items-center gap-2 rounded-xl border border-[#D4AF37]/30 bg-white px-5 py-2.5 text-sm font-semibold text-[#B28B20] transition-all duration-300 hover:border-[#D4AF37] hover:bg-[#D4AF37] hover:text-white hover:shadow-[0_10px_30px_rgba(212,175,55,0.18)]"
-            >
-              <span>Explore Opportunities</span>
-
-              <FiArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-            </Link>
+         <Link
+  to="/dashboard"
+  onClick={(e) => {
+    e.preventDefault();
+    handleNavigate("/dashboard");
+  }}
+  className={`group flex items-center gap-2 rounded-xl border px-5 py-2.5 text-sm font-semibold transition-all duration-300 hover:border-[#D4AF37] hover:bg-[#D4AF37] hover:text-white hover:shadow-[0_10px_30px_rgba(212,175,55,0.18)] ${
+    dark
+      ? "border-[#D4AF37]/30 bg-[#151715] text-[#D4AF37]"
+      : "border-[#D4AF37]/30 bg-white text-[#B28B20]"
+  }`}
+>
+  <span>Explore Opportunities</span>
+  <FiArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+</Link>
           </div>
 
           {/* =========================================
@@ -419,15 +585,31 @@ function Features() {
               ARC
             </span>
 
-            <span className="h-1 w-1 rounded-full bg-black/20" />
+            <span
+              className={`h-1 w-1 rounded-full transition-colors duration-500 ${
+                dark ? "bg-white/15" : "bg-black/20"
+              }`}
+            />
 
-            <span className="text-[9px] font-semibold uppercase tracking-[0.18em] text-[#8b8880]">
+            <span
+              className={`text-[9px] font-semibold uppercase tracking-[0.18em] transition-colors duration-500 ${
+                dark ? "text-white/35" : "text-[#8b8880]"
+              }`}
+            >
               USDC
             </span>
 
-            <span className="h-1 w-1 rounded-full bg-black/20" />
+            <span
+              className={`h-1 w-1 rounded-full transition-colors duration-500 ${
+                dark ? "bg-white/15" : "bg-black/20"
+              }`}
+            />
 
-            <span className="text-[9px] font-semibold uppercase tracking-[0.18em] text-[#8b8880]">
+            <span
+              className={`text-[9px] font-semibold uppercase tracking-[0.18em] transition-colors duration-500 ${
+                dark ? "text-white/35" : "text-[#8b8880]"
+              }`}
+            >
               WEB3 WORK
             </span>
           </div>
