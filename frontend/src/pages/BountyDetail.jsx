@@ -24,6 +24,7 @@ import { useAccount, useChainId, useSwitchChain } from "wagmi";
 import { formatEther } from "viem";
 import { useBounty } from "../hooks/useBounty";
 import { formatAmount } from "../utils/format";
+import { BountyDetailSkeleton } from "../components/UI/Skeleton";
 
 const BountyDetail = () => {
   const { id } = useParams();
@@ -807,8 +808,8 @@ const BountyDetail = () => {
       >
         <NavBar />
 
-        <main className="flex-grow flex items-center justify-center pt-20">
-          <div className="w-16 h-16 border-4 border-[#e5ddc8] dark:border-white/10 border-t-[#d4af37] rounded-full animate-spin" />
+        <main className="flex-grow pt-20">
+          <BountyDetailSkeleton />
         </main>
 
         <Footer />
@@ -1020,7 +1021,7 @@ const BountyDetail = () => {
                         <button
                           onClick={handleEnroll}
                           disabled={isEnrolling}
-                          className="px-5 py-2.5 rounded-xl bg-[#d4af37] dark:bg-[#D4AF37] text-[#171714] font-semibold hover:bg-[#c49b2c] dark:hover:bg-[#B8962E] transition disabled:opacity-50"
+                          className="px-5 py-2.5 rounded-xl bg-[#d4af37] dark:bg-[#e0bd45] text-[#171714] font-semibold hover:bg-[#c49b2c] dark:hover:bg-[#d2ac2f] transition-colors duration-300 disabled:opacity-50"
                         >
                           {isEnrolling
                             ? "Enrolling..."
@@ -1036,7 +1037,7 @@ const BountyDetail = () => {
                             onClick={() =>
                               setShowSubmitModal(true)
                             }
-                            className="px-5 py-2.5 rounded-xl bg-white dark:bg-[#151715] border border-[#d8d3c6] dark:border-white/10 text-[#292720] dark:text-white font-semibold hover:border-[#c49b2c] dark:hover:border-[#D4AF37]/60 transition"
+                            className="px-5 py-2.5 rounded-xl bg-white dark:bg-[#151715] border border-[#d8d3c6] dark:border-white/10 text-[#292720] dark:text-white font-semibold hover:border-[#c49b2c] dark:hover:border-[#D4AF37]/60 transition-colors duration-300"
                           >
                             Submit Task
                           </button>
@@ -1074,7 +1075,7 @@ const BountyDetail = () => {
                             bounty.winnersAllowed > 1 ? "s" : ""
                           }`
                     }
-                    className="px-5 py-2.5 rounded-xl bg-[#171714] text-white font-semibold hover:bg-[#292922] transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-5 py-2.5 rounded-xl bg-[#d4af37] dark:bg-[#e0bd45] text-[#171714] font-semibold hover:bg-[#c49b2c] dark:hover:bg-[#d2ac2f] transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Distribute Reward
                     {selectedWinners.length > 0 && (
@@ -1423,11 +1424,11 @@ const BountyDetail = () => {
       {/* Submit modal */}
       {showSubmitModal && (
         <div
-          className="fixed inset-0 bg-[#171714]/60 dark:bg-black/75 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          className="app-modal-overlay fixed inset-0 backdrop-blur-md flex items-center justify-center z-50 p-4"
           onClick={() => setShowSubmitModal(false)}
         >
           <div
-            className="bg-[#f9f8f3] dark:bg-[#111311] border border-[#ddd8ca] dark:border-white/10 rounded-3xl w-full max-w-md p-6 shadow-2xl max-h-[90vh] overflow-y-auto"
+            className="app-modal-panel bg-[#f9f8f3] dark:bg-[#111311] border border-[#ddd8ca] dark:border-white/10 rounded-3xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-5">
@@ -1532,13 +1533,13 @@ const BountyDetail = () => {
       {/* Distribute modal */}
       {showDistributeModal && bounty && (
         <div
-          className="fixed inset-0 bg-[#171714]/60 dark:bg-black/75 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          className="app-modal-overlay fixed inset-0 backdrop-blur-md flex items-center justify-center z-50 p-4"
           onClick={() =>
             setShowDistributeModal(false)
           }
         >
           <div
-            className="bg-[#f9f8f3] dark:bg-[#111311] border border-[#ddd8ca] dark:border-white/10 rounded-3xl w-full max-w-md p-6 shadow-2xl max-h-[90vh] overflow-y-auto"
+            className="app-modal-panel bg-[#f9f8f3] dark:bg-[#111311] border border-[#ddd8ca] dark:border-white/10 rounded-3xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-5">

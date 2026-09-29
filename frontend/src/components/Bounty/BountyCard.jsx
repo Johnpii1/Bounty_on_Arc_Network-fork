@@ -167,7 +167,7 @@ const BountyCard = ({ bounty }) => {
 
         border border-slate-200 dark:border-white/[0.08]
 
-        bg-white dark:bg-[#111311]
+        bg-white dark:bg-[#171a17]
 
         shadow-[0_8px_30px_rgba(15,23,42,0.06)]
         dark:shadow-[0_8px_30px_rgba(0,0,0,0.32)]
@@ -404,7 +404,7 @@ const BountyCard = ({ bounty }) => {
             dark:border-white/[0.08]
 
             bg-[#fbfaf6]
-            dark:bg-[#151715]
+            dark:bg-[#20231f]
 
             p-3
           "
@@ -540,22 +540,22 @@ const BountyCard = ({ bounty }) => {
                 flex min-w-0 items-center justify-center
                 gap-1.5 overflow-hidden rounded-xl
 
-                bg-[#171714]
-                dark:bg-[#d4af37]
+                bg-[#d4af37]
+                dark:bg-[#e0bd45]
 
                 px-3 py-3
 
                 text-xs font-bold
 
-                text-[#d4af37]
+                text-[#171714]
                 dark:text-[#171714]
 
                 shadow-sm
 
-                transition-all duration-200
+                transition-all duration-300
 
-                hover:bg-[#292922]
-                dark:hover:bg-[#b8962e]
+                hover:bg-[#c49b2c]
+                dark:hover:bg-[#d2ac2f]
 
                 active:scale-[0.98]
 
@@ -587,22 +587,22 @@ const BountyCard = ({ bounty }) => {
                 flex min-w-0 items-center justify-center
                 gap-1.5 overflow-hidden rounded-xl
 
-                bg-[#171714]
-                dark:bg-[#d4af37]
+                bg-[#d4af37]
+                dark:bg-[#e0bd45]
 
                 px-3 py-3
 
                 text-xs font-bold
 
-                text-[#d4af37]
+                text-[#171714]
                 dark:text-[#171714]
 
                 shadow-sm
 
-                transition-all duration-200
+                transition-all duration-300
 
-                hover:bg-[#292922]
-                dark:hover:bg-[#b8962e]
+                hover:bg-[#c49b2c]
+                dark:hover:bg-[#d2ac2f]
 
                 active:scale-[0.98]
 
@@ -635,22 +635,22 @@ const BountyCard = ({ bounty }) => {
                 relative
                 min-w-0 overflow-hidden rounded-xl
 
-                bg-[#171714]
-                dark:bg-[#d4af37]
+                bg-[#d4af37]
+                dark:bg-[#e0bd45]
 
                 px-3 py-3
 
                 text-xs font-bold
 
-                text-white
+                text-[#171714]
                 dark:text-[#171714]
 
                 shadow-sm
 
-                transition-all duration-200
+                transition-all duration-300
 
-                hover:bg-[#292922]
-                dark:hover:bg-[#b8962e]
+                hover:bg-[#c49b2c]
+                dark:hover:bg-[#d2ac2f]
 
                 hover:shadow-md
 
@@ -682,8 +682,8 @@ const BountyCard = ({ bounty }) => {
                       animate-spin rounded-full
 
                       border-2
-                      border-white/30
-                      border-t-white
+                      border-[#171714]/30
+                      border-t-[#171714]
 
                       dark:border-[#171714]/30
                       dark:border-t-[#171714]

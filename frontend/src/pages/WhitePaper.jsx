@@ -15,7 +15,7 @@ import {
 
 export default function WhitepaperPage() {
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#f7f6f0] text-[#171714]">
+    <div className="theme-page min-h-screen overflow-x-hidden bg-[#f7f6f0] text-[#171714]">
       {/* BACKGROUND */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div
