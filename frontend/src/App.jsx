@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import LandingPage from "./pages/LandingPage";
@@ -12,25 +12,11 @@ import WhitepaperPage from "./pages/WhitePaper";
 import ContactUs from "./pages/ContactUs";
 
 import LoadingScreen from "./components/LoadingScreen";
+import { useTheme } from "./context/ThemeContext";
 
 function App() {
   const [loading, setLoading] = useState(true);
-
-  const [dark, setDark] = useState(() => {
-    return localStorage.getItem("theme") === "dark";
-  });
-
-  useEffect(() => {
-    const root = document.documentElement;
-
-    if (dark) {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
-
-    localStorage.setItem("theme", dark ? "dark" : "light");
-  }, [dark]);
+  const { dark, setDark } = useTheme();
 
   return (
     <div className="min-h-screen transition-colors duration-300">

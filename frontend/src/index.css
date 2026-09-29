@@ -57,6 +57,12 @@ body,
   background: #f3f1ec;
 }
 
+html.dark,
+html.dark body,
+html.dark #root {
+  background: #080908;
+}
+
 body {
   margin: 0;
   overflow-x: hidden;
