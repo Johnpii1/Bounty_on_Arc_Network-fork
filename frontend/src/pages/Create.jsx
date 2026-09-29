@@ -43,23 +43,17 @@ function Create() {
     category: "",
     network: "",
     tags: [], // string for input (will convert later)
-
     startDate: "",
     deadline: "",
-
     originLink: "",
-
     reward: 0,
-    token: "INJ", // pick your default
-
+    token: "USDC", // pick your default
     // payout logic (needed for contract/backend)
     winnersAllowed: 1,
     payoutType: "",
     percentages: [],
-
     // UI-specific logic
     rewardType: "self-fund",
-
     creator: "", // will be filled from wallet
   });
 
@@ -386,9 +380,8 @@ function Create() {
         percentages: finalPercentages,
       });
 
-      let blockchainId = eventData?.bountyId
-        ? Number(eventData.bountyId)
-        : null;
+      let blockchainId =
+        eventData?.bountyId != null ? Number(eventData.bountyId) : null;
 
       console.log(
         `Token type ${bountyData.token} reward ${bountyData.reward} total amount ${totalAmount} in wei`,
@@ -396,7 +389,7 @@ function Create() {
 
       console.log("Full eventData:", eventData);
       // This blockchainId is currently causeing error on various networks...
-      if (!blockchainId) {
+      if (blockchainId === null || blockchainId === undefined) {
         // Fallback chain — handles Injective's sparse logs and Creditcoin's
         // log-less receipts via explorer API + bountyCounter() contract read.
         blockchainId = await fetchBountyIdFromTx(hash);
@@ -409,16 +402,18 @@ function Create() {
         );
         return;
       }
-      // if (hash) return showToast.success("Bounty created onchain");
-
+      if (!hash || !/^0x[a-fA-F0-9]{64}$/.test(hash)) {
+        showToast.error("Invalid transaction hash — cannot link bounty");
+        return;
+      }
       // 8. Save to backend with blockchain info
       console.log("posting to db");
       const saveResponse = await axios.post(`${API_URL}/bounty/create`, {
         ...backendData,
-        blockchainId: blockchainId,
+        blockchainId,
         txHash: hash,
         isOnChain: true,
-        creator: address,
+        // creator: address,
       });
       console.log("posting sucess");
       if (saveResponse.status === 201) {

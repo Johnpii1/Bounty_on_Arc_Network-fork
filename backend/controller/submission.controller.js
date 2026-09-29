@@ -57,7 +57,7 @@ const submit = async (req, res) => {
     // 更新 bounty 的提交计数
     await Bounty.findByIdAndUpdate(bountyId, {
       $inc: { "submissions.count": 1 },
-      $push: { "submissions.ids": submission._id },
+      // $push: { "submissions.ids": submission._id },
     });
 
     res.status(201).json({

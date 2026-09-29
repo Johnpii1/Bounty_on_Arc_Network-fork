@@ -218,18 +218,18 @@ const BountyDetail = () => {
   /* ---------------- Fetch bounty ---------------- */
 
   useEffect(() => {
-    setEnrollmentStatus("checking");
-    setIsCreator(false);
-    setHasUserSubmitted(false);
-    setUserSubmission(null);
-    setWinnersData(null);
-    setOffChainClaimable("0");
-    setHasUserClaimedOffChain(false);
-    setAllSubmissions([]);
-    setSelectedWinners([]);
-
     const fetchBounty = async () => {
       if (!id) return;
+      setEnrollmentStatus("checking");
+      setIsCreator(false);
+      setHasUserSubmitted(false);
+      setUserSubmission(null);
+      setWinnersData(null);
+      setOffChainClaimable("0");
+      setHasUserClaimedOffChain(false);
+      setAllSubmissions([]);
+      setSelectedWinners([]);
+
       try {
         const { data } = await axios.get(`${API_URL}/bounty/${id}`);
         let bountyData = data.bounty || data;
