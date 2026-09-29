@@ -15,6 +15,7 @@ import {
   prepareTransferOwnershipTx,
 } from "../services/bountyService"; // adjust path
 import { useChainId } from "wagmi"; // or get from useAccount
+import Skeleton from "../components/UI/Skeleton";
 
 export default function AdminPage() {
   const navigate = useNavigate();
@@ -254,9 +255,19 @@ export default function AdminPage() {
 
       {/* Loading overlay */}
       {txLoading && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-[#171a17] border border-pink-500 p-6 rounded-xl">
-            <p className="text-pink-400">Transaction pending...</p>
+        <div className="app-modal-overlay fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md">
+          <div className="app-modal-panel w-full max-w-sm rounded-2xl border border-[#ddd8ca] bg-[#f9f8f3] p-6 dark:border-white/10 dark:bg-[#111311]">
+            <div className="mb-5 flex items-center gap-3">
+              <Skeleton className="h-10 w-10 rounded-xl" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-4 w-2/3" />
+                <Skeleton className="h-3 w-1/2" />
+              </div>
+            </div>
+            <Skeleton className="h-2 w-full rounded-full" />
+            <p className="mt-4 text-sm font-medium text-[#625e55] dark:text-white/60">
+              Transaction pending. Confirm it in your wallet.
+            </p>
           </div>
         </div>
       )}

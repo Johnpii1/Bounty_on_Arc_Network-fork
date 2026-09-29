@@ -2172,7 +2172,7 @@ function Create() {
       ========================================================== */}
       {showEqualModal && (
         <div
-          className={`fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 p-4 ${
+          className={`app-modal-overlay fixed inset-0 backdrop-blur-md flex items-center justify-center z-50 p-4 ${
             dark
               ? "bg-black/70"
               : "bg-[#171714]/60"
@@ -2180,7 +2180,7 @@ function Create() {
           onClick={() => setShowEqualModal(false)}
         >
           <div
-            className={`border rounded-3xl w-full max-w-md p-6 shadow-2xl ${
+            className={`app-modal-panel border rounded-3xl w-full max-w-md p-6 ${
               dark
                 ? "bg-[#111311] border-white/10"
                 : "bg-[#f9f8f3] border-[#ddd8ca]"
@@ -2277,7 +2277,7 @@ function Create() {
       ========================================================== */}
       {showPercentModal && (
         <div
-          className={`fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 p-4 ${
+          className={`app-modal-overlay fixed inset-0 backdrop-blur-md flex items-center justify-center z-50 p-4 ${
             dark
               ? "bg-black/70"
               : "bg-[#171714]/60"
@@ -2285,7 +2285,7 @@ function Create() {
           onClick={() => setShowPercentModal(false)}
         >
           <div
-            className={`border rounded-3xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto shadow-2xl ${
+            className={`app-modal-panel border rounded-3xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto ${
               dark
                 ? "bg-[#111311] border-white/10"
                 : "bg-[#f9f8f3] border-[#ddd8ca]"

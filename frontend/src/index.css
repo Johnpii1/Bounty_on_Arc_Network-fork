@@ -68,6 +68,102 @@ body {
   overflow-x: hidden;
 }
 
+/* Shared application overlays keep dialogs visually consistent across routes. */
+.app-modal-overlay {
+  background: rgba(23, 23, 20, 0.62);
+  animation: modalOverlayIn 180ms ease-out;
+}
+
+.app-modal-panel {
+  box-shadow:
+    0 28px 90px rgba(23, 20, 12, 0.3),
+    0 0 0 1px rgba(212, 175, 55, 0.06);
+  animation: modalPanelIn 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.skeleton-surface {
+  border: 1px solid #dedbd1;
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 18px 60px rgba(34, 31, 24, 0.07);
+}
+
+.skeleton-block {
+  background: #e8e5dc;
+}
+
+.skeleton-block::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.72) 45%,
+    transparent 70%
+  );
+  animation: skeletonShimmer 1.5s ease-in-out infinite;
+  content: "";
+}
+
+@keyframes skeletonShimmer {
+  from {
+    transform: translateX(-110%);
+  }
+  to {
+    transform: translateX(110%);
+  }
+}
+
+@keyframes modalOverlayIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalPanelIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.dark .app-modal-panel {
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.62), 0 0 0 1px rgba(212, 175, 55, 0.1);
+}
+
+.dark .skeleton-surface {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(17, 19, 17, 0.9);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.35);
+}
+
+.dark .skeleton-block {
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.dark .skeleton-block::after {
+  background: linear-gradient(
+    100deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.09) 45%,
+    transparent 70%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-modal-overlay,
+  .app-modal-panel,
+  .skeleton-block::after {
+    animation: none !important;
+  }
+}
+
 /* =========================================================
    HAPPY BOUNTY — HOW IT WORKS PREMIUM ANIMATIONS
    Colors/layout remain unchanged

@@ -24,6 +24,7 @@ import { useAccount, useChainId, useSwitchChain } from "wagmi";
 import { formatEther } from "viem";
 import { useBounty } from "../hooks/useBounty";
 import { formatAmount } from "../utils/format";
+import { BountyDetailSkeleton } from "../components/UI/Skeleton";
 
 const BountyDetail = () => {
   const { id } = useParams();
@@ -807,8 +808,8 @@ const BountyDetail = () => {
       >
         <NavBar />
 
-        <main className="flex-grow flex items-center justify-center pt-20">
-          <div className="w-16 h-16 border-4 border-[#e5ddc8] dark:border-white/10 border-t-[#d4af37] rounded-full animate-spin" />
+        <main className="flex-grow pt-20">
+          <BountyDetailSkeleton />
         </main>
 
         <Footer />
@@ -1423,11 +1424,11 @@ const BountyDetail = () => {
       {/* Submit modal */}
       {showSubmitModal && (
         <div
-          className="fixed inset-0 bg-[#171714]/60 dark:bg-black/75 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          className="app-modal-overlay fixed inset-0 backdrop-blur-md flex items-center justify-center z-50 p-4"
           onClick={() => setShowSubmitModal(false)}
         >
           <div
-            className="bg-[#f9f8f3] dark:bg-[#111311] border border-[#ddd8ca] dark:border-white/10 rounded-3xl w-full max-w-md p-6 shadow-2xl max-h-[90vh] overflow-y-auto"
+            className="app-modal-panel bg-[#f9f8f3] dark:bg-[#111311] border border-[#ddd8ca] dark:border-white/10 rounded-3xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-5">
@@ -1532,13 +1533,13 @@ const BountyDetail = () => {
       {/* Distribute modal */}
       {showDistributeModal && bounty && (
         <div
-          className="fixed inset-0 bg-[#171714]/60 dark:bg-black/75 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          className="app-modal-overlay fixed inset-0 backdrop-blur-md flex items-center justify-center z-50 p-4"
           onClick={() =>
             setShowDistributeModal(false)
           }
         >
           <div
-            className="bg-[#f9f8f3] dark:bg-[#111311] border border-[#ddd8ca] dark:border-white/10 rounded-3xl w-full max-w-md p-6 shadow-2xl max-h-[90vh] overflow-y-auto"
+            className="app-modal-panel bg-[#f9f8f3] dark:bg-[#111311] border border-[#ddd8ca] dark:border-white/10 rounded-3xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-5">
