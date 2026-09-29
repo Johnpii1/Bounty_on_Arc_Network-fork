@@ -18,9 +18,13 @@ const queryClient = new QueryClient();
 
 function ThemedRainbowKitProvider({ children }) {
   const { dark } = useTheme();
+  const themeMode = dark ? "dark" : "light";
 
   return (
     <RainbowKitProvider
+      // RainbowKit injects its palette when this provider mounts. Keying it by
+      // mode makes it regenerate that palette whenever the app theme changes.
+      key={themeMode}
       chains={supportedChains}
       theme={
         dark
