@@ -7,8 +7,10 @@ import { useAccount } from "wagmi";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { FiArrowRight, FiChevronDown } from "react-icons/fi";
+import { useTheme } from "../../context/ThemeContext";
 
-function NavBar({ dark, setDark }) {
+function NavBar() {
+  const { dark, setDark } = useTheme();
   const { address, isConnected } = useAccount();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
