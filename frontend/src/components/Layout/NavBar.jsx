@@ -1,4 +1,3 @@
-
 import HappyBounty from "../../assets/images/HappyBounty.png";
 import Themes from "./Themes";
 import Connect from "../Connect";
@@ -36,6 +35,20 @@ function NavBar() {
         navigate("/dashboard");
         console.log(`Connected account: ${address}`);
       }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [address, isConnected, pathname, navigate]);
+
+  useEffect(() => {
+    if (pathname !== "/dashboard" && pathname !== "/create") return;
+
+    const timer = setTimeout(() => {
+      if (!address && !isConnected) {
+        navigate("/");
+        console.log(` Wallet disconnected`);
+      }
+      // navigate("/");
     }, 1000);
 
     return () => clearTimeout(timer);
@@ -362,11 +375,7 @@ function NavBar() {
               <div
                 className={`
                   border-b px-4 py-3.5
-                  ${
-                    dark
-                      ? "border-white/[0.07]"
-                      : "border-black/[0.07]"
-                  }
+                  ${dark ? "border-white/[0.07]" : "border-black/[0.07]"}
                 `}
               >
                 <div className="flex items-center justify-between">
@@ -602,10 +611,7 @@ function NavBar() {
           ====================================================== */}
 
           <div>
-            <Themes
-              dark={dark}
-              setDark={setDark}
-            />
+            <Themes dark={dark} setDark={setDark} />
           </div>
         </div>
       </nav>
