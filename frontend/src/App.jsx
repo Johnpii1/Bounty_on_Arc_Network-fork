@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
+import { useAccount } from "wagmi"; 
 
 import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
@@ -18,108 +19,93 @@ function App() {
   const [loading, setLoading] = useState(true);
   const { dark, setDark } = useTheme();
 
+  const RequireWallet = ({ children }) => {
+    const { address, isConnected } = useAccount();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+      if (!address && !isConnected) {
+        navigate("/", { replace: true });
+      }
+    }, [address, isConnected, navigate]);
+
+    if (!address && !isConnected) return null;
+
+    return children;
+  };
+
   return (
     <div className="min-h-screen transition-colors duration-300">
-      {loading && (
-        <LoadingScreen onComplete={() => setLoading(false)} />
-      )}
+      {loading && <LoadingScreen onComplete={() => setLoading(false)} />}
 
       <BrowserRouter>
         <Routes>
           <Route
             path="/"
-            element={
-              <LandingPage
-                dark={dark}
-                setDark={setDark}
-              />
-            }
+            element={<LandingPage dark={dark} setDark={setDark} />}
+          />
+
+          <Route
+            path="/faqs"
+            element={<FAQPage dark={dark} setDark={setDark} />}
+          />
+
+          <Route
+            path="/whitepaper"
+            element={<WhitepaperPage dark={dark} setDark={setDark} />}
+          />
+
+          <Route
+            path="/contact"
+            element={<ContactUs dark={dark} setDark={setDark} />}
           />
 
           <Route
             path="/dashboard"
             element={
-              <Dashboard
-                dark={dark}
-                setDark={setDark}
-              />
+              <RequireWallet>
+                <Dashboard dark={dark} setDark={setDark} />
+              </RequireWallet>
             }
           />
 
           <Route
             path="/profile"
             element={
-              <Profile
-                dark={dark}
-                setDark={setDark}
-              />
+              <RequireWallet>
+                <Profile dark={dark} setDark={setDark} />
+              </RequireWallet>
             }
           />
 
           <Route
             path="/create"
             element={
-              <Create
-                dark={dark}
-                setDark={setDark}
-              />
-            }
-          />
-
-          <Route
-            path="/faqs"
-            element={
-              <FAQPage
-                dark={dark}
-                setDark={setDark}
-              />
-            }
-          />
-
-          <Route
-            path="/whitepaper"
-            element={
-              <WhitepaperPage
-                dark={dark}
-                setDark={setDark}
-              />
-            }
-          />
-
-          <Route
-            path="/contact"
-            element={
-              <ContactUs
-                dark={dark}
-                setDark={setDark}
-              />
+              <RequireWallet>
+                <Create dark={dark} setDark={setDark} />
+              </RequireWallet>
             }
           />
 
           <Route
             path="/bounty/:id"
             element={
-              <BountyDetail
-                dark={dark}
-                setDark={setDark}
-              />
+              <RequireWallet>
+                <BountyDetail dark={dark} setDark={setDark} />
+              </RequireWallet>
             }
           />
 
           <Route
             path="/admin-224466"
             element={
-              <Admin
-                dark={dark}
-                setDark={setDark}
-              />
+              <RequireWallet>
+                <Admin dark={dark} setDark={setDark} />
+              </RequireWallet>
             }
           />
 
-          <Route
-            path="*"
-            element={<h1>404 Not Found</h1>}
-          />
+          <Route path="*" element={<h1>404 Not Found</h1>} />
         </Routes>
       </BrowserRouter>
     </div>
