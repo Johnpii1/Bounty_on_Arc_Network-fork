@@ -1239,12 +1239,17 @@ const BountyDetail = () => {
           {isCreator && allSubmissions.length > 0 && (
             <div className={cardClass}>
               <div className="p-6 md:p-8">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-bold text-[#171714]">
-                    Submissions ({allSubmissions.length})
-                  </h3>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between mb-6">
+                  <div>
+                    <h3 className="font-bold text-[#171714] dark:text-white">
+                      Submissions ({allSubmissions.length})
+                    </h3>
+                    <p className="mt-1 text-sm text-[#777267] dark:text-white/50">
+                      Review entries submitted by participants and select the winner{bounty.winnersAllowed > 1 ? "s" : ""}.
+                    </p>
+                  </div>
                   {selectedWinners.length > 0 && (
-                    <span className="text-xs font-semibold text-[#8f6c12] bg-[#f4ecd5] border border-[#e5d9b8] px-3 py-1 rounded-full">
+                    <span className="w-fit whitespace-nowrap text-xs font-semibold text-[#8f6c12] dark:text-[#D4AF37] bg-[#f4ecd5] dark:bg-[#2b2510] border border-[#e5d9b8] dark:border-[#D4AF37]/30 px-3 py-1.5 rounded-full">
                       {selectedWinners.length} / {bounty.winnersAllowed}{" "}
                       selected
                     </span>
@@ -1255,20 +1260,20 @@ const BountyDetail = () => {
                 {selectedWinners.length > 0 &&
                   bounty.payoutType === "MULTI_PERCENTAGE" &&
                   bounty.percentages?.length > 0 && (
-                    <div className="mb-5 p-3 rounded-xl bg-[#fbfaf6] border border-[#e7e3da]">
-                      <p className="text-xs uppercase tracking-wider text-[#8b8579] mb-2">
+                    <div className="mb-5 p-4 rounded-2xl bg-[#fbfaf6] dark:bg-[#151715] border border-[#e7e3da] dark:border-white/10">
+                      <p className="text-xs uppercase tracking-wider text-[#8b8579] dark:text-white/40 mb-2">
                         Selection order (maps to percentages)
                       </p>
                       <div className="space-y-1">
                         {selectedWinners.map((s, idx) => (
                           <div
                             key={s.address}
-                            className="flex justify-between text-xs text-[#4f4b43]"
+                            className="flex justify-between text-xs text-[#4f4b43] dark:text-white/65"
                           >
                             <span className="font-mono">
                               {idx + 1}. {shortenAddress(s.address)}
                             </span>
-                            <span className="font-semibold text-[#8f6c12]">
+                            <span className="font-semibold text-[#8f6c12] dark:text-[#D4AF37]">
                               {bounty.percentages[idx]}%
                             </span>
                           </div>
@@ -1288,30 +1293,30 @@ const BountyDetail = () => {
                         key={submission._id}
                         className={`p-4 rounded-xl border transition ${
                           selected
-                            ? "bg-[#fbf7e9] border-[#d4af37]"
-                            : "bg-[#fbfaf6] border-[#e7e3da]"
+                            ? "bg-[#fbf7e9] dark:bg-[#2b2510] border-[#d4af37] dark:border-[#D4AF37]/60 shadow-[0_8px_28px_rgba(212,175,55,0.08)]"
+                            : "bg-[#fbfaf6] dark:bg-[#151715] border-[#e7e3da] dark:border-white/10 hover:border-[#d4af37]/60 dark:hover:border-[#D4AF37]/40"
                         }`}
                       >
-                        <div className="flex justify-between items-start gap-4">
+                        <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-start">
                           <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="font-mono text-sm text-[#171714] font-semibold">
+                            <div className="flex flex-wrap items-center gap-2 mb-2">
+                              <span className="font-mono text-sm text-[#171714] dark:text-white font-semibold">
                                 {shortenAddress(submission.user)}
                               </span>
                               {selected && (
-                                <span className="text-[10px] font-bold text-[#8f6c12] bg-[#f4ecd5] border border-[#e5d9b8] px-2 py-0.5 rounded-full">
+                                <span className="text-[10px] font-bold text-[#8f6c12] dark:text-[#D4AF37] bg-[#f4ecd5] dark:bg-[#332b12] border border-[#e5d9b8] dark:border-[#D4AF37]/30 px-2 py-0.5 rounded-full">
                                   #{selectionIndex + 1}
                                 </span>
                               )}
                             </div>
-                            <p className="text-sm text-[#4f4b43] mb-1">
+                            <p className="text-sm text-[#4f4b43] dark:text-white/70 mb-2 leading-relaxed">
                               {submission.description}
                             </p>
                             <a
                               href={submission.projectLink}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-xs text-[#9a7619] hover:underline break-all"
+                              className="inline-flex max-w-full items-center gap-1 text-xs text-[#9a7619] dark:text-[#D4AF37] hover:underline break-all"
                             >
                               {submission.projectLink}
                             </a>
@@ -1320,7 +1325,7 @@ const BountyDetail = () => {
                                 href={submission.image}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="block text-xs text-[#9a7619] hover:underline mt-1"
+                                className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-[#9a7619] dark:text-[#D4AF37] hover:underline"
                               >
                                 View Image
                               </a>
@@ -1331,8 +1336,8 @@ const BountyDetail = () => {
                             onClick={() => toggleWinnerSelection(submission)}
                             className={`shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
                               selected
-                                ? "bg-[#171714] text-[#d4af37] border border-[#171714]"
-                                : "bg-white border border-[#d8d3c6] text-[#4f4b43] hover:border-[#c49b2c] hover:text-[#8f6c12]"
+                                ? "bg-[#171714] dark:bg-[#D4AF37] text-[#d4af37] dark:text-[#171714] border border-[#171714] dark:border-[#D4AF37]"
+                                : "bg-white dark:bg-[#1b1e1b] border border-[#d8d3c6] dark:border-white/15 text-[#4f4b43] dark:text-white/75 hover:border-[#c49b2c] dark:hover:border-[#D4AF37] hover:text-[#8f6c12] dark:hover:text-[#D4AF37]"
                             }`}
                           >
                             {selected ? "Selected" : "Select"}
@@ -1346,7 +1351,7 @@ const BountyDetail = () => {
                 {selectedWinners.length > 0 && (
                   <button
                     onClick={() => setSelectedWinners([])}
-                    className="mt-4 text-xs text-[#8b8579] hover:text-[#c62828] transition"
+                    className="mt-5 text-xs text-[#8b8579] dark:text-white/45 hover:text-[#c62828] dark:hover:text-[#ef9a9a] transition"
                   >
                     Clear selection
                   </button>
