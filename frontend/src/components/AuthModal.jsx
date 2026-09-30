@@ -21,7 +21,7 @@ function AuthModal({ isOpen, onClose }) {
   return (
     <div
       className="
-        auth-modal-overlay
+        auth-modal-overlay app-modal-overlay
         fixed inset-0 z-[100]
         flex min-h-screen
         items-center justify-center
@@ -34,7 +34,7 @@ function AuthModal({ isOpen, onClose }) {
     >
       <div
         className="
-          auth-modal-card
+          auth-modal-card app-modal-panel
           relative w-full max-w-sm
           rounded-2xl
           px-5 py-5

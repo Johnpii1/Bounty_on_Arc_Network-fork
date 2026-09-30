@@ -15,6 +15,7 @@ import {
   prepareTransferOwnershipTx,
 } from "../services/bountyService"; // adjust path
 import { useChainId } from "wagmi"; // or get from useAccount
+import Skeleton from "../components/UI/Skeleton";
 
 export default function AdminPage() {
   const navigate = useNavigate();
@@ -123,7 +124,7 @@ export default function AdminPage() {
   // Access denied if not owner and we have both addresses
   if (connectedWallet && ownerAddress && !isOwner) {
     return (
-      <div className="flex h-screen items-center justify-center bg-black text-white">
+      <div className="theme-page flex h-screen items-center justify-center bg-[#f7f6f0] text-[#171714] dark:bg-[#080908] dark:text-white transition-colors duration-300">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-red-500">Access Denied</h1>
           <p className="mt-2 text-gray-400">
@@ -141,7 +142,7 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white p-6">
+    <div className="theme-page min-h-screen bg-[#f7f6f0] p-6 text-[#171714] dark:bg-[#080908] dark:text-white transition-colors duration-300">
       <div className="flex items-center justify-between mb-6">
         <button
           onClick={() => navigate(-1)}
@@ -155,7 +156,7 @@ export default function AdminPage() {
 
       {/* Contract Info Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bg-black border border-pink-500/20 p-4 rounded-xl">
+        <div className="bg-white dark:bg-[#171a17] border border-pink-500/20 p-4 rounded-xl">
           <h3 className="text-gray-400 text-sm">Contract Owner</h3>
           <p className="text-pink-400 font-mono text-sm break-all">
             {ownerAddress || "Loading..."}
@@ -166,15 +167,15 @@ export default function AdminPage() {
             </p>
           )}
         </div>
-        <div className="bg-black border border-pink-500/20 p-4 rounded-xl">
+        <div className="bg-white dark:bg-[#171a17] border border-pink-500/20 p-4 rounded-xl">
           <h3 className="text-gray-400 text-sm">Fee Percentage</h3>
           <p className="text-2xl font-bold text-pink-500">{feePercent}%</p>
         </div>
-        <div className="bg-black border border-pink-500/20 p-4 rounded-xl">
+        <div className="bg-white dark:bg-[#171a17] border border-pink-500/20 p-4 rounded-xl">
           <h3 className="text-gray-400 text-sm">Total ETH Fees</h3>
           <p className="text-2xl font-bold text-pink-500">{totalEthFees} ETH</p>
         </div>
-        <div className="bg-black border border-pink-500/20 p-4 rounded-xl">
+        <div className="bg-white dark:bg-[#171a17] border border-pink-500/20 p-4 rounded-xl">
           <h3 className="text-gray-400 text-sm">Total USDC Fees</h3>
           <p className="text-2xl font-bold text-pink-500">
             {totalUsdcFees} USDC
@@ -183,7 +184,7 @@ export default function AdminPage() {
       </div>
 
       {/* Withdraw Section */}
-      <div className="bg-black border border-pink-500/20 rounded-xl p-6 mb-8">
+      <div className="bg-white dark:bg-[#171a17] border border-pink-500/20 rounded-xl p-6 mb-8">
         <h2 className="text-xl font-semibold text-pink-400 mb-4">
           Withdraw Fees
         </h2>
@@ -197,7 +198,7 @@ export default function AdminPage() {
               placeholder="0x..."
               value={withdrawAddress}
               onChange={(e) => setWithdrawAddress(e.target.value)}
-              className="w-full bg-black border border-pink-500/20 rounded px-3 py-2 text-white focus:outline-none focus:border-pink-500"
+              className="w-full bg-white dark:bg-[#171a17] border border-pink-500/20 rounded px-3 py-2 text-[#171714] dark:text-white focus:outline-none focus:border-pink-500"
             />
           </div>
           <div className="flex gap-3">
@@ -220,7 +221,7 @@ export default function AdminPage() {
       </div>
 
       {/* Ownership Transfer Section */}
-      <div className="bg-black border border-pink-500/20 rounded-xl p-6">
+      <div className="bg-white dark:bg-[#171a17] border border-pink-500/20 rounded-xl p-6">
         <h2 className="text-xl font-semibold text-pink-400 mb-4">
           Transfer Ownership
         </h2>
@@ -233,7 +234,7 @@ export default function AdminPage() {
               type="text"
               placeholder="0x..."
               id="newOwnerInput"
-              className="w-full bg-black border border-pink-500/20 rounded px-3 py-2 text-white focus:outline-none focus:border-pink-500"
+              className="w-full bg-white dark:bg-[#171a17] border border-pink-500/20 rounded px-3 py-2 text-[#171714] dark:text-white focus:outline-none focus:border-pink-500"
             />
           </div>
           <button
@@ -254,9 +255,19 @@ export default function AdminPage() {
 
       {/* Loading overlay */}
       {txLoading && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-black border border-pink-500 p-6 rounded-xl">
-            <p className="text-pink-400">Transaction pending...</p>
+        <div className="app-modal-overlay fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md">
+          <div className="app-modal-panel w-full max-w-sm rounded-2xl border border-[#ddd8ca] bg-[#f9f8f3] p-6 dark:border-white/10 dark:bg-[#111311]">
+            <div className="mb-5 flex items-center gap-3">
+              <Skeleton className="h-10 w-10 rounded-xl" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-4 w-2/3" />
+                <Skeleton className="h-3 w-1/2" />
+              </div>
+            </div>
+            <Skeleton className="h-2 w-full rounded-full" />
+            <p className="mt-4 text-sm font-medium text-[#625e55] dark:text-white/60">
+              Transaction pending. Confirm it in your wallet.
+            </p>
           </div>
         </div>
       )}
