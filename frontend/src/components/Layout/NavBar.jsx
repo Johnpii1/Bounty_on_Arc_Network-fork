@@ -201,7 +201,7 @@ function NavBar() {
                   w-auto object-contain
                   transition-all duration-500
                   group-hover:scale-[1.04]
-                  ${scrolled ? "h-[52px]" : "h-[64px] sm:h-[60px]"}
+                  ${scrolled ? "h-[52px]" : "h-[66px] sm:h-[62px]"}
                 `}
                 src={HappyBounty}
                 alt="Happy Bounty"
@@ -219,7 +219,7 @@ function NavBar() {
                   w-auto h-1 object-contain
                   transition-all duration-500
                   group-hover:scale-[1.04]
-                  ${scrolled ? "h-[42px] sm:h-[52px]" : "h-[48px] sm:h-[54px]"}
+                  ${scrolled ? "h-[52px]" : "h-[66px] sm:h-[62px]"}
                 `}
                 src={HappyBounty}
                 alt="Happy Bounty"
