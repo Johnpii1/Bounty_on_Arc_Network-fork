@@ -320,6 +320,10 @@ function Create() {
     setPercentageArray(preset);
   };
 
+  const isSelectedPreset = (preset) =>
+    percentageArray.length === preset.length &&
+    percentageArray.every((percentage, index) => percentage === preset[index]);
+
   // ---------------------------------------------------
   // FEES
   // ---------------------------------------------------
@@ -616,6 +620,10 @@ function Create() {
   const secondaryButtonClass = dark
     ? "bg-[#111311] border-white/10 text-white/70"
     : "bg-white border-[#d8d3c6] text-[#625e55]";
+
+  const selectedChoiceClass = dark
+    ? "bg-[#D4AF37]/15 border-[#D4AF37] text-[#D4AF37] shadow-[0_0_0_3px_rgba(212,175,55,0.12)]"
+    : "bg-[#f4ecd5] border-[#c49b2c] text-[#8f6c12] shadow-[0_0_0_3px_rgba(196,155,44,0.12)]";
 
   const themeBorderClass = dark
     ? "border-white/10"
@@ -1405,7 +1413,14 @@ function Create() {
                             onClick={() =>
                               setShowEqualModal(true)
                             }
-                            className={`px-4 py-2.5 rounded-xl text-sm font-medium text-[#d4af37] border hover:bg-[#292922] transition ${darkButtonClass}`}
+                            aria-pressed={
+                              selectedPayoutType === "MULTI_EQUAL"
+                            }
+                            className={`cursor-pointer px-4 py-2.5 rounded-xl border text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37]/50 ${
+                              selectedPayoutType === "MULTI_EQUAL"
+                                ? selectedChoiceClass
+                                : `${secondaryButtonClass} hover:border-[#c49b2c] hover:bg-[#f4ecd5] dark:hover:bg-[#292922]`
+                            }`}
                           >
                             Equal Split
                           </button>
@@ -1414,10 +1429,15 @@ function Create() {
                             onClick={() =>
                               setShowPercentModal(true)
                             }
-                            className={`px-4 py-2.5 rounded-xl border text-sm font-medium transition hover:border-[#c49b2c] ${
-                              dark
-                                ? "bg-[#111311] border-white/10 text-white hover:border-[#D4AF37]"
-                                : "bg-white border-[#d8d3c6] text-[#292720] hover:border-[#c49b2c]"
+                            aria-pressed={
+                              selectedPayoutType ===
+                              "MULTI_PERCENTAGE"
+                            }
+                            className={`cursor-pointer px-4 py-2.5 rounded-xl border text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37]/50 ${
+                              selectedPayoutType ===
+                              "MULTI_PERCENTAGE"
+                                ? selectedChoiceClass
+                                : `${secondaryButtonClass} hover:border-[#c49b2c] hover:bg-[#f4ecd5] dark:hover:bg-[#292922]`
                             }`}
                           >
                             % Split
@@ -1430,7 +1450,7 @@ function Create() {
                                   !showInfoMenu,
                                 )
                               }
-                              className={`w-10 h-10 rounded-xl border flex items-center justify-center transition ${
+                              className={`cursor-pointer w-10 h-10 rounded-xl border flex items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37]/50 ${
                                 dark
                                   ? "border-white/10 bg-[#111311] text-white/55 hover:text-[#D4AF37] hover:border-[#D4AF37]"
                                   : "border-[#ddd8cb] bg-white text-[#777267] hover:text-[#b28b20] hover:border-[#c49b2c]"
@@ -1525,10 +1545,10 @@ function Create() {
                               "self-fund",
                             )
                           }
-                          className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition ${
+                          className={`cursor-pointer px-5 py-2.5 rounded-xl border text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37]/50 ${
                             bountyData.rewardType ===
                             "self-fund"
-                              ? `${darkButtonClass} text-[#d4af37]`
+                              ? selectedChoiceClass
                               : dark
                                 ? "bg-[#111311] border border-white/10 text-white/65 hover:border-[#D4AF37]"
                                 : "bg-white border border-[#d8d3c6] text-[#625e55] hover:border-[#c49b2c]"
@@ -2224,7 +2244,7 @@ function Create() {
                 onClick={() =>
                   setShowEqualModal(false)
                 }
-                className={`w-9 h-9 rounded-xl border flex items-center justify-center transition ${
+                className={`cursor-pointer w-9 h-9 rounded-xl border flex items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37]/50 ${
                   dark
                     ? "border-white/10 bg-[#151715] text-white/55 hover:text-white"
                     : "border-[#ddd8ca] bg-white text-[#777267] hover:text-[#171714]"
@@ -2252,7 +2272,7 @@ function Create() {
                 onClick={() =>
                   setShowEqualModal(false)
                 }
-                className={`flex-1 px-4 py-3 rounded-xl border font-semibold transition ${
+                className={`cursor-pointer flex-1 px-4 py-3 rounded-xl border font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37]/50 ${
                   dark
                     ? "bg-[#151715] border-white/10 text-white/75 hover:bg-[#1b1d1b]"
                     : "bg-white border-[#d9d4c8] text-[#555047] hover:bg-[#f4f2ec]"
@@ -2263,7 +2283,7 @@ function Create() {
 
               <button
                 onClick={handleEqualSplitConfirm}
-                className={`flex-1 px-4 py-3 rounded-xl border text-[#d4af37] font-semibold hover:bg-[#292922] transition ${darkButtonClass}`}
+                className={`cursor-pointer flex-1 px-4 py-3 rounded-xl border font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37]/50 ${selectedChoiceClass}`}
               >
                 Confirm
               </button>
@@ -2329,7 +2349,7 @@ function Create() {
                 onClick={() =>
                   setShowPercentModal(false)
                 }
-                className={`w-9 h-9 rounded-xl border flex items-center justify-center transition ${
+                className={`cursor-pointer w-9 h-9 rounded-xl border flex items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37]/50 ${
                   dark
                     ? "border-white/10 bg-[#151715] text-white/55 hover:text-white"
                     : "border-[#ddd8ca] bg-white text-[#777267] hover:text-[#171714]"
@@ -2350,10 +2370,11 @@ function Create() {
                     5,
                   ])
                 }
-                className={`w-full text-left px-4 py-3 rounded-xl border transition ${
-                  dark
-                    ? "bg-[#151715] border-white/10 text-white hover:border-[#D4AF37]"
-                    : "bg-white border-[#ddd8ca] text-[#3e3b35] hover:border-[#c49b2c]"
+                aria-pressed={isSelectedPreset([40, 30, 20, 5, 5])}
+                className={`cursor-pointer w-full text-left px-4 py-3 rounded-xl border transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37]/50 ${
+                  isSelectedPreset([40, 30, 20, 5, 5])
+                    ? selectedChoiceClass
+                    : `${secondaryButtonClass} hover:border-[#c49b2c] hover:bg-[#f4ecd5] dark:hover:bg-[#292922]`
                 }`}
               >
                 <span className="font-semibold">
@@ -2379,10 +2400,11 @@ function Create() {
                     10,
                   ])
                 }
-                className={`w-full text-left px-4 py-3 rounded-xl border transition ${
-                  dark
-                    ? "bg-[#151715] border-white/10 text-white hover:border-[#D4AF37]"
-                    : "bg-white border-[#ddd8ca] text-[#3e3b35] hover:border-[#c49b2c]"
+                aria-pressed={isSelectedPreset([40, 30, 20, 10])}
+                className={`cursor-pointer w-full text-left px-4 py-3 rounded-xl border transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37]/50 ${
+                  isSelectedPreset([40, 30, 20, 10])
+                    ? selectedChoiceClass
+                    : `${secondaryButtonClass} hover:border-[#c49b2c] hover:bg-[#f4ecd5] dark:hover:bg-[#292922]`
                 }`}
               >
                 <span className="font-semibold">
@@ -2407,10 +2429,11 @@ function Create() {
                     20,
                   ])
                 }
-                className={`w-full text-left px-4 py-3 rounded-xl border transition ${
-                  dark
-                    ? "bg-[#151715] border-white/10 text-white hover:border-[#D4AF37]"
-                    : "bg-white border-[#ddd8ca] text-[#3e3b35] hover:border-[#c49b2c]"
+                aria-pressed={isSelectedPreset([50, 30, 20])}
+                className={`cursor-pointer w-full text-left px-4 py-3 rounded-xl border transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37]/50 ${
+                  isSelectedPreset([50, 30, 20])
+                    ? selectedChoiceClass
+                    : `${secondaryButtonClass} hover:border-[#c49b2c] hover:bg-[#f4ecd5] dark:hover:bg-[#292922]`
                 }`}
               >
                 <span className="font-semibold">
@@ -2434,10 +2457,11 @@ function Create() {
                     50,
                   ])
                 }
-                className={`w-full text-left px-4 py-3 rounded-xl border transition ${
-                  dark
-                    ? "bg-[#151715] border-white/10 text-white hover:border-[#D4AF37]"
-                    : "bg-white border-[#ddd8ca] text-[#3e3b35] hover:border-[#c49b2c]"
+                aria-pressed={isSelectedPreset([50, 50])}
+                className={`cursor-pointer w-full text-left px-4 py-3 rounded-xl border transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37]/50 ${
+                  isSelectedPreset([50, 50])
+                    ? selectedChoiceClass
+                    : `${secondaryButtonClass} hover:border-[#c49b2c] hover:bg-[#f4ecd5] dark:hover:bg-[#292922]`
                 }`}
               >
                 <span className="font-semibold">
@@ -2489,7 +2513,7 @@ function Create() {
                 onClick={() =>
                   setShowPercentModal(false)
                 }
-                className={`flex-1 px-4 py-3 rounded-xl border font-semibold transition ${
+                className={`cursor-pointer flex-1 px-4 py-3 rounded-xl border font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37]/50 ${
                   dark
                     ? "bg-[#151715] border-white/10 text-white/75 hover:bg-[#1b1d1b]"
                     : "bg-white border-[#d9d4c8] text-[#555047] hover:bg-[#f4f2ec]"
@@ -2500,7 +2524,7 @@ function Create() {
 
               <button
                 onClick={handlePercentSplitConfirm}
-                className={`flex-1 px-4 py-3 rounded-xl border text-[#d4af37] font-semibold hover:bg-[#292922] transition ${darkButtonClass}`}
+                className={`cursor-pointer flex-1 px-4 py-3 rounded-xl border font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37]/50 ${selectedChoiceClass}`}
               >
                 Confirm
               </button>
