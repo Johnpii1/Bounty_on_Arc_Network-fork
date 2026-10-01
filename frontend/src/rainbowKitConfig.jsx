@@ -12,5 +12,4 @@ export default getDefaultConfig({
   appName: "Fresh Bounty",
   projectId: projectId,
   chains: supportedChains,
-  ssr: true,
 });
