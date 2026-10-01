@@ -216,10 +216,10 @@ function NavBar() {
             >
               <img
                 className={`
-                  w-auto object-contain
+                  w-auto h-1 object-contain
                   transition-all duration-500
                   group-hover:scale-[1.04]
-                  ${scrolled ? "h-[52px]" : "h-[66px] sm:h-[62px]"}
+                  ${scrolled ? "h-[42px] sm:h-[52px]" : "h-[48px] sm:h-[54px]"}
                 `}
                 src={HappyBounty}
                 alt="Happy Bounty"
