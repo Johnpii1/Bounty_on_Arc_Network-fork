@@ -1,14 +1,37 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FiChevronDown, FiLogOut, FiRadio } from "react-icons/fi";
 import { useDisconnect } from "wagmi";
 import { useTheme } from "../context/ThemeContext";
 
 function Connect() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const accountModalFrame = useRef(null);
   const { disconnect } = useDisconnect();
   const { dark } = useTheme();
+
+  useEffect(() => {
+    return () => {
+      if (accountModalFrame.current !== null) {
+        cancelAnimationFrame(accountModalFrame.current);
+      }
+    };
+  }, []);
+
+  const openMobileAccountModal = (openAccountModal) => {
+    setMobileMenuOpen(false);
+
+    // Let the mobile menu close before RainbowKit mounts its account dialog.
+    // This avoids a stale menu layer intercepting the first tap after a wallet
+    // reconnects on mobile browsers.
+    accountModalFrame.current = requestAnimationFrame(() => {
+      accountModalFrame.current = requestAnimationFrame(() => {
+        accountModalFrame.current = null;
+        openAccountModal();
+      });
+    });
+  };
 
   return (
     <ConnectButton.Custom>
@@ -123,10 +146,7 @@ function Connect() {
 
                     <button
                       type="button"
-                      onClick={() => {
-                        setMobileMenuOpen(false);
-                        openAccountModal();
-                      }}
+                      onClick={() => openMobileAccountModal(openAccountModal)}
                       className={`w-full rounded-xl px-3 py-2 text-xs font-semibold transition-colors ${
                         dark
                           ? "text-white/55 hover:bg-white/10 hover:text-white"
