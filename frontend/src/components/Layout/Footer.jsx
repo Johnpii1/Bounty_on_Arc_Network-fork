@@ -10,7 +10,7 @@ import {
   FiCheck,
   FiDollarSign,
 } from "react-icons/fi";
-import HappyBounty from "../../assets/images/HappyBounty.png";
+import HappyBounty from "../../assets/images/happy-bounty-logo.png";
 
 function Footer() {
   const [dark, setDark] = useState(
