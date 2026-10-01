@@ -1,4 +1,4 @@
-import HappyBounty from "../../assets/images/HappyBounty.png";
+import HappyBounty from "../../assets/images/happy-bounty-logo.png";
 import Themes from "./Themes";
 import Connect from "../Connect";
 import SignUp from "../SignUp";
@@ -201,7 +201,7 @@ function NavBar() {
                   w-auto object-contain
                   transition-all duration-500
                   group-hover:scale-[1.04]
-                  ${scrolled ? "h-[52px]" : "h-[66px] sm:h-[62px]"}
+                  ${scrolled ? "h-[52px]" : "h-[64px] sm:h-[60px]"}
                 `}
                 src={HappyBounty}
                 alt="Happy Bounty"
