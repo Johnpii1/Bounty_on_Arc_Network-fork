@@ -10,6 +10,7 @@ import {
   FiDollarSign,
 } from "react-icons/fi";
 import HappyBounty from "../../assets/images/happy-bounty-logo.png";
+import { Link } from "react-router-dom";
 
 function Footer() {
   const [dark, setDark] = useState(
@@ -203,54 +204,54 @@ function Footer() {
 
               {/* Documentation */}
               <li>
-                <a
-                  href="/docs"
+                <Link
+                  to="/docs"
                   className={`group flex w-fit items-center gap-2 transition-all duration-200 hover:translate-x-1 hover:text-[#D4AF37] ${
                     dark ? "text-white/45" : "text-black/45"
                   }`}
                 >
                   <span className="h-px w-0 bg-[#D4AF37] transition-all duration-200 group-hover:w-3" />
                   Documentation
-                </a>
+                </Link>
               </li>
 
               {/* FAQ */}
               <li>
-                <a
-                  href="/faq"
+                <Link
+                  to="/faqs"
                   className={`group flex w-fit items-center gap-2 transition-all duration-200 hover:translate-x-1 hover:text-[#D4AF37] ${
                     dark ? "text-white/45" : "text-black/45"
                   }`}
                 >
                   <span className="h-px w-0 bg-[#D4AF37] transition-all duration-200 group-hover:w-3" />
                   FAQ
-                </a>
+                </Link>
               </li>
 
               {/* White Paper */}
               <li>
-                <a
-                  href="/whitepaper"
+                <Link
+                  to="/whitepaper"
                   className={`group flex w-fit items-center gap-2 transition-all duration-200 hover:translate-x-1 hover:text-[#D4AF37] ${
                     dark ? "text-white/45" : "text-black/45"
                   }`}
                 >
                   <span className="h-px w-0 bg-[#D4AF37] transition-all duration-200 group-hover:w-3" />
                   White Paper
-                </a>
+                </Link>
               </li>
 
               {/* Contact Us */}
               <li>
-                <a
-                  href="/contact"
+                <Link
+                  to="/contact"
                   className={`group flex w-fit items-center gap-2 transition-all duration-200 hover:translate-x-1 hover:text-[#D4AF37] ${
                     dark ? "text-white/45" : "text-black/45"
                   }`}
                 >
                   <span className="h-px w-0 bg-[#D4AF37] transition-all duration-200 group-hover:w-3" />
                   Contact Us
-                </a>
+                </Link>
               </li>
 
             </ul>
