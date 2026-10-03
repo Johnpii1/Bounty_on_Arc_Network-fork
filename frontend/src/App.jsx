@@ -10,6 +10,7 @@ import Admin from "./pages/Admin";
 import FAQPage from "./pages/Faqs";
 import WhitepaperPage from "./pages/WhitePaper";
 import ContactUs from "./pages/ContactUs";
+import Docs from "./pages/Docs";
 
 import LoadingScreen from "./components/LoadingScreen";
 import { useTheme } from "./context/ThemeContext";
@@ -60,6 +61,16 @@ function App() {
             path="/create"
             element={
               <Create
+                dark={dark}
+                setDark={setDark}
+              />
+            }
+          />
+
+          <Route
+            path="/docs"
+            element={
+              <Docs
                 dark={dark}
                 setDark={setDark}
               />
