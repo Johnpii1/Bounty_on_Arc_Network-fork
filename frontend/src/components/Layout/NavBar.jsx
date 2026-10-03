@@ -40,21 +40,24 @@ function NavBar() {
     return () => clearTimeout(timer);
   }, [address, isConnected, pathname, navigate]);
 
-  useEffect(() => {
-    if (pathname !== "/dashboard" && pathname !== "/create") return;
+  // useEffect(() => {
+  //   if (pathname !== "/dashboard" && pathname !== "/bounty/:id") return;
 
-    const timer = setTimeout(() => {
-      if (!address && !isConnected) {
-        navigate("/");
-        console.log(` Wallet disconnected`);
-      }
-      // navigate("/");
-    }, 1000);
+  //   const timer = setTimeout(() => {
+  //     if (!address && !isConnected) {
+  //       navigate("/");
+  //       console.log(` Wallet disconnected`);
+  //     }
+  //     // navigate("/");
+  //   }, 1000);
 
-    return () => clearTimeout(timer);
-  }, [address, isConnected, pathname, navigate]);
+  //   return () => clearTimeout(timer);
+  // }, [address, isConnected, pathname, navigate]);
 
   // Handle logo click
+  
+  
+  
   const handleLogoClick = (event) => {
     if (pathname === "/" || pathname === "/dashboard") {
       event.preventDefault();

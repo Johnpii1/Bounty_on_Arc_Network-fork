@@ -231,6 +231,23 @@ function Create() {
           return false;
         }
 
+        // NEW: end date must be at least one day after start date
+        const start = new Date(bountyData.startDate);
+        const end = new Date(bountyData.deadline);
+
+        // Strip time so we compare calendar days only
+        start.setHours(0, 0, 0, 0);
+        end.setHours(0, 0, 0, 0);
+
+        const diffDays = (end - start) / (1000 * 60 * 60 * 24);
+
+        if (diffDays < 1) {
+          showToast.error(
+            "End date must be at least one day after the start date",
+          );
+          return false;
+        }
+
         if (!bountyData.startDate || !bountyData.deadline) {
           showToast.error("Please select start and end dates");
           return false;
@@ -397,6 +414,11 @@ function Create() {
 
   const handleFinalSubmit = async () => {
     if (!validateStep(3)) return;
+
+    if (!validateStep(2)) {
+      setCurrentStep(2);
+      return;
+    }
 
     const urlErr = isValidUrl(bountyData.originLink);
 
@@ -582,10 +604,6 @@ function Create() {
   const secondaryButtonClass = dark
     ? "bg-[#111311] border-white/10 text-white/70"
     : "bg-white border-[#d8d3c6] text-[#625e55]";
-
-  const selectedChoiceClass = dark
-    ? "bg-[#D4AF37]/15 border-[#D4AF37] text-[#D4AF37] shadow-[0_0_0_3px_rgba(212,175,55,0.12)]"
-    : "bg-[#f4ecd5] border-[#c49b2c] text-[#8f6c12] shadow-[0_0_0_3px_rgba(196,155,44,0.12)]";
 
   const themeBorderClass = dark ? "border-white/10" : "border-[#e7e3da]";
 
@@ -1090,6 +1108,7 @@ function Create() {
                         <input
                           type="date"
                           value={bountyData.startDate}
+                          min={new Date().toISOString().split("T")[0]} // can't pick past start
                           onChange={(e) =>
                             updateBountyData("startDate", e.target.value)
                           }
@@ -1107,6 +1126,16 @@ function Create() {
                         <input
                           type="date"
                           value={bountyData.deadline}
+                          min={
+                            bountyData.startDate
+                              ? new Date(
+                                  new Date(bountyData.startDate).getTime() +
+                                    24 * 60 * 60 * 1000,
+                                )
+                                  .toISOString()
+                                  .split("T")[0]
+                              : undefined
+                          }
                           onChange={(e) =>
                             updateBountyData("deadline", e.target.value)
                           }
@@ -1256,25 +1285,17 @@ function Create() {
                         <div className="flex flex-wrap gap-3 items-center">
                           <button
                             onClick={() => setShowEqualModal(true)}
-                            aria-pressed={selectedPayoutType === "MULTI_EQUAL"}
-                            className={`cursor-pointer px-4 py-2.5 rounded-xl border text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37]/50 ${
-                              selectedPayoutType === "MULTI_EQUAL"
-                                ? selectedChoiceClass
-                                : `${secondaryButtonClass} hover:border-[#c49b2c] hover:bg-[#f4ecd5] dark:hover:bg-[#292922]`
-                            }`}
+                            className={`px-4 py-2.5 rounded-xl text-sm font-medium text-[#d4af37] border hover:bg-[#292922] transition ${darkButtonClass}`}
                           >
                             Equal Split
                           </button>
 
                           <button
                             onClick={() => setShowPercentModal(true)}
-                            aria-pressed={
-                              selectedPayoutType === "MULTI_PERCENTAGE"
-                            }
-                            className={`cursor-pointer px-4 py-2.5 rounded-xl border text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37]/50 ${
-                              selectedPayoutType === "MULTI_PERCENTAGE"
-                                ? selectedChoiceClass
-                                : `${secondaryButtonClass} hover:border-[#c49b2c] hover:bg-[#f4ecd5] dark:hover:bg-[#292922]`
+                            className={`px-4 py-2.5 rounded-xl border text-sm font-medium transition hover:border-[#c49b2c] ${
+                              dark
+                                ? "bg-[#111311] border-white/10 text-white hover:border-[#D4AF37]"
+                                : "bg-white border-[#d8d3c6] text-[#292720] hover:border-[#c49b2c]"
                             }`}
                           >
                             % Split
@@ -1283,7 +1304,7 @@ function Create() {
                           <div className="relative">
                             <button
                               onClick={() => setShowInfoMenu(!showInfoMenu)}
-                              className={`cursor-pointer w-10 h-10 rounded-xl border flex items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37]/50 ${
+                              className={`w-10 h-10 rounded-xl border flex items-center justify-center transition ${
                                 dark
                                   ? "border-white/10 bg-[#111311] text-white/55 hover:text-[#D4AF37] hover:border-[#D4AF37]"
                                   : "border-[#ddd8cb] bg-white text-[#777267] hover:text-[#b28b20] hover:border-[#c49b2c]"
@@ -1369,9 +1390,9 @@ function Create() {
                           onClick={() =>
                             updateBountyData("rewardType", "self-fund")
                           }
-                          className={`cursor-pointer px-5 py-2.5 rounded-xl border text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37]/50 ${
+                          className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition ${
                             bountyData.rewardType === "self-fund"
-                              ? selectedChoiceClass
+                              ? `${darkButtonClass} text-[#d4af37]`
                               : dark
                                 ? "bg-[#111311] border border-white/10 text-white/65 hover:border-[#D4AF37]"
                                 : "bg-white border border-[#d8d3c6] text-[#625e55] hover:border-[#c49b2c]"
@@ -1900,7 +1921,7 @@ function Create() {
       ========================================================== */}
       {showEqualModal && (
         <div
-          className={`app-modal-overlay fixed inset-0 backdrop-blur-md flex items-center justify-center z-50 p-4 ${
+          className={`fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 p-4 ${
             dark ? "bg-black/70" : "bg-[#171714]/60"
           }`}
           onClick={() => setShowEqualModal(false)}
@@ -1944,7 +1965,7 @@ function Create() {
 
               <button
                 onClick={() => setShowEqualModal(false)}
-                className={`cursor-pointer w-9 h-9 rounded-xl border flex items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37]/50 ${
+                className={`w-9 h-9 rounded-xl border flex items-center justify-center transition ${
                   dark
                     ? "border-white/10 bg-[#151715] text-white/55 hover:text-white"
                     : "border-[#ddd8ca] bg-white text-[#777267] hover:text-[#171714]"
@@ -1966,7 +1987,7 @@ function Create() {
             <div className="flex gap-3 mt-5">
               <button
                 onClick={() => setShowEqualModal(false)}
-                className={`cursor-pointer flex-1 px-4 py-3 rounded-xl border font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37]/50 ${
+                className={`flex-1 px-4 py-3 rounded-xl border font-semibold transition ${
                   dark
                     ? "bg-[#151715] border-white/10 text-white/75 hover:bg-[#1b1d1b]"
                     : "bg-white border-[#d9d4c8] text-[#555047] hover:bg-[#f4f2ec]"
@@ -1991,7 +2012,7 @@ function Create() {
       ========================================================== */}
       {showPercentModal && (
         <div
-          className={`app-modal-overlay fixed inset-0 backdrop-blur-md flex items-center justify-center z-50 p-4 ${
+          className={`fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 p-4 ${
             dark ? "bg-black/70" : "bg-[#171714]/60"
           }`}
           onClick={() => setShowPercentModal(false)}
@@ -2035,7 +2056,7 @@ function Create() {
 
               <button
                 onClick={() => setShowPercentModal(false)}
-                className={`cursor-pointer w-9 h-9 rounded-xl border flex items-center justify-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37]/50 ${
+                className={`w-9 h-9 rounded-xl border flex items-center justify-center transition ${
                   dark
                     ? "border-white/10 bg-[#151715] text-white/55 hover:text-white"
                     : "border-[#ddd8ca] bg-white text-[#777267] hover:text-[#171714]"
@@ -2048,11 +2069,10 @@ function Create() {
             <div className="space-y-2.5 mb-5">
               <button
                 onClick={() => handlePresetSelect([40, 30, 20, 5, 5])}
-                aria-pressed={isSelectedPreset([40, 30, 20, 5, 5])}
-                className={`cursor-pointer w-full text-left px-4 py-3 rounded-xl border transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37]/50 ${
-                  isSelectedPreset([40, 30, 20, 5, 5])
-                    ? selectedChoiceClass
-                    : `${secondaryButtonClass} hover:border-[#c49b2c] hover:bg-[#f4ecd5] dark:hover:bg-[#292922]`
+                className={`w-full text-left px-4 py-3 rounded-xl border transition ${
+                  dark
+                    ? "bg-[#151715] border-white/10 text-white hover:border-[#D4AF37]"
+                    : "bg-white border-[#ddd8ca] text-[#3e3b35] hover:border-[#c49b2c]"
                 }`}
               >
                 <span className="font-semibold">[40, 30, 20, 5, 5]</span>{" "}
@@ -2063,11 +2083,10 @@ function Create() {
 
               <button
                 onClick={() => handlePresetSelect([40, 30, 20, 10])}
-                aria-pressed={isSelectedPreset([40, 30, 20, 10])}
-                className={`cursor-pointer w-full text-left px-4 py-3 rounded-xl border transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37]/50 ${
-                  isSelectedPreset([40, 30, 20, 10])
-                    ? selectedChoiceClass
-                    : `${secondaryButtonClass} hover:border-[#c49b2c] hover:bg-[#f4ecd5] dark:hover:bg-[#292922]`
+                className={`w-full text-left px-4 py-3 rounded-xl border transition ${
+                  dark
+                    ? "bg-[#151715] border-white/10 text-white hover:border-[#D4AF37]"
+                    : "bg-white border-[#ddd8ca] text-[#3e3b35] hover:border-[#c49b2c]"
                 }`}
               >
                 <span className="font-semibold">[40, 30, 20, 10]</span>{" "}
@@ -2078,11 +2097,10 @@ function Create() {
 
               <button
                 onClick={() => handlePresetSelect([50, 30, 20])}
-                aria-pressed={isSelectedPreset([50, 30, 20])}
-                className={`cursor-pointer w-full text-left px-4 py-3 rounded-xl border transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37]/50 ${
-                  isSelectedPreset([50, 30, 20])
-                    ? selectedChoiceClass
-                    : `${secondaryButtonClass} hover:border-[#c49b2c] hover:bg-[#f4ecd5] dark:hover:bg-[#292922]`
+                className={`w-full text-left px-4 py-3 rounded-xl border transition ${
+                  dark
+                    ? "bg-[#151715] border-white/10 text-white hover:border-[#D4AF37]"
+                    : "bg-white border-[#ddd8ca] text-[#3e3b35] hover:border-[#c49b2c]"
                 }`}
               >
                 <span className="font-semibold">[50, 30, 20]</span>{" "}
@@ -2093,11 +2111,10 @@ function Create() {
 
               <button
                 onClick={() => handlePresetSelect([50, 50])}
-                aria-pressed={isSelectedPreset([50, 50])}
-                className={`cursor-pointer w-full text-left px-4 py-3 rounded-xl border transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37]/50 ${
-                  isSelectedPreset([50, 50])
-                    ? selectedChoiceClass
-                    : `${secondaryButtonClass} hover:border-[#c49b2c] hover:bg-[#f4ecd5] dark:hover:bg-[#292922]`
+                className={`w-full text-left px-4 py-3 rounded-xl border transition ${
+                  dark
+                    ? "bg-[#151715] border-white/10 text-white hover:border-[#D4AF37]"
+                    : "bg-white border-[#ddd8ca] text-[#3e3b35] hover:border-[#c49b2c]"
                 }`}
               >
                 <span className="font-semibold">[50, 50]</span>{" "}
@@ -2133,7 +2150,7 @@ function Create() {
             <div className="flex gap-3">
               <button
                 onClick={() => setShowPercentModal(false)}
-                className={`cursor-pointer flex-1 px-4 py-3 rounded-xl border font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37]/50 ${
+                className={`flex-1 px-4 py-3 rounded-xl border font-semibold transition ${
                   dark
                     ? "bg-[#151715] border-white/10 text-white/75 hover:bg-[#1b1d1b]"
                     : "bg-white border-[#d9d4c8] text-[#555047] hover:bg-[#f4f2ec]"
