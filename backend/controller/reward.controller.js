@@ -148,28 +148,19 @@ const distributeRewards = async (req, res) => {
     // };
     // await bounty.save();
 
-    // // 🔥 STEP 6: update user earnings (numeric-safe)
-    // await Promise.all(
-    //   winnerDetails.map((w) =>
-    //     User.updateOne(
-    //       { walletAddress: w.winnerAddress },
-    //       {
-    //         $inc: { totalEarningsWei: w.amountWei }, // store wei as string/decimal
-    //         $set: { lastUpdated: new Date() },
-    //         $push: {
-    //           earnedFrom: {
-    //             bountyId: bounty._id,
-    //             bountyTitle: bounty.title,
-    //             amountWei: w.amountWei,
-    //             amountFormatted: w.amountFormatted,
-    //             earnedAt: new Date(),
-    //           },
-    //         },
-    //       },
-    //       { upsert: true },
-    //     ),
-    //   ),
-    // );
+    // 🔥 STEP 6: increment completed tasks for each winner
+    await Promise.all(
+      winnerDetails.map((w) =>
+        User.updateOne(
+          { walletAddress: w.winnerAddress },
+          {
+            $inc: { "stats.tasksCompleted": 1 },
+            $set: { lastLogin: new Date() },
+          },
+          { upsert: true },
+        ),
+      ),
+    );
 
     return res.status(200).json({
       message: "Distribution synced from blockchain",
@@ -391,7 +382,7 @@ const claimReward = async (req, res) => {
         },
         $inc: {
           totalEarnings: numericAmount, // ← dashboard reads this
-          "stats.tasksCompleted": 1,
+          // "stats.tasksCompleted": 1,
         },
         $set: { lastLogin: new Date() },
       },
