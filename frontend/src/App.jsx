@@ -72,7 +72,6 @@ function App() {
           />
 
           <Route
-            path="/faqs"
             path="/dashboard"
             element={
               <RequireWallet>

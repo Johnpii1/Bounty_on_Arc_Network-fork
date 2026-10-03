@@ -21,6 +21,7 @@ import Testimonials from "./Testimonials";
 import CallToAction from "./CallToAction";
 import BuiltForWeb3 from "./BuiltForWeb3";
 import Footer from "../components/Layout/Footer";
+import ScrollToTopButton from "../components/ScrollToTopButton";
 
 function LandingPage({ dark, setDark }) {
   const [featuredBounties, setFeaturedBounties] = useState([]);
@@ -672,6 +673,7 @@ function LandingPage({ dark, setDark }) {
       ========================================== */}
       <div className="relative z-10">
         <Footer />
+        <ScrollToTopButton />
       </div>
 
       {/* =========================================
