@@ -68,7 +68,7 @@ function Dashboard({ dark, setDark }) {
       const { data } = await axios.get(userInfoApi);
 
       setStats({
-        completed: data.submissions?.accepted || 0,
+        completed: data.user?.tasksCompleted || 0,
         inProgress: data.submissions?.pending || 0,
         earnings: data.user?.totalEarnings || 0,
       });
@@ -364,7 +364,7 @@ function Dashboard({ dark, setDark }) {
                     dark ? "text-white/40" : "text-black/40"
                   }`}
                 >
-                  Completed Tasks
+                  Bounty Won
                 </p>
 
                 <p
@@ -424,7 +424,7 @@ function Dashboard({ dark, setDark }) {
                     dark ? "text-white/40" : "text-black/40"
                   }`}
                 >
-                  In Progress
+                  In Progress / Submitted
                 </p>
 
                 <p

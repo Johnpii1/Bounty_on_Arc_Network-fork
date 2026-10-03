@@ -71,6 +71,7 @@ const getUserDashboard = async (req, res) => {
         walletAddress: wallet,
         reputationScore: user.reputationScore || 0,
         totalEarnings: totalEarnings.toString(),
+        tasksCompleted: user.stats?.tasksCompleted || 0,
       },
       bounties: bountyStats,
       submissions: submissionStats,
