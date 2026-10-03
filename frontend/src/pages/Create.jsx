@@ -253,23 +253,6 @@ function Create() {
           return false;
         }
 
-         // NEW: end date must be at least one day after start date
-  const start = new Date(bountyData.startDate);
-  const end = new Date(bountyData.deadline);
-
-  // Strip time so we compare calendar days only
-  start.setHours(0, 0, 0, 0);
-  end.setHours(0, 0, 0, 0);
-
-  const diffDays = (end - start) / (1000 * 60 * 60 * 24);
-
-  if (diffDays < 1) {
-    showToast.error(
-      "End date must be at least one day after the start date",
-    );
-    return false;
-  }
-
         const urlErr = isValidUrl(bountyData.originLink);
 
         if (urlErr) {
