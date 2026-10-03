@@ -74,6 +74,16 @@ const getUserDashboard = async (req, res) => {
       },
       bounties: bountyStats,
       submissions: submissionStats,
+      // rewards: (user.claimedRewards || [])
+      //   .sort((a, b) => new Date(b.claimedAt) - new Date(a.claimedAt))
+      //   .slice(0, 20) // cap at 20 for the dashboard
+      //   .map((r) => ({
+      //     bountyId: r.bountyId,
+      //     bountyTitle: r.bountyTitle,
+      //     amount: r.amount,
+      //     amountFormatted: r.amountFormatted,
+      //     claimedAt: r.claimedAt,
+      //   })),
     });
   } catch (err) {
     console.error("Failed to fetch dashboard stats", err);

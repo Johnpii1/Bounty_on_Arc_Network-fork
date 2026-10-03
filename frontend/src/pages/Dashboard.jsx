@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAccount } from "wagmi";
@@ -62,6 +61,8 @@ function Dashboard({ dark, setDark }) {
     }
   };
 
+  // const [rewards, setRewards] = useState([]);
+
   const loadDashboardStats = async () => {
     try {
       const { data } = await axios.get(userInfoApi);
@@ -71,6 +72,7 @@ function Dashboard({ dark, setDark }) {
         inProgress: data.submissions?.pending || 0,
         earnings: data.user?.totalEarnings || 0,
       });
+      // setRewards(data.rewards || []);
     } catch (err) {
       console.error("Error loading userInfo:", err);
       showToast.error("Couldn't fetch user info");
@@ -114,9 +116,7 @@ function Dashboard({ dark, setDark }) {
   return (
     <div
       className={`min-h-screen overflow-hidden transition-colors duration-500 ${
-        dark
-          ? "bg-[#080908] text-white"
-          : "bg-[#f6f5ef] text-[#111111]"
+        dark ? "bg-[#080908] text-white" : "bg-[#f6f5ef] text-[#111111]"
       }`}
     >
       <NavBar dark={dark} setDark={setDark} />
@@ -232,9 +232,7 @@ function Dashboard({ dark, setDark }) {
                 <Link
                   to="/create"
                   className={`group relative flex h-11 items-center gap-2 overflow-hidden rounded-xl px-5 text-sm font-bold shadow-[0_10px_30px_rgba(17,17,17,0.14)] transition-all duration-300 hover:-translate-y-1 hover:bg-[#B28B20] hover:text-white hover:shadow-[0_14px_35px_rgba(212,160,23,0.25)] ${
-                    dark
-                      ? "bg-[#D4A017] text-white"
-                      : "bg-gold-700 text-black"
+                    dark ? "bg-[#D4A017] text-white" : "bg-gold-700 text-black"
                   }`}
                 >
                   <span className="relative z-10 flex items-center gap-2">
@@ -633,9 +631,7 @@ function Dashboard({ dark, setDark }) {
 
                     <div
                       className={`mt-6 border-t pt-5 ${
-                        dark
-                          ? "border-white/[0.06]"
-                          : "border-black/[0.06]"
+                        dark ? "border-white/[0.06]" : "border-black/[0.06]"
                       }`}
                     >
                       <div className="flex items-center justify-between">

@@ -12,18 +12,15 @@ const claimedRewardSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    amount: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
+    amountWei: { type: String, required: true },
+    amountFormatted: { type: String, default: "0" },
     claimedAt: {
       type: Date,
       default: Date.now,
     },
+    txHash: { type: String, default: null },
   },
   { _id: false },
 ); // No separate _id for subdocuments
-
 
 module.exports = claimedRewardSchema;
