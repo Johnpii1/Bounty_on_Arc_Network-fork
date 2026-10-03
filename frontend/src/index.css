@@ -57,6 +57,10 @@ body,
   background: #f3f1ec;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 html.dark,
 html.dark body,
 html.dark #root {
@@ -66,6 +70,8 @@ html.dark #root {
 body {
   margin: 0;
   overflow-x: hidden;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Shared application overlays keep dialogs visually consistent across routes. */
@@ -157,6 +163,10 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   .app-modal-overlay,
   .app-modal-panel,
   .skeleton-block::after {
