@@ -5,6 +5,7 @@ import {
   FiZap,
   FiShield,
   FiArrowRight,
+  FiArrowUp,
   FiGlobe,
   FiBriefcase,
 } from "react-icons/fi";
@@ -33,6 +34,7 @@ function LandingPage({ dark, setDark }) {
   });
 
   const [heroText, setHeroText] = useState(0);
+  const [showScrollToTop, setShowScrollToTop] = useState(false);
 
   const heroMessages = [
     "Web3",
@@ -57,6 +59,37 @@ function LandingPage({ dark, setDark }) {
 
     return () => clearInterval(interval);
   }, []);
+
+  // Reveal the shortcut only when a visitor reverses direction and scrolls up.
+  // Updating it in requestAnimationFrame keeps scrolling responsive on this long page.
+  useEffect(() => {
+    let previousScrollY = window.scrollY;
+    let animationFrame;
+
+    const updateScrollButton = () => {
+      const currentScrollY = window.scrollY;
+      setShowScrollToTop(currentScrollY < previousScrollY && currentScrollY > 480);
+      previousScrollY = currentScrollY;
+      animationFrame = undefined;
+    };
+
+    const handleScroll = () => {
+      if (!animationFrame) {
+        animationFrame = window.requestAnimationFrame(updateScrollButton);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (animationFrame) window.cancelAnimationFrame(animationFrame);
+    };
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   // FETCH FEATURED BOUNTIES AND STATS
   useEffect(() => {
@@ -684,6 +717,23 @@ function LandingPage({ dark, setDark }) {
       <div className="relative z-10">
         <Footer />
       </div>
+
+      <button
+        type="button"
+        onClick={scrollToTop}
+        aria-label="Scroll back to the top"
+        className={`fixed bottom-6 right-5 z-40 flex h-12 w-12 items-center justify-center rounded-full border shadow-lg transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 sm:bottom-8 sm:right-8 ${
+          showScrollToTop
+            ? "pointer-events-auto translate-y-0 opacity-100"
+            : "pointer-events-none translate-y-4 opacity-0"
+        } ${
+          dark
+            ? "border-[#D4AF37]/35 bg-[#161816]/95 text-[#D4AF37] shadow-black/30 hover:bg-[#D4AF37] hover:text-white"
+            : "border-[#D4AF37]/40 bg-white/95 text-[#9b7715] shadow-black/15 hover:bg-[#D4AF37] hover:text-white"
+        }`}
+      >
+        <FiArrowUp className="h-5 w-5" aria-hidden="true" />
+      </button>
 
       {/* =========================================
           FEATURED BOUNTY ANIMATIONS

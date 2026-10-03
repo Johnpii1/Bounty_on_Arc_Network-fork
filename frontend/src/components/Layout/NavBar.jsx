@@ -459,7 +459,7 @@ function NavBar() {
               </Link>
 
               {/* =================================================
-                  WHITE PAPER
+                  DOCUMENTATION
               ================================================== */}
 
               <Link
@@ -487,7 +487,7 @@ function NavBar() {
                       }
                     `}
                   >
-                    White Paper
+                    Documentation
                   </span>
 
                   <span
@@ -502,7 +502,7 @@ function NavBar() {
                       }
                     `}
                   >
-                    Learn how Happy Bounty works
+                    Read the Happy Bounty documentation
                   </span>
                 </div>
 

@@ -57,6 +57,11 @@ body,
   background: #f3f1ec;
 }
 
+html {
+  scroll-behavior: smooth;
+  overscroll-behavior-y: none;
+}
+
 html.dark,
 html.dark body,
 html.dark #root {
@@ -66,6 +71,7 @@ html.dark #root {
 body {
   margin: 0;
   overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Shared application overlays keep dialogs visually consistent across routes. */

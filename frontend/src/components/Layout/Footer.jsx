@@ -1,5 +1,6 @@
 
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   FaTwitter,
   FaDiscord,
@@ -202,27 +203,27 @@ function Footer() {
 
             <ul className="space-y-3 text-sm">
               <li>
-                <a
-                  href="/dashboard"
+                <Link
+                  to="/dashboard"
                   className={`group flex w-fit items-center gap-2 transition-all duration-200 hover:translate-x-1 hover:text-[#D4AF37] ${
                     dark ? "text-white/45" : "text-black/45"
                   }`}
                 >
                   <span className="h-px w-0 bg-[#D4AF37] transition-all duration-200 group-hover:w-3" />
                   Browse Bounties
-                </a>
+                </Link>
               </li>
 
               <li>
-                <a
-                  href="/dashboard"
+                <Link
+                  to="/dashboard"
                   className={`group flex w-fit items-center gap-2 transition-all duration-200 hover:translate-x-1 hover:text-[#D4AF37] ${
                     dark ? "text-white/45" : "text-black/45"
                   }`}
                 >
                   <span className="h-px w-0 bg-[#D4AF37] transition-all duration-200 group-hover:w-3" />
                   Categories
-                </a>
+                </Link>
               </li>
 
               <li>
@@ -266,27 +267,27 @@ function Footer() {
 
             <ul className="space-y-3 text-sm">
               <li>
-                <a
-                  href="#"
+                <Link
+                  to="/whitepaper"
                   className={`group flex w-fit items-center gap-2 transition-all duration-200 hover:translate-x-1 hover:text-[#D4AF37] ${
                     dark ? "text-white/45" : "text-black/45"
                   }`}
                 >
                   <span className="h-px w-0 bg-[#D4AF37] transition-all duration-200 group-hover:w-3" />
                   Documentation
-                </a>
+                </Link>
               </li>
 
               <li>
-                <a
-                  href="#"
+                <Link
+                  to="/faqs"
                   className={`group flex w-fit items-center gap-2 transition-all duration-200 hover:translate-x-1 hover:text-[#D4AF37] ${
                     dark ? "text-white/45" : "text-black/45"
                   }`}
                 >
                   <span className="h-px w-0 bg-[#D4AF37] transition-all duration-200 group-hover:w-3" />
-                  Blog
-                </a>
+                  FAQs
+                </Link>
               </li>
 
               <li>

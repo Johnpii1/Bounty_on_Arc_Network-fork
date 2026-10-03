@@ -6,7 +6,7 @@ function LoadingScreen({ onComplete }) {
   const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
-    const duration = 2200;
+    const duration = 1600;
     const start = performance.now();
 
     let animationFrame;
@@ -264,7 +264,7 @@ function LoadingScreen({ onComplete }) {
         {floatingCoins.map((coin, index) => (
           <div
             key={index}
-            className="absolute opacity-[0.11]"
+            className="absolute opacity-[0.11] will-change-transform"
             style={{
               left: coin.left,
               top: coin.top,
