@@ -28,10 +28,10 @@ const winnersSchema = new mongoose.Schema(
       type: [String], // Array of wallet addresses
       default: [],
     },
-    claimed: {
-      type: [String], // Array of wallet addresses
-      default: [],
-    },
+    // claimed: {
+    //   type: [String], // Array of wallet addresses
+    //   default: [],
+    // },
   },
   { _id: false },
 );
@@ -209,7 +209,6 @@ const bountySchema = new mongoose.Schema(
         message: "Percentages must sum to 100 and match winnersAllowed count",
       },
     },
-
     submissions: {
       type: submissionSchema,
       default: () => ({}),
@@ -218,6 +217,9 @@ const bountySchema = new mongoose.Schema(
       type: winnersSchema,
       default: () => ({}),
     },
+    distributionTxHash: { type: String, default: null },
+    distributedAt: { type: Date, default: null },
+    assignedCount: { type: Number, default: 0 },
   },
   {
     timestamps: false, // We're using custom createdAt
@@ -361,18 +363,18 @@ bountySchema.methods.removeSubmission = function (submissionId) {
 // };
 
 // Instance method: Claim reward
-bountySchema.methods.claimReward = function (walletAddress) {
-  if (!this.winners.assigned.includes(walletAddress)) {
-    throw new Error("Wallet address is not a winner");
-  }
+// bountySchema.methods.claimReward = function (walletAddress) {
+//   if (!this.winners.assigned.includes(walletAddress)) {
+//     throw new Error("Wallet address is not a winner");
+//   }
 
-  if (this.winners.claimed.includes(walletAddress)) {
-    throw new Error("Reward already claimed");
-  }
+//   if (this.winners.claimed.includes(walletAddress)) {
+//     throw new Error("Reward already claimed");
+//   }
 
-  this.winners.claimed.push(walletAddress);
-  return this.save();
-};
+//   this.winners.claimed.push(walletAddress);
+//   return this.save();
+// };
 
 // Instance method: cancel bounty
 bountySchema.methods.cancel = function () {

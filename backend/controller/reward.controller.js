@@ -112,6 +112,7 @@ const distributeRewards = async (req, res) => {
       blockchainId,
       chainId: chainIdNum,
       bountyContract,
+      bountyTitle: bounty.title,
       winnerAddress: w.winnerAddress,
       amount: w.amountWei,
       amountFormatted: w.amountFormatted,
@@ -132,35 +133,43 @@ const distributeRewards = async (req, res) => {
 
     // 🔥 STEP 5: update Bounty summary + mark distributed
     bounty.rewardsAssignedOnChain = true;
-    bounty.winners = {
-      assignedCount: winnerDetails.length,
-      assignedAt: new Date(),
-      distributionTxHash: txHash,
-    };
+    bounty.distributionTxHash = txHash;
+    bounty.distributedAt = new Date();
+    bounty.assignedCount = winnerDetails.length;
+    bounty.winners.assigned = winnerDetails.map((w) => w.winnerAddress);
     await bounty.save();
 
-    // 🔥 STEP 6: update user earnings (numeric-safe)
-    await Promise.all(
-      winnerDetails.map((w) =>
-        User.updateOne(
-          { walletAddress: w.winnerAddress },
-          {
-            $inc: { totalEarningsWei: w.amountWei }, // store wei as string/decimal
-            $set: { lastUpdated: new Date() },
-            $push: {
-              earnedFrom: {
-                bountyId: bounty._id,
-                bountyTitle: bounty.title,
-                amountWei: w.amountWei,
-                amountFormatted: w.amountFormatted,
-                earnedAt: new Date(),
-              },
-            },
-          },
-          { upsert: true },
-        ),
-      ),
-    );
+    // // 🔥 STEP 5: update Bounty summary + mark distributed
+    // bounty.rewardsAssignedOnChain = true;
+    // bounty.winners = {
+    //   assignedCount: winnerDetails.length,
+    //   assignedAt: new Date(),
+    //   distributionTxHash: txHash,
+    // };
+    // await bounty.save();
+
+    // // 🔥 STEP 6: update user earnings (numeric-safe)
+    // await Promise.all(
+    //   winnerDetails.map((w) =>
+    //     User.updateOne(
+    //       { walletAddress: w.winnerAddress },
+    //       {
+    //         $inc: { totalEarningsWei: w.amountWei }, // store wei as string/decimal
+    //         $set: { lastUpdated: new Date() },
+    //         $push: {
+    //           earnedFrom: {
+    //             bountyId: bounty._id,
+    //             bountyTitle: bounty.title,
+    //             amountWei: w.amountWei,
+    //             amountFormatted: w.amountFormatted,
+    //             earnedAt: new Date(),
+    //           },
+    //         },
+    //       },
+    //       { upsert: true },
+    //     ),
+    //   ),
+    // );
 
     return res.status(200).json({
       message: "Distribution synced from blockchain",
@@ -209,7 +218,7 @@ const getWinners = async (req, res) => {
       claimed,
       distributedAt: bounty.winners?.assignedAt || null,
       isDistributed: rewards.length > 0,
-      payoutType: bounty.winners?.payoutType || null,
+      payoutType: bounty.payoutType || null,
     });
   } catch (err) {
     console.error("Failed to fetch winners:", err);
@@ -328,21 +337,63 @@ const claimReward = async (req, res) => {
       // Someone else flipped it in between
       return res.status(400).json({ error: "Reward already claimed" });
     }
+    // 🔥 NEW: check whether every reward for this bounty has been claimed
+    const remaining = await Reward.countDocuments({
+      bountyId: id,
+      status: "assigned",
+    });
+
+    if (remaining === 0) {
+      await Bounty.updateOne(
+        { _id: id, lifecycleStatus: { $ne: "completed" } },
+        { $set: { lifecycleStatus: "completed" } },
+      );
+    }
 
     // Mirror into user's claimed history
+    // await User.updateOne(
+    //   { walletAddress: winnerAddress.toLowerCase() },
+    //   {
+    //     $push: {
+    //       claimedRewards: {
+    //         bountyId: id,
+    //         bountyTitle: updated.bountyTitle,
+    //         amountWei: updated.amount,
+    //         amountFormatted: updated.amountFormatted,
+    //         claimedAt: updated.claimedAt,
+    //         txHash,
+    //       },
+    //     },
+    //     $inc: { "stats.tasksCompleted": 1 },
+    //   },
+    //   { upsert: true },
+    // );
+
+    // Mirror into user's claimed history and increment total earnings
+    // NOTE: amountFormatted is a decimal string from formatEther.
+    // Number() is lossy for amounts below 1e-15 USDC. Our rewards are
+    // always >= 0.01 USDC, so this is safe. If sub-cent rewards are
+    // ever supported, store amounts as strings and sum on read.
+    const numericAmount = Number(updated.amountFormatted || "0");
+
     await User.updateOne(
       { walletAddress: winnerAddress.toLowerCase() },
       {
         $push: {
           claimedRewards: {
             bountyId: id,
-            bountyTitle: updated.bountyId?.title,
-            amountWei: updated.amount,
-            amountFormatted: updated.amountFormatted,
+            bountyTitle: updated.bountyTitle || "Untitled bounty",
+            amountWei: updated.amount, // ← was: amount
+            amountFormatted: updated.amountFormatted, // ← added
             claimedAt: updated.claimedAt,
             txHash,
           },
         },
+        $inc: {
+          totalEarnings: numericAmount, // ← dashboard reads this
+          "stats.tasksCompleted": 1,
+        },
+        $set: { lastLogin: new Date() },
       },
       { upsert: true },
     );
