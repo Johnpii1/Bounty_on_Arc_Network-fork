@@ -31,6 +31,8 @@ function Create() {
   const API_URL = import.meta.env.VITE_API_URL;
   const [currentStep, setCurrentStep] = useState(1);
   const [customTag, setCustomTag] = useState("");
+  const [percentageInput, setPercentageInput] = useState("");
+
   const totalSteps = 4;
 
   // ---------------------------------------------------
@@ -301,7 +303,6 @@ function Create() {
     }
 
     const total = percentageArray.reduce((sum, p) => sum + p, 0);
-
     if (total !== 100) {
       showToast.error("Percentages must sum to 100");
       return;
@@ -310,14 +311,37 @@ function Create() {
     setSelectedPayoutType("MULTI_PERCENTAGE");
     setWinnerCount(percentageArray.length);
     setShowPercentModal(false);
+    setPercentageInput(""); // ← clear after confirm
 
     showToast.success(
       `${percentageArray.length} winners selected with percentage split`,
     );
   };
+  // const handlePercentSplitConfirm = () => {
+  //   if (percentageArray.length === 0) {
+  //     showToast.error("Please select a preset or enter percentages");
+  //     return;
+  //   }
+
+  //   const total = percentageArray.reduce((sum, p) => sum + p, 0);
+
+  //   if (total !== 100) {
+  //     showToast.error("Percentages must sum to 100");
+  //     return;
+  //   }
+
+  //   setSelectedPayoutType("MULTI_PERCENTAGE");
+  //   setWinnerCount(percentageArray.length);
+  //   setShowPercentModal(false);
+
+  //   showToast.success(
+  //     `${percentageArray.length} winners selected with percentage split`,
+  //   );
+  // };
 
   const handlePresetSelect = (preset) => {
     setPercentageArray(preset);
+    setPercentageInput(preset.join(",")); // ← fill the input box
   };
 
   const isSelectedPreset = (preset) =>
@@ -608,6 +632,9 @@ function Create() {
   const themeBorderClass = dark ? "border-white/10" : "border-[#e7e3da]";
 
   const goldTextClass = dark ? "text-[#D4AF37]" : "text-[#b28b20]";
+  const selectedChoiceClass = dark
+    ? "bg-[#151715] border-white/10 text-[#D4AF37] hover:bg-[#1b1d1b]"
+    : "bg-[#171714] border-[#171714] text-[#d4af37] hover:bg-[#292922]";
 
   return (
     <div
@@ -1291,7 +1318,14 @@ function Create() {
                           </button>
 
                           <button
-                            onClick={() => setShowPercentModal(true)}
+                            onClick={() => {
+                              setShowPercentModal(true);
+                              if (percentageArray.length > 0) {
+                                setPercentageInput(percentageArray.join(","));
+                              } else {
+                                setPercentageInput("");
+                              }
+                            }}
                             className={`px-4 py-2.5 rounded-xl border text-sm font-medium transition hover:border-[#c49b2c] ${
                               dark
                                 ? "bg-[#111311] border-white/10 text-white hover:border-[#D4AF37]"
@@ -2134,6 +2168,28 @@ function Create() {
               <input
                 type="text"
                 placeholder="e.g., 40,30,20,10"
+                value={percentageInput}
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  setPercentageInput(raw);
+
+                  const values = raw
+                    .split(",")
+                    .map((v) => parseInt(v.trim(), 10));
+
+                  // Only commit to state if every parsed value is a valid number
+                  if (
+                    values.length > 0 &&
+                    values.every((v) => !Number.isNaN(v))
+                  ) {
+                    setPercentageArray(values);
+                  }
+                }}
+                className={inputClass}
+              />
+              {/* <input
+                type="text"
+                placeholder="e.g., 40,30,20,10"
                 onChange={(e) => {
                   const values = e.target.value
                     .split(",")
@@ -2144,12 +2200,16 @@ function Create() {
                   }
                 }}
                 className={inputClass}
-              />
+              /> */}
             </div>
 
             <div className="flex gap-3">
               <button
-                onClick={() => setShowPercentModal(false)}
+                onClick={() => {
+                  setShowPercentModal(false);
+                  setPercentageInput("");
+                }}
+                // onClick={() => setShowPercentModal(false)}
                 className={`flex-1 px-4 py-3 rounded-xl border font-semibold transition ${
                   dark
                     ? "bg-[#151715] border-white/10 text-white/75 hover:bg-[#1b1d1b]"
