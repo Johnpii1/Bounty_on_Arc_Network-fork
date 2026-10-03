@@ -54,7 +54,7 @@ const submit = async (req, res) => {
       submittedAt: new Date(),
     });
 
-    // 更新 bounty 的提交计数
+    // bounty
     await Bounty.findByIdAndUpdate(bountyId, {
       $inc: { "submissions.count": 1 },
       // $push: { "submissions.ids": submission._id },
@@ -87,7 +87,7 @@ const getUserSubmission = async (req, res) => {
   try {
     const submissions = await Submission.find({ user: wallet })
       .sort({ submittedAt: -1 })
-      .lean(); // lean() 返回普通对象，性能更好
+      .lean();
 
     const formatted = submissions.map((sub) => ({
       ...sub,

@@ -1,4 +1,3 @@
-
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
@@ -8,6 +7,7 @@ import { useAccount } from "wagmi";
 import {
   FiArrowUpRight,
   FiCalendar,
+  FiUsers,
   FiCheckCircle,
   FiClock,
   FiLayers,
@@ -92,8 +92,7 @@ const BountyCard = ({ bounty }) => {
   };
 
   const deadlineDate = new Date(bounty.deadline);
-  const sameYear =
-    deadlineDate.getFullYear() === new Date().getFullYear();
+  const sameYear = deadlineDate.getFullYear() === new Date().getFullYear();
 
   const deadline = deadlineDate.toLocaleDateString("en-US", {
     month: "short",
@@ -107,8 +106,7 @@ const BountyCard = ({ bounty }) => {
     bounty.token || "USDC"
   }`;
 
-  const description =
-    bounty.description || "No description provided";
+  const description = bounty.description || "No description provided";
 
   const handleEnroll = async (e) => {
     e.preventDefault();
@@ -120,18 +118,13 @@ const BountyCard = ({ bounty }) => {
 
     setIsEnrolling(true);
 
-    const loadingshowToast = showToast.loading(
-      "Enrolling in bounty..."
-    );
+    const loadingshowToast = showToast.loading("Enrolling in bounty...");
 
     try {
-      const response = await axios.post(
-        `${API_URL}/user/enrollment`,
-        {
-          bountyId: bounty._id,
-          user: address,
-        }
-      );
+      const response = await axios.post(`${API_URL}/user/enrollment`, {
+        bountyId: bounty._id,
+        user: address,
+      });
 
       if (response.status === 200 || response.status === 201) {
         showToast.success("Enrolled! Redirecting...", {
@@ -152,7 +145,7 @@ const BountyCard = ({ bounty }) => {
         {
           id: loadingshowToast,
           duration: 3000,
-        }
+        },
       );
     } finally {
       setIsEnrolling(false);
@@ -395,88 +388,34 @@ const BountyCard = ({ bounty }) => {
         </div>
 
         {/* REWARD + DEADLINE */}
-        <div
-          className="
-            my-5 grid grid-cols-2 gap-3
-            rounded-xl
-
-            border border-slate-200
-            dark:border-white/[0.08]
-
-            bg-[#fbfaf6]
-            dark:bg-[#20231f]
-
-            p-3
-          "
-        >
+        {/* in the REWARD + DEADLINE block */}
+        <div className="my-5 grid grid-cols-3 gap-3 rounded-xl ...">
           {/* REWARD */}
           <div className="min-w-0">
-            <p
-              className="
-                mb-1
-                text-[9px] font-semibold uppercase
-                tracking-[0.12em]
-
-                text-slate-400
-                dark:text-white/35
-              "
-            >
-              Reward
-            </p>
-
-            <p
-              className="
-                truncate
-                text-sm font-bold
-                tracking-[-0.01em]
-
-                text-slate-900
-                dark:text-white
-
-                sm:text-base
-              "
-              title={rewardDisplay}
-            >
-              {rewardDisplay}
-            </p>
+            <p className="...">Reward</p>
+            <p className="...">{rewardDisplay}</p>
           </div>
 
           {/* DEADLINE */}
-          <div
-            className="
-              min-w-0
-
-              border-l border-slate-200
-              dark:border-white/[0.08]
-
-              pl-3
-            "
-          >
-            <p
-              className="
-                mb-1 flex items-center gap-1
-
-                text-[9px] font-semibold uppercase
-                tracking-[0.12em]
-
-                text-slate-400
-                dark:text-white/35
-              "
-            >
+          <div className="min-w-0 border-l ...">
+            <p className="...">
               <FiCalendar size={10} />
               Deadline
             </p>
+            <p className="...">{deadline}</p>
+          </div>
 
-            <p
-              className="
-                truncate
-                text-sm font-semibold
-
-                text-slate-700
-                dark:text-white/70
-              "
-            >
-              {deadline}
+          {/* SUBMISSIONS */}
+          <div className="min-w-0 border-l ...">
+            <p className="...">
+              <FiUsers size={10} />
+              Submissions
+            </p>
+            <p className="truncate text-sm font-semibold text-slate-700 dark:text-white/70">
+              {bounty.submissions?.count ?? 0}
+              {bounty.submissions?.maxSubmissions
+                ? ` / ${bounty.submissions.maxSubmissions}`
+                : ""}
             </p>
           </div>
         </div>
@@ -574,9 +513,7 @@ const BountyCard = ({ bounty }) => {
                 "
               />
 
-              <span className="truncate">
-                Manage
-              </span>
+              <span className="truncate">Manage</span>
             </Link>
           ) : isEnrolled ? (
             /* ENROLLED */
@@ -621,9 +558,7 @@ const BountyCard = ({ bounty }) => {
                 "
               />
 
-              <span className="truncate">
-                Continue
-              </span>
+              <span className="truncate">Continue</span>
             </Link>
           ) : status === "active" ? (
             /* ACTIVE */
@@ -690,15 +625,11 @@ const BountyCard = ({ bounty }) => {
                     "
                   />
 
-                  <span className="truncate">
-                    Enrolling
-                  </span>
+                  <span className="truncate">Enrolling</span>
                 </span>
               ) : (
                 <span className="flex items-center justify-center gap-1.5">
-                  <span className="truncate">
-                    Start Task
-                  </span>
+                  <span className="truncate">Start Task</span>
 
                   <FiArrowUpRight
                     size={14}
@@ -757,15 +688,9 @@ const BountyCard = ({ bounty }) => {
               "
             >
               {status === "completed" ? (
-                <FiCheckCircle
-                  size={14}
-                  className="shrink-0"
-                />
+                <FiCheckCircle size={14} className="shrink-0" />
               ) : (
-                <FiClock
-                  size={14}
-                  className="shrink-0"
-                />
+                <FiClock size={14} className="shrink-0" />
               )}
 
               <span className="truncate">
