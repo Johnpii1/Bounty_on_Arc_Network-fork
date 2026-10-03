@@ -27,12 +27,13 @@ function Dashboard({ dark, setDark }) {
   const [bounties, setBounties] = useState([]);
   const [filter, setFilter] = useState("all");
   const [pagination, setPagination] = useState(null);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [stats, setStats] = useState({
     completed: 0,
     inProgress: 0,
     earnings: 0,
   });
+  const [enrolledBountyIds, setEnrolledBountyIds] = useState([]);
 
   const API_URL = import.meta.env.VITE_API_URL;
 
@@ -72,7 +73,7 @@ function Dashboard({ dark, setDark }) {
         inProgress: data.submissions?.pending || 0,
         earnings: data.user?.totalEarnings || 0,
       });
-      // setRewards(data.rewards || []);
+      setEnrolledBountyIds(data.enrolledBountyIds || []);
     } catch (err) {
       console.error("Error loading userInfo:", err);
       showToast.error("Couldn't fetch user info");
@@ -102,7 +103,7 @@ function Dashboard({ dark, setDark }) {
 
   const handleFilterChange = (status) => {
     setFilter(status);
-    setCurrentPage(0);
+    setCurrentPage(1);
   };
 
   const handleRefresh = async () => {
@@ -699,7 +700,11 @@ function Dashboard({ dark, setDark }) {
               <>
                 <div className="grid grid-cols-1 items-stretch gap-5 md:grid-cols-2">
                   {bounties.map((bounty) => (
-                    <BountyCard key={bounty._id} bounty={bounty} />
+                    <BountyCard
+                      key={bounty._id}
+                      bounty={bounty}
+                      enrolledBountyIds={enrolledBountyIds}
+                    />
                   ))}
                 </div>
 
@@ -719,9 +724,9 @@ function Dashboard({ dark, setDark }) {
                       <button
                         type="button"
                         onClick={() =>
-                          setCurrentPage((prev) => Math.max(0, prev - 1))
+                          setCurrentPage((prev) => Math.max(1, prev - 1))
                         }
-                        disabled={currentPage === 0}
+                        disabled={currentPage === 1}
                         aria-label="Previous page"
                         className={`flex h-9 w-9 items-center justify-center rounded-lg transition-all duration-200 hover:bg-[#D4A017] hover:text-white disabled:cursor-not-allowed disabled:opacity-20 disabled:hover:bg-transparent ${
                           dark
@@ -737,9 +742,7 @@ function Dashboard({ dark, setDark }) {
                           dark ? "text-white/45" : "text-black/45"
                         }`}
                       >
-                        <span className="text-[#D4A017]">
-                          {currentPage + 1}
-                        </span>
+                        <span className="text-[#D4A017]">{currentPage}</span>
 
                         <span
                           className={`mx-2 ${
@@ -756,10 +759,10 @@ function Dashboard({ dark, setDark }) {
                         type="button"
                         onClick={() =>
                           setCurrentPage((prev) =>
-                            Math.min(pagination.pages - 1, prev + 1),
+                            Math.min(pagination.pages, prev + 1),
                           )
                         }
-                        disabled={currentPage + 1 >= pagination.pages}
+                        disabled={currentPage >= pagination.pages}
                         aria-label="Next page"
                         className={`flex h-9 w-9 items-center justify-center rounded-lg transition-all duration-200 hover:bg-[#D4A017] hover:text-white disabled:cursor-not-allowed disabled:opacity-20 disabled:hover:bg-transparent ${
                           dark
