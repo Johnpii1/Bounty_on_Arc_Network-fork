@@ -86,8 +86,7 @@ function LandingPage({ dark, setDark }) {
           },
         });
 
-        const totalBounties =
-          allBounties.data.pagination?.total || 0;
+        const totalBounties = allBounties.data.pagination?.total || 0;
 
         setStats({
           totalBounties,
@@ -109,15 +108,9 @@ function LandingPage({ dark, setDark }) {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.classList.add(
-              "opacity-100",
-              "translate-y-0"
-            );
+            entry.target.classList.add("opacity-100", "translate-y-0");
 
-            entry.target.classList.remove(
-              "opacity-0",
-              "translate-y-10"
-            );
+            entry.target.classList.remove("opacity-0", "translate-y-10");
 
             observer.unobserve(entry.target);
           }
@@ -125,7 +118,7 @@ function LandingPage({ dark, setDark }) {
       },
       {
         threshold: 0.3,
-      }
+      },
     );
 
     if (card1Ref.current) observer.observe(card1Ref.current);
@@ -146,11 +139,7 @@ function LandingPage({ dark, setDark }) {
         relative z-10 flex min-h-screen flex-col
         overflow-x-hidden
         transition-colors duration-500
-        ${
-          dark
-            ? "bg-[#080908] text-white"
-            : "bg-[#f6f5ef] text-[#111111]"
-        }
+        ${dark ? "bg-[#080908] text-white" : "bg-[#f6f5ef] text-[#111111]"}
       `}
     >
       {/* =========================================
@@ -291,9 +280,8 @@ function LandingPage({ dark, setDark }) {
                 ${dark ? "text-white/50" : "text-[#77736b]"}
               `}
             >
-              Discover active opportunities, contribute your skills,
-              and work toward earning rewards through the Arc-powered
-              bounty experience.
+              Discover active opportunities, contribute your skills, and work
+              toward earning rewards through the Arc-powered bounty experience.
             </p>
           </div>
 
@@ -372,11 +360,7 @@ function LandingPage({ dark, setDark }) {
                     animate-[featuredLoading_1.8s_ease-in-out_infinite]
                     bg-gradient-to-r
                     from-transparent
-                    ${
-                      dark
-                        ? "via-white/[0.04]"
-                        : "via-white/60"
-                    }
+                    ${dark ? "via-white/[0.04]" : "via-white/60"}
                     to-transparent
                   `}
                 />
@@ -510,8 +494,8 @@ function LandingPage({ dark, setDark }) {
                   ${dark ? "text-white/45" : "text-[#77736b]"}
                 `}
               >
-                There are no featured opportunities available right now.
-                New bounties will appear here as they are posted.
+                There are no featured opportunities available right now. New
+                bounties will appear here as they are posted.
               </p>
 
               <Link
@@ -543,7 +527,6 @@ function LandingPage({ dark, setDark }) {
                 `}
               >
                 Browse bounties
-
                 <FiArrowRight className="h-4 w-4" />
               </Link>
             </div>
@@ -611,11 +594,7 @@ function LandingPage({ dark, setDark }) {
             items-center justify-between gap-3
             border-t pt-5
             transition-colors duration-500
-            ${
-              dark
-                ? "border-white/[0.07]"
-                : "border-black/[0.06]"
-            }
+            ${dark ? "border-white/[0.07]" : "border-black/[0.06]"}
           `}
         >
           <div className="flex items-center gap-2">
@@ -651,6 +630,11 @@ function LandingPage({ dark, setDark }) {
       </section>
 
       {/* =========================================
+          LIVE TICKER
+      ========================================== */}
+      <LiveTricker />
+
+      {/* =========================================
           WHY FRESH BOUNTY
       ========================================== */}
       <div>
@@ -670,6 +654,11 @@ function LandingPage({ dark, setDark }) {
       <div>
         <BuiltForWeb3 />
       </div>
+
+      {/* =========================================
+          LIVE TICKER
+      ========================================== */}
+      <LiveTricker />
 
       {/* =========================================
           FINAL CTA

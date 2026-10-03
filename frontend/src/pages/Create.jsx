@@ -253,6 +253,23 @@ function Create() {
           return false;
         }
 
+         // NEW: end date must be at least one day after start date
+  const start = new Date(bountyData.startDate);
+  const end = new Date(bountyData.deadline);
+
+  // Strip time so we compare calendar days only
+  start.setHours(0, 0, 0, 0);
+  end.setHours(0, 0, 0, 0);
+
+  const diffDays = (end - start) / (1000 * 60 * 60 * 24);
+
+  if (diffDays < 1) {
+    showToast.error(
+      "End date must be at least one day after the start date",
+    );
+    return false;
+  }
+
         const urlErr = isValidUrl(bountyData.originLink);
 
         if (urlErr) {
@@ -319,6 +336,10 @@ function Create() {
   const handlePresetSelect = (preset) => {
     setPercentageArray(preset);
   };
+
+  const isSelectedPreset = (preset) =>
+    percentageArray.length === preset.length &&
+    percentageArray.every((percentage, index) => percentage === preset[index]);
 
   // ---------------------------------------------------
   // FEES
@@ -557,13 +578,13 @@ function Create() {
   // THEME CLASSES
   // ---------------------------------------------------
 
-  const inputClass = `w-full rounded-xl px-4 py-3 outline-none transition focus:ring-2 focus:ring-[#d4af37]/10 ${
+  const inputClass = `w-full rounded-xl  px-4 py-3 outline-none transition focus:ring-2 focus:ring-[#d4af37]/10 ${
     dark
       ? "bg-[#111311] border border-white/10 text-white placeholder:text-white/35 focus:border-[#D4AF37]"
       : "bg-white border border-[#ddd9ce] text-[#171714] placeholder:text-[#99958a] focus:border-[#c49b2c]"
   }`;
 
-  const selectClass = `w-full rounded-xl px-4 py-3 outline-none transition focus:ring-2 focus:ring-[#d4af37]/10 ${
+  const selectClass = `w-full rounded-xl px-4 py-3 cursor-pointer outline-none transition focus:ring-2 focus:ring-[#d4af37]/10 ${
     dark
       ? "bg-[#111311] border border-white/10 text-white focus:border-[#D4AF37]"
       : "bg-white border border-[#ddd9ce] text-[#171714] focus:border-[#c49b2c]"
@@ -806,11 +827,10 @@ function Create() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
                       <label
-                        className={`block text-xs font-semibold uppercase tracking-wider mb-2.5 ${labelClass}`}
+                        className={`block text-xs font-semibold uppercase tracking-wider  mb-2.5 ${labelClass}`}
                       >
                         Blockchain Network
                       </label>
-
                       <select
                         onChange={handleChainChange}
                         value={bountyData.network}
@@ -840,7 +860,7 @@ function Create() {
                           updateBountyData("tags", []);
                           setCustomTag("");
                         }}
-                        className={selectClass}
+                        className={`${selectClass} cursor-pointer`}
                       >
                         <option value="">Select Category</option>
 
@@ -1995,7 +2015,7 @@ function Create() {
 
               <button
                 onClick={handleEqualSplitConfirm}
-                className={`flex-1 px-4 py-3 rounded-xl border text-[#d4af37] font-semibold hover:bg-[#292922] transition ${darkButtonClass}`}
+                className={`cursor-pointer flex-1 px-4 py-3 rounded-xl border font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37]/50 ${selectedChoiceClass}`}
               >
                 Confirm
               </button>
@@ -2158,7 +2178,7 @@ function Create() {
 
               <button
                 onClick={handlePercentSplitConfirm}
-                className={`flex-1 px-4 py-3 rounded-xl border text-[#d4af37] font-semibold hover:bg-[#292922] transition ${darkButtonClass}`}
+                className={`cursor-pointer flex-1 px-4 py-3 rounded-xl border font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37]/50 ${selectedChoiceClass}`}
               >
                 Confirm
               </button>
