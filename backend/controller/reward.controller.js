@@ -17,12 +17,24 @@ const isAddress = (a) => typeof a === "string" && /^0x[a-fA-F0-9]{40}$/.test(a);
 const distributeRewards = async (req, res) => {
   const { id } = req.params;
   const { txHash, blockchainId, chainId, bountyContract } = req.body;
-  console.log("Distribute rewards request:", {
+  console.log("DISTRIBUTE DEBUG:", {
     id,
     txHash,
     blockchainId,
     chainId,
     bountyContract,
+    types: {
+      txHash: typeof txHash,
+      blockchainId: typeof blockchainId,
+      chainId: typeof chainId,
+      bountyContract: typeof bountyContract,
+    },
+    falsy: {
+      txHash: !txHash,
+      blockchainId: !blockchainId,
+      chainId: !chainId,
+      bountyContract: !bountyContract,
+    },
   });
 
   if (!isValidId(id)) {
