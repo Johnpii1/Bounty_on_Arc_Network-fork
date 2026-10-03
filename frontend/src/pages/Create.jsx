@@ -43,9 +43,7 @@ function Create() {
 
   useEffect(() => {
     const observer = new MutationObserver(() => {
-      setDark(
-        document.documentElement.classList.contains("dark"),
-      );
+      setDark(document.documentElement.classList.contains("dark"));
     });
 
     observer.observe(document.documentElement, {
@@ -78,8 +76,7 @@ function Create() {
 
   // Multi-winner state
   const [multipleWinner, setMultipleWinner] = useState(false);
-  const [selectedPayoutType, setSelectedPayoutType] =
-    useState("MULTI_EQUAL");
+  const [selectedPayoutType, setSelectedPayoutType] = useState("MULTI_EQUAL");
   const [winnerCount, setWinnerCount] = useState(2);
   const [percentageArray, setPercentageArray] = useState([]);
 
@@ -163,10 +160,8 @@ function Create() {
 
     const stillValid = availableTokens.some(
       (t) =>
-        t.key.toUpperCase() ===
-          (bountyData.token || "").toUpperCase() ||
-        t.label.toUpperCase() ===
-          (bountyData.token || "").toUpperCase(),
+        t.key.toUpperCase() === (bountyData.token || "").toUpperCase() ||
+        t.label.toUpperCase() === (bountyData.token || "").toUpperCase(),
     );
 
     if (!stillValid) {
@@ -226,18 +221,30 @@ function Create() {
           return false;
         }
 
-        if (
-          !bountyData.description ||
-          bountyData.description.length < 20
-        ) {
-          showToast.error(
-            "Description must be at least 20 characters",
-          );
+        if (!bountyData.description || bountyData.description.length < 20) {
+          showToast.error("Description must be at least 20 characters");
           return false;
         }
 
         if (!bountyData.tags || bountyData.tags.length === 0) {
           showToast.error("Please select at least one tag");
+          return false;
+        }
+
+        // NEW: end date must be at least one day after start date
+        const start = new Date(bountyData.startDate);
+        const end = new Date(bountyData.deadline);
+
+        // Strip time so we compare calendar days only
+        start.setHours(0, 0, 0, 0);
+        end.setHours(0, 0, 0, 0);
+
+        const diffDays = (end - start) / (1000 * 60 * 60 * 24);
+
+        if (diffDays < 1) {
+          showToast.error(
+            "End date must be at least one day after the start date",
+          );
           return false;
         }
 
@@ -284,23 +291,16 @@ function Create() {
     setPercentageArray([]);
     setShowEqualModal(false);
 
-    showToast.success(
-      `${count} winners selected for equal split`,
-    );
+    showToast.success(`${count} winners selected for equal split`);
   };
 
   const handlePercentSplitConfirm = () => {
     if (percentageArray.length === 0) {
-      showToast.error(
-        "Please select a preset or enter percentages",
-      );
+      showToast.error("Please select a preset or enter percentages");
       return;
     }
 
-    const total = percentageArray.reduce(
-      (sum, p) => sum + p,
-      0,
-    );
+    const total = percentageArray.reduce((sum, p) => sum + p, 0);
 
     if (total !== 100) {
       showToast.error("Percentages must sum to 100");
@@ -411,6 +411,11 @@ function Create() {
   const handleFinalSubmit = async () => {
     if (!validateStep(3)) return;
 
+    if (!validateStep(2)) {
+      setCurrentStep(2);
+      return;
+    }
+
     const urlErr = isValidUrl(bountyData.originLink);
 
     if (urlErr) {
@@ -433,15 +438,12 @@ function Create() {
       return;
     }
 
-    const contractAddress =
-      CONTRACT_ADDRESSES[selectedChainId]?.bounty;
+    const contractAddress = CONTRACT_ADDRESSES[selectedChainId]?.bounty;
 
     if (!contractAddress || contractAddress === "Loading...") {
       showToast.error(
         `Contract not deployed on ${
-          supportedChains.find(
-            (c) => c.id === selectedChainId,
-          )?.name
+          supportedChains.find((c) => c.id === selectedChainId)?.name
         }.`,
       );
 
@@ -451,9 +453,7 @@ function Create() {
     if (currentChainId !== selectedChainId) {
       showToast.loading(
         `Switching to ${
-          supportedChains.find(
-            (c) => c.id === selectedChainId,
-          )?.name
+          supportedChains.find((c) => c.id === selectedChainId)?.name
         }...`,
       );
 
@@ -461,9 +461,7 @@ function Create() {
         switchChain({ chainId: selectedChainId });
         showToast.success("Network switched!");
       } catch (err) {
-        showToast.error(
-          "Failed to switch network. Please switch manually.",
-        );
+        showToast.error("Failed to switch network. Please switch manually.");
 
         return;
       }
@@ -471,21 +469,16 @@ function Create() {
 
     console.log("chain is correct");
 
-    const finalWinnersAllowed = multipleWinner
-      ? winnerCount
-      : 1;
+    const finalWinnersAllowed = multipleWinner ? winnerCount : 1;
 
-    const finalPayoutType = multipleWinner
-      ? selectedPayoutType
-      : "SINGLE";
+    const finalPayoutType = multipleWinner ? selectedPayoutType : "SINGLE";
 
     console.log(
       `Final payout type: ${finalPayoutType}, winners allowed: ${finalWinnersAllowed}`,
     );
 
     const finalPercentages =
-      multipleWinner &&
-      selectedPayoutType === "MULTI_PERCENTAGE"
+      multipleWinner && selectedPayoutType === "MULTI_PERCENTAGE"
         ? percentageArray
         : [];
 
@@ -546,9 +539,7 @@ function Create() {
       console.log("posting sucess");
 
       if (saveResponse.status === 201) {
-        showToast.success(
-          "Bounty created on-chain and saved!",
-        );
+        showToast.success("Bounty created on-chain and saved!");
 
         navigate("/dashboard");
       } else {
@@ -560,8 +551,7 @@ function Create() {
     }
   };
 
-  const isProcessing =
-    isContractPending || isConfirming;
+  const isProcessing = isContractPending || isConfirming;
 
   // ---------------------------------------------------
   // THEME CLASSES
@@ -585,17 +575,11 @@ function Create() {
       : "bg-white border-[#dedbd1]"
   }`;
 
-  const labelClass = dark
-    ? "text-white/65"
-    : "text-[#6f6a60]";
+  const labelClass = dark ? "text-white/65" : "text-[#6f6a60]";
 
-  const mutedClass = dark
-    ? "text-white/55"
-    : "text-[#777267]";
+  const mutedClass = dark ? "text-white/55" : "text-[#777267]";
 
-  const softMutedClass = dark
-    ? "text-white/45"
-    : "text-[#858075]";
+  const softMutedClass = dark ? "text-white/45" : "text-[#858075]";
 
   const iconBoxClass = dark
     ? "bg-[#D4AF37]/10 border border-[#D4AF37]/20 text-[#D4AF37]"
@@ -617,20 +601,14 @@ function Create() {
     ? "bg-[#111311] border-white/10 text-white/70"
     : "bg-white border-[#d8d3c6] text-[#625e55]";
 
-  const themeBorderClass = dark
-    ? "border-white/10"
-    : "border-[#e7e3da]";
+  const themeBorderClass = dark ? "border-white/10" : "border-[#e7e3da]";
 
-  const goldTextClass = dark
-    ? "text-[#D4AF37]"
-    : "text-[#b28b20]";
+  const goldTextClass = dark ? "text-[#D4AF37]" : "text-[#b28b20]";
 
   return (
     <div
       className={`min-h-screen flex flex-col transition-colors duration-300 ${
-        dark
-          ? "bg-[#080908] text-white"
-          : "bg-[#f7f6f0] text-[#171714]"
+        dark ? "bg-[#080908] text-white" : "bg-[#f7f6f0] text-[#171714]"
       }`}
       style={{
         backgroundImage: dark
@@ -649,7 +627,6 @@ function Create() {
     >
       <main className="flex-grow pt-28 pb-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-
           {/* Back Button */}
           <div className="max-w-4xl mx-auto mb-8">
             <Link
@@ -702,8 +679,8 @@ function Create() {
                     dark ? "text-white/60" : "text-[#777267]"
                   }`}
                 >
-                  Define the work, set the reward, and launch your
-                  on-chain bounty.
+                  Define the work, set the reward, and launch your on-chain
+                  bounty.
                 </p>
               </div>
 
@@ -735,14 +712,8 @@ function Create() {
                 } transition-all duration-500`}
                 style={{
                   width: `calc(${
-                    ((currentStep - 1) /
-                      (totalSteps - 1)) *
-                    100
-                  }% - ${
-                    ((currentStep - 1) /
-                      (totalSteps - 1)) *
-                    48
-                  }px)`,
+                    ((currentStep - 1) / (totalSteps - 1)) * 100
+                  }% - ${((currentStep - 1) / (totalSteps - 1)) * 48}px)`,
                 }}
               />
 
@@ -765,11 +736,7 @@ function Create() {
                               : "bg-[#f7f6f0] border-[#d8d4c8] text-[#989286]"
                       }`}
                     >
-                      {step < currentStep ? (
-                        <FiCheck size={17} />
-                      ) : (
-                        step
-                      )}
+                      {step < currentStep ? <FiCheck size={17} /> : step}
                     </div>
 
                     <div className="mt-2.5 text-center">
@@ -812,7 +779,6 @@ function Create() {
 
           {/* Main Card */}
           <div className="w-full max-w-4xl mx-auto">
-
             {/* STEP 1 */}
             {currentStep === 1 && (
               <div className={cardClass}>
@@ -827,9 +793,7 @@ function Create() {
                     </div>
 
                     <div>
-                      <h2 className="text-xl font-bold">
-                        Choose Network
-                      </h2>
+                      <h2 className="text-xl font-bold">Choose Network</h2>
 
                       <p
                         className={`text-sm mt-1 ${dark ? "text-white/55" : "text-[#817b70]"}`}
@@ -852,15 +816,10 @@ function Create() {
                         value={bountyData.network}
                         className={selectClass}
                       >
-                        <option value="">
-                          Select Network
-                        </option>
+                        <option value="">Select Network</option>
 
                         {supportedChains.map((chain) => (
-                          <option
-                            key={chain.id}
-                            value={chain.id}
-                          >
+                          <option key={chain.id} value={chain.id}>
                             {chain.name}
                           </option>
                         ))}
@@ -877,33 +836,23 @@ function Create() {
                       <select
                         value={bountyData.category}
                         onChange={(e) => {
-                          updateBountyData(
-                            "category",
-                            e.target.value,
-                          );
+                          updateBountyData("category", e.target.value);
                           updateBountyData("tags", []);
                           setCustomTag("");
                         }}
                         className={selectClass}
                       >
-                        <option value="">
-                          Select Category
-                        </option>
+                        <option value="">Select Category</option>
 
-                        {BOUNTY_CATEGORIES.map(
-                          ({ group, values }) => (
-                            <optgroup
-                              key={group}
-                              label={group}
-                            >
-                              {values.map((v) => (
-                                <option key={v} value={v}>
-                                  {v}
-                                </option>
-                              ))}
-                            </optgroup>
-                          ),
-                        )}
+                        {BOUNTY_CATEGORIES.map(({ group, values }) => (
+                          <optgroup key={group} label={group}>
+                            {values.map((v) => (
+                              <option key={v} value={v}>
+                                {v}
+                              </option>
+                            ))}
+                          </optgroup>
+                        ))}
                       </select>
                     </div>
                   </div>
@@ -911,15 +860,11 @@ function Create() {
                   <div
                     className={`mt-7 rounded-2xl border p-4 flex items-start gap-3 ${softPanelClass}`}
                   >
-                    <FiShield
-                      className={`${goldTextClass} mt-0.5 shrink-0`}
-                    />
+                    <FiShield className={`${goldTextClass} mt-0.5 shrink-0`} />
 
-                    <p
-                      className={`text-xs leading-relaxed ${mutedClass}`}
-                    >
-                      Your selected network determines where the
-                      bounty contract transaction will be executed.
+                    <p className={`text-xs leading-relaxed ${mutedClass}`}>
+                      Your selected network determines where the bounty contract
+                      transaction will be executed.
                     </p>
                   </div>
                 </div>
@@ -940,43 +885,32 @@ function Create() {
                     </div>
 
                     <div>
-                      <h2 className="text-xl font-bold">
-                        Task Details
-                      </h2>
+                      <h2 className="text-xl font-bold">Task Details</h2>
 
                       <p
                         className={`text-sm mt-1 ${
-                          dark
-                            ? "text-white/55"
-                            : "text-[#817b70]"
+                          dark ? "text-white/55" : "text-[#817b70]"
                         }`}
                       >
-                        Give contributors everything they need to
-                        understand the work.
+                        Give contributors everything they need to understand the
+                        work.
                       </p>
                     </div>
                   </div>
 
                   <div className="space-y-6">
-
                     {/* Title */}
                     <div>
                       <label
                         className={`block text-xs font-semibold uppercase tracking-wider mb-2.5 ${labelClass}`}
                       >
-                        Title{" "}
-                        <span className={goldTextClass}>
-                          *
-                        </span>
+                        Title <span className={goldTextClass}>*</span>
                       </label>
 
                       <input
                         value={bountyData.title}
                         onChange={(e) =>
-                          updateBountyData(
-                            "title",
-                            e.target.value,
-                          )
+                          updateBountyData("title", e.target.value)
                         }
                         className={inputClass}
                         placeholder="e.g., Build a DeFi dashboard"
@@ -988,19 +922,13 @@ function Create() {
                       <label
                         className={`block text-xs font-semibold uppercase tracking-wider mb-2.5 ${labelClass}`}
                       >
-                        Description{" "}
-                        <span className={goldTextClass}>
-                          *
-                        </span>
+                        Description <span className={goldTextClass}>*</span>
                       </label>
 
                       <textarea
                         value={bountyData.description}
                         onChange={(e) =>
-                          updateBountyData(
-                            "description",
-                            e.target.value,
-                          )
+                          updateBountyData("description", e.target.value)
                         }
                         className={`${inputClass} h-40 resize-none`}
                         placeholder="Describe the task, requirements, deliverables, and expectations..."
@@ -1013,17 +941,12 @@ function Create() {
                         <label
                           className={`block text-xs font-semibold uppercase tracking-wider ${labelClass}`}
                         >
-                          Tags{" "}
-                          <span className={goldTextClass}>
-                            *
-                          </span>
+                          Tags <span className={goldTextClass}>*</span>
                         </label>
 
                         <span
                           className={`text-xs ${
-                            dark
-                              ? "text-white/45"
-                              : "text-[#8b8579]"
+                            dark ? "text-white/45" : "text-[#8b8579]"
                           }`}
                         >
                           {bountyData.tags.length} / 5 selected
@@ -1033,32 +956,25 @@ function Create() {
                       {!bountyData.category ? (
                         <p
                           className={`text-xs italic ${
-                            dark
-                              ? "text-white/40"
-                              : "text-[#8b8579]"
+                            dark ? "text-white/40" : "text-[#8b8579]"
                           }`}
                         >
-                          Select a category first to see related
-                          tags.
+                          Select a category first to see related tags.
                         </p>
                       ) : (
                         <>
                           <div className="flex flex-wrap gap-2">
                             {(
-                              TAGS_BY_CATEGORY[
-                                bountyData.category
-                              ] || DEFAULT_TAGS
+                              TAGS_BY_CATEGORY[bountyData.category] ||
+                              DEFAULT_TAGS
                             ).map((tag) => {
-                              const selected =
-                                bountyData.tags.includes(tag);
+                              const selected = bountyData.tags.includes(tag);
 
                               return (
                                 <button
                                   key={tag}
                                   type="button"
-                                  onClick={() =>
-                                    toggleTag(tag)
-                                  }
+                                  onClick={() => toggleTag(tag)}
                                   className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${
                                     selected
                                       ? dark
@@ -1079,9 +995,7 @@ function Create() {
                             <div className="mt-4">
                               <label
                                 className={`block text-xs mb-1.5 ${
-                                  dark
-                                    ? "text-white/60"
-                                    : "text-[#6f6a60]"
+                                  dark ? "text-white/60" : "text-[#6f6a60]"
                                 }`}
                               >
                                 Add your own tags
@@ -1091,11 +1005,7 @@ function Create() {
                                 <input
                                   type="text"
                                   value={customTag}
-                                  onChange={(e) =>
-                                    setCustomTag(
-                                      e.target.value,
-                                    )
-                                  }
+                                  onChange={(e) => setCustomTag(e.target.value)}
                                   onKeyDown={(e) => {
                                     if (e.key === "Enter") {
                                       e.preventDefault();
@@ -1126,22 +1036,17 @@ function Create() {
 
                               <p
                                 className={`mt-1 text-[10px] ${
-                                  dark
-                                    ? "text-white/40"
-                                    : "text-[#99958a]"
+                                  dark ? "text-white/40" : "text-[#99958a]"
                                 }`}
                               >
-                                Press Enter or click Add. Max 5
-                                tags total.
+                                Press Enter or click Add. Max 5 tags total.
                               </p>
                             </div>
                           )}
 
                           {bountyData.tags.length > 0 && (
                             <div className="mt-4">
-                              <p
-                                className={`text-xs mb-2 ${labelClass}`}
-                              >
+                              <p className={`text-xs mb-2 ${labelClass}`}>
                                 Selected:
                               </p>
 
@@ -1159,9 +1064,7 @@ function Create() {
 
                                     <button
                                       type="button"
-                                      onClick={() =>
-                                        removeTag(tag)
-                                      }
+                                      onClick={() => removeTag(tag)}
                                       aria-label={`Remove ${tag}`}
                                       className={`transition ${
                                         dark
@@ -1180,9 +1083,7 @@ function Create() {
                           {bountyData.tags.length === 0 && (
                             <p
                               className={`mt-2 text-xs ${
-                                dark
-                                  ? "text-white/40"
-                                  : "text-[#8b8579]"
+                                dark ? "text-white/40" : "text-[#8b8579]"
                               }`}
                             >
                               Pick at least one tag.
@@ -1198,20 +1099,15 @@ function Create() {
                         <label
                           className={`block text-xs font-semibold uppercase tracking-wider mb-2.5 ${labelClass}`}
                         >
-                          Start Date{" "}
-                          <span className={goldTextClass}>
-                            *
-                          </span>
+                          Start Date <span className={goldTextClass}>*</span>
                         </label>
 
                         <input
                           type="date"
                           value={bountyData.startDate}
+                          min={new Date().toISOString().split("T")[0]} // can't pick past start
                           onChange={(e) =>
-                            updateBountyData(
-                              "startDate",
-                              e.target.value,
-                            )
+                            updateBountyData("startDate", e.target.value)
                           }
                           className={inputClass}
                         />
@@ -1221,20 +1117,24 @@ function Create() {
                         <label
                           className={`block text-xs font-semibold uppercase tracking-wider mb-2.5 ${labelClass}`}
                         >
-                          End Date{" "}
-                          <span className={goldTextClass}>
-                            *
-                          </span>
+                          End Date <span className={goldTextClass}>*</span>
                         </label>
 
                         <input
                           type="date"
                           value={bountyData.deadline}
+                          min={
+                            bountyData.startDate
+                              ? new Date(
+                                  new Date(bountyData.startDate).getTime() +
+                                    24 * 60 * 60 * 1000,
+                                )
+                                  .toISOString()
+                                  .split("T")[0]
+                              : undefined
+                          }
                           onChange={(e) =>
-                            updateBountyData(
-                              "deadline",
-                              e.target.value,
-                            )
+                            updateBountyData("deadline", e.target.value)
                           }
                           className={inputClass}
                         />
@@ -1252,10 +1152,7 @@ function Create() {
                       <input
                         value={bountyData.originLink}
                         onChange={(e) =>
-                          updateBountyData(
-                            "originLink",
-                            e.target.value,
-                          )
+                          updateBountyData("originLink", e.target.value)
                         }
                         className={`${inputClass} ${
                           originLinkError
@@ -1290,29 +1187,21 @@ function Create() {
                     </div>
 
                     <div>
-                      <h2 className="text-xl font-bold">
-                        Reward Information
-                      </h2>
+                      <h2 className="text-xl font-bold">Reward Information</h2>
 
                       <p
                         className={`text-sm mt-1 ${
-                          dark
-                            ? "text-white/55"
-                            : "text-[#817b70]"
+                          dark ? "text-white/55" : "text-[#817b70]"
                         }`}
                       >
-                        Configure how contributors will receive
-                        the bounty.
+                        Configure how contributors will receive the bounty.
                       </p>
                     </div>
                   </div>
 
                   <div className="space-y-6">
-
                     {/* Self Fund */}
-                    <div
-                      className={`rounded-2xl border p-5 ${softPanelClass}`}
-                    >
+                    <div className={`rounded-2xl border p-5 ${softPanelClass}`}>
                       <div className="flex items-start gap-3">
                         <FiShield
                           className={`${goldTextClass} mt-0.5 shrink-0`}
@@ -1321,9 +1210,7 @@ function Create() {
                         <div>
                           <p
                             className={`text-sm font-semibold ${
-                              dark
-                                ? "text-white"
-                                : "text-[#25231e]"
+                              dark ? "text-white" : "text-[#25231e]"
                             }`}
                           >
                             Self-fund
@@ -1332,9 +1219,9 @@ function Create() {
                           <p
                             className={`text-xs mt-1.5 leading-relaxed ${mutedClass}`}
                           >
-                            You use your own money to create the task.
-                            You will be responsible for providing the
-                            reward money to the winner(s).
+                            You use your own money to create the task. You will
+                            be responsible for providing the reward money to the
+                            winner(s).
                           </p>
                         </div>
                       </div>
@@ -1361,11 +1248,8 @@ function Create() {
                               Multiple winners
                             </h3>
 
-                            <p
-                              className={`text-xs mt-1 ${softMutedClass}`}
-                            >
-                              Allow multiple participants to share
-                              the reward
+                            <p className={`text-xs mt-1 ${softMutedClass}`}>
+                              Allow multiple participants to share the reward
                             </p>
                           </div>
                         </div>
@@ -1375,11 +1259,7 @@ function Create() {
                             type="checkbox"
                             className="sr-only peer"
                             checked={multipleWinner}
-                            onChange={() =>
-                              setMultipleWinner(
-                                !multipleWinner,
-                              )
-                            }
+                            onChange={() => setMultipleWinner(!multipleWinner)}
                           />
 
                           <div
@@ -1400,20 +1280,15 @@ function Create() {
                         className={`rounded-2xl border p-5 ${secondaryPanelClass}`}
                       >
                         <div className="flex flex-wrap gap-3 items-center">
-
                           <button
-                            onClick={() =>
-                              setShowEqualModal(true)
-                            }
+                            onClick={() => setShowEqualModal(true)}
                             className={`px-4 py-2.5 rounded-xl text-sm font-medium text-[#d4af37] border hover:bg-[#292922] transition ${darkButtonClass}`}
                           >
                             Equal Split
                           </button>
 
                           <button
-                            onClick={() =>
-                              setShowPercentModal(true)
-                            }
+                            onClick={() => setShowPercentModal(true)}
                             className={`px-4 py-2.5 rounded-xl border text-sm font-medium transition hover:border-[#c49b2c] ${
                               dark
                                 ? "bg-[#111311] border-white/10 text-white hover:border-[#D4AF37]"
@@ -1425,11 +1300,7 @@ function Create() {
 
                           <div className="relative">
                             <button
-                              onClick={() =>
-                                setShowInfoMenu(
-                                  !showInfoMenu,
-                                )
-                              }
+                              onClick={() => setShowInfoMenu(!showInfoMenu)}
                               className={`w-10 h-10 rounded-xl border flex items-center justify-center transition ${
                                 dark
                                   ? "border-white/10 bg-[#111311] text-white/55 hover:text-[#D4AF37] hover:border-[#D4AF37]"
@@ -1451,8 +1322,7 @@ function Create() {
                                   <span className="font-semibold text-[#d4af37]">
                                     Equal split:
                                   </span>{" "}
-                                  Reward split equally among
-                                  winners.
+                                  Reward split equally among winners.
                                 </p>
 
                                 <p className="text-xs leading-relaxed mt-3">
@@ -1467,15 +1337,14 @@ function Create() {
                                 </p>
 
                                 <p className="text-xs text-white/70 mt-1">
-                                  [40,30,20,5,5], [40,30,20,10],
-                                  [50,30,20], [50,50]
+                                  [40,30,20,5,5], [40,30,20,10], [50,30,20],
+                                  [50,50]
                                 </p>
                               </div>
                             )}
                           </div>
 
-                          {selectedPayoutType ===
-                            "MULTI_EQUAL" &&
+                          {selectedPayoutType === "MULTI_EQUAL" &&
                             winnerCount > 1 && (
                               <span
                                 className={`text-xs font-semibold px-3 py-1.5 rounded-full ${
@@ -1488,8 +1357,7 @@ function Create() {
                               </span>
                             )}
 
-                          {selectedPayoutType ===
-                            "MULTI_PERCENTAGE" &&
+                          {selectedPayoutType === "MULTI_PERCENTAGE" &&
                             percentageArray.length > 0 && (
                               <span
                                 className={`text-xs font-semibold px-3 py-1.5 rounded-full ${
@@ -1511,23 +1379,16 @@ function Create() {
                       <label
                         className={`block text-xs font-semibold uppercase tracking-wider mb-3 ${labelClass}`}
                       >
-                        Reward Type{" "}
-                        <span className={goldTextClass}>
-                          *
-                        </span>
+                        Reward Type <span className={goldTextClass}>*</span>
                       </label>
 
                       <div className="flex flex-wrap gap-3">
                         <button
                           onClick={() =>
-                            updateBountyData(
-                              "rewardType",
-                              "self-fund",
-                            )
+                            updateBountyData("rewardType", "self-fund")
                           }
                           className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition ${
-                            bountyData.rewardType ===
-                            "self-fund"
+                            bountyData.rewardType === "self-fund"
                               ? `${darkButtonClass} text-[#d4af37]`
                               : dark
                                 ? "bg-[#111311] border border-white/10 text-white/65 hover:border-[#D4AF37]"
@@ -1546,9 +1407,7 @@ function Create() {
                           }`}
                         >
                           Seek Funding{" "}
-                          <span
-                            className={`${goldTextClass} text-xs`}
-                          >
+                          <span className={`${goldTextClass} text-xs`}>
                             soon
                           </span>
                         </button>
@@ -1556,18 +1415,12 @@ function Create() {
                     </div>
 
                     {/* Reward */}
-                    <div
-                      className={`border-t pt-6 ${themeBorderClass}`}
-                    >
+                    <div className={`border-t pt-6 ${themeBorderClass}`}>
                       <div className="flex flex-col md:flex-row md:justify-between gap-4">
                         <div>
-                          <h4 className="font-semibold text-sm">
-                            Set reward
-                          </h4>
+                          <h4 className="font-semibold text-sm">Set reward</h4>
 
-                          <p
-                            className={`text-xs mt-1 ${softMutedClass}`}
-                          >
+                          <p className={`text-xs mt-1 ${softMutedClass}`}>
                             Amount distributed to the winner(s)
                           </p>
                         </div>
@@ -1593,9 +1446,7 @@ function Create() {
 
                                 const cleaned =
                                   parts.length > 2
-                                    ? `${parts[0]}.${parts
-                                        .slice(1)
-                                        .join("")}`
+                                    ? `${parts[0]}.${parts.slice(1).join("")}`
                                     : raw;
 
                                 updateBountyData(
@@ -1605,17 +1456,13 @@ function Create() {
                               }}
                               placeholder="0"
                               className={`bg-transparent outline-none text-sm w-full ${
-                                dark
-                                  ? "text-white"
-                                  : "text-[#171714]"
+                                dark ? "text-white" : "text-[#171714]"
                               }`}
                             />
 
                             <p
                               className={`text-sm font-semibold ${
-                                dark
-                                  ? "text-white/45"
-                                  : "text-[#8b8579]"
+                                dark ? "text-white/45" : "text-[#8b8579]"
                               }`}
                             >
                               {bountyData.token}
@@ -1654,17 +1501,13 @@ function Create() {
                               value={feeDisplay}
                               disabled
                               className={`bg-transparent outline-none text-sm w-full ${
-                                dark
-                                  ? "text-white/45"
-                                  : "text-[#777267]"
+                                dark ? "text-white/45" : "text-[#777267]"
                               }`}
                             />
 
                             <p
                               className={`text-sm font-semibold ${
-                                dark
-                                  ? "text-white/30"
-                                  : "text-[#999286]"
+                                dark ? "text-white/30" : "text-[#999286]"
                               }`}
                             >
                               {bountyData.token}
@@ -1684,15 +1527,11 @@ function Create() {
                     >
                       <div className="flex flex-col md:flex-row md:justify-between gap-4 md:items-center">
                         <div>
-                          <h4 className="font-bold text-sm">
-                            Total Amount
-                          </h4>
+                          <h4 className="font-bold text-sm">Total Amount</h4>
 
                           <p
                             className={`text-xs mt-1 ${
-                              dark
-                                ? "text-white/55"
-                                : "text-[#7c7567]"
+                              dark ? "text-white/55" : "text-[#7c7567]"
                             }`}
                           >
                             Reward + service fees
@@ -1711,17 +1550,13 @@ function Create() {
                             value={totalAmountDisplay}
                             disabled
                             className={`bg-transparent outline-none text-sm w-full font-bold ${
-                              dark
-                                ? "text-white"
-                                : "text-[#171714]"
+                              dark ? "text-white" : "text-[#171714]"
                             }`}
                           />
 
                           <p
                             className={`text-sm font-bold ${
-                              dark
-                                ? "text-[#D4AF37]"
-                                : "text-[#9a7619]"
+                              dark ? "text-[#D4AF37]" : "text-[#9a7619]"
                             }`}
                           >
                             {bountyData.token}
@@ -1741,10 +1576,7 @@ function Create() {
                       <select
                         value={bountyData.token}
                         onChange={(e) =>
-                          updateBountyData(
-                            "token",
-                            e.target.value,
-                          )
+                          updateBountyData("token", e.target.value)
                         }
                         className={`${selectClass} sm:w-64`}
                       >
@@ -1754,14 +1586,9 @@ function Create() {
                           </option>
                         ) : (
                           availableTokens.map((t) => (
-                            <option
-                              key={t.key}
-                              value={t.key}
-                            >
+                            <option key={t.key} value={t.key}>
                               {t.label}
-                              {t.kind === "native"
-                                ? " (Native)"
-                                : ""}
+                              {t.kind === "native" ? " (Native)" : ""}
                             </option>
                           ))
                         )}
@@ -1786,19 +1613,14 @@ function Create() {
                     </div>
 
                     <div>
-                      <h2 className="text-xl font-bold">
-                        Review & Submit
-                      </h2>
+                      <h2 className="text-xl font-bold">Review & Submit</h2>
 
                       <p
                         className={`text-sm mt-1 ${
-                          dark
-                            ? "text-white/55"
-                            : "text-[#817b70]"
+                          dark ? "text-white/55" : "text-[#817b70]"
                         }`}
                       >
-                        Confirm your bounty details before
-                        submitting.
+                        Confirm your bounty details before submitting.
                       </p>
                     </div>
                   </div>
@@ -1807,55 +1629,31 @@ function Create() {
                     className={`rounded-2xl border overflow-hidden ${dark ? "border-white/10" : "border-[#e1ddd2]"}`}
                   >
                     {[
-                      [
-                        "Category",
-                        bountyData.category ||
-                          "Not selected",
-                      ],
-                      [
-                        "Title",
-                        bountyData.title ||
-                          "Not entered",
-                      ],
-                      [
-                        "Tags",
-                        bountyData.tags ||
-                          "Not selected",
-                      ],
+                      ["Category", bountyData.category || "Not selected"],
+                      ["Title", bountyData.title || "Not entered"],
+                      ["Tags", bountyData.tags || "Not selected"],
                       [
                         "Timeline",
-                        `${formatDate(
-                          bountyData.startDate,
-                        )} → ${formatDate(
+                        `${formatDate(bountyData.startDate)} → ${formatDate(
                           bountyData.deadline,
                         )}`,
                       ],
-                      [
-                        "Reward",
-                        `${rewardDisplay} ${bountyData.token}`,
-                      ],
-                      [
-                        "Service Fee",
-                        `${feeDisplay} ${bountyData.token}`,
-                      ],
+                      ["Reward", `${rewardDisplay} ${bountyData.token}`],
+                      ["Service Fee", `${feeDisplay} ${bountyData.token}`],
                     ].map(([label, value], index) => (
                       <div
                         key={label}
                         className={`flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 px-5 py-4 ${
                           index !== 5
                             ? `border-b ${
-                                dark
-                                  ? "border-white/10"
-                                  : "border-[#e7e3da]"
+                                dark ? "border-white/10" : "border-[#e7e3da]"
                               }`
                             : ""
                         }`}
                       >
                         <span
                           className={`text-xs font-semibold uppercase tracking-wider ${
-                            dark
-                              ? "text-white/45"
-                              : "text-[#898378]"
+                            dark ? "text-white/45" : "text-[#898378]"
                           }`}
                         >
                           {label}
@@ -1863,9 +1661,7 @@ function Create() {
 
                         <span
                           className={`text-sm font-medium sm:text-right ${
-                            dark
-                              ? "text-white"
-                              : "text-[#25231e]"
+                            dark ? "text-white" : "text-[#25231e]"
                           }`}
                         >
                           {value}
@@ -1876,16 +1672,12 @@ function Create() {
                     {/* Description */}
                     <div
                       className={`flex flex-col sm:flex-row sm:justify-between gap-2 px-5 py-4 border-b ${
-                        dark
-                          ? "border-white/10"
-                          : "border-[#e7e3da]"
+                        dark ? "border-white/10" : "border-[#e7e3da]"
                       }`}
                     >
                       <span
                         className={`text-xs font-semibold uppercase tracking-wider ${
-                          dark
-                            ? "text-white/45"
-                            : "text-[#898378]"
+                          dark ? "text-white/45" : "text-[#898378]"
                         }`}
                       >
                         Description
@@ -1893,18 +1685,12 @@ function Create() {
 
                       <span
                         className={`text-sm sm:text-right max-w-full sm:max-w-[60%] ${
-                          dark
-                            ? "text-white/65"
-                            : "text-[#4f4b43]"
+                          dark ? "text-white/65" : "text-[#4f4b43]"
                         }`}
                       >
                         {bountyData.description
-                          ? bountyData.description
-                              .length > 100
-                            ? bountyData.description.substring(
-                                0,
-                                100,
-                              ) + "..."
+                          ? bountyData.description.length > 100
+                            ? bountyData.description.substring(0, 100) + "..."
                             : bountyData.description
                           : "Not entered"}
                       </span>
@@ -1913,16 +1699,12 @@ function Create() {
                     {/* Origin Link */}
                     <div
                       className={`flex flex-col sm:flex-row sm:justify-between gap-2 px-5 py-4 border-b ${
-                        dark
-                          ? "border-white/10"
-                          : "border-[#e7e3da]"
+                        dark ? "border-white/10" : "border-[#e7e3da]"
                       }`}
                     >
                       <span
                         className={`text-xs font-semibold uppercase tracking-wider ${
-                          dark
-                            ? "text-white/45"
-                            : "text-[#898378]"
+                          dark ? "text-white/45" : "text-[#898378]"
                         }`}
                       >
                         Origin Link
@@ -1936,20 +1718,14 @@ function Create() {
                             rel="noopener noreferrer"
                             className={`hover:underline ${dark ? "text-[#D4AF37]" : "text-[#9a7619]"}`}
                           >
-                            {bountyData.originLink.length >
-                            40
-                              ? bountyData.originLink.substring(
-                                  0,
-                                  40,
-                                ) + "..."
+                            {bountyData.originLink.length > 40
+                              ? bountyData.originLink.substring(0, 40) + "..."
                               : bountyData.originLink}
                           </a>
                         ) : (
                           <span
                             className={
-                              dark
-                                ? "text-white/65"
-                                : "text-[#4f4b43]"
+                              dark ? "text-white/65" : "text-[#4f4b43]"
                             }
                           >
                             Not provided
@@ -1968,9 +1744,7 @@ function Create() {
                     >
                       <span
                         className={`text-xs font-bold uppercase tracking-wider ${
-                          dark
-                            ? "text-white/60"
-                            : "text-[#766e5d]"
+                          dark ? "text-white/60" : "text-[#766e5d]"
                         }`}
                       >
                         Total Amount
@@ -1978,29 +1752,22 @@ function Create() {
 
                       <span
                         className={`text-lg font-bold ${
-                          dark
-                            ? "text-[#D4AF37]"
-                            : "text-[#8f6c12]"
+                          dark ? "text-[#D4AF37]" : "text-[#8f6c12]"
                         }`}
                       >
-                        {totalAmountDisplay}{" "}
-                        {bountyData.token}
+                        {totalAmountDisplay} {bountyData.token}
                       </span>
                     </div>
 
                     {/* Multiple Winners */}
                     <div
                       className={`flex flex-col sm:flex-row sm:justify-between gap-2 px-5 py-4 border-b ${
-                        dark
-                          ? "border-white/10"
-                          : "border-[#e7e3da]"
+                        dark ? "border-white/10" : "border-[#e7e3da]"
                       }`}
                     >
                       <span
                         className={`text-xs font-semibold uppercase tracking-wider ${
-                          dark
-                            ? "text-white/45"
-                            : "text-[#898378]"
+                          dark ? "text-white/45" : "text-[#898378]"
                         }`}
                       >
                         Winner Type
@@ -2008,14 +1775,11 @@ function Create() {
 
                       <span
                         className={`text-sm font-medium sm:text-right ${
-                          dark
-                            ? "text-white"
-                            : "text-[#25231e]"
+                          dark ? "text-white" : "text-[#25231e]"
                         }`}
                       >
                         {multipleWinner
-                          ? selectedPayoutType ===
-                            "MULTI_EQUAL"
+                          ? selectedPayoutType === "MULTI_EQUAL"
                             ? `Yes (${winnerCount} winners, equal split)`
                             : `Yes (${percentageArray.length} winners, ${percentageArray.join(
                                 "% / ",
@@ -2027,16 +1791,12 @@ function Create() {
                     {/* Reward Type */}
                     <div
                       className={`flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 px-5 py-4 border-b ${
-                        dark
-                          ? "border-white/10"
-                          : "border-[#e7e3da]"
+                        dark ? "border-white/10" : "border-[#e7e3da]"
                       }`}
                     >
                       <span
                         className={`text-xs font-semibold uppercase tracking-wider ${
-                          dark
-                            ? "text-white/45"
-                            : "text-[#898378]"
+                          dark ? "text-white/45" : "text-[#898378]"
                         }`}
                       >
                         Reward Type
@@ -2044,15 +1804,10 @@ function Create() {
 
                       <span
                         className={`text-sm font-medium capitalize ${
-                          dark
-                            ? "text-white"
-                            : "text-[#25231e]"
+                          dark ? "text-white" : "text-[#25231e]"
                         }`}
                       >
-                        {bountyData.rewardType?.replace(
-                          "-",
-                          " ",
-                        )}
+                        {bountyData.rewardType?.replace("-", " ")}
                       </span>
                     </div>
 
@@ -2060,9 +1815,7 @@ function Create() {
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 px-5 py-4">
                       <span
                         className={`text-xs font-semibold uppercase tracking-wider ${
-                          dark
-                            ? "text-white/45"
-                            : "text-[#898378]"
+                          dark ? "text-white/45" : "text-[#898378]"
                         }`}
                       >
                         Network
@@ -2070,14 +1823,11 @@ function Create() {
 
                       <span
                         className={`text-sm font-medium ${
-                          dark
-                            ? "text-white"
-                            : "text-[#25231e]"
+                          dark ? "text-white" : "text-[#25231e]"
                         }`}
                       >
                         {supportedChains.find(
-                          (c) =>
-                            c.id === bountyData.network,
+                          (c) => c.id === bountyData.network,
                         )?.name || "Not selected"}
                       </span>
                     </div>
@@ -2086,13 +1836,9 @@ function Create() {
                   <div
                     className={`mt-7 flex items-start gap-3 rounded-2xl border p-4 ${softPanelClass}`}
                   >
-                    <FiShield
-                      className={`${goldTextClass} mt-0.5 shrink-0`}
-                    />
+                    <FiShield className={`${goldTextClass} mt-0.5 shrink-0`} />
 
-                    <p
-                      className={`text-xs leading-relaxed ${mutedClass}`}
-                    >
+                    <p className={`text-xs leading-relaxed ${mutedClass}`}>
                       By creating this bounty you agree to our{" "}
                       <a
                         href="#"
@@ -2172,10 +1918,8 @@ function Create() {
       ========================================================== */}
       {showEqualModal && (
         <div
-          className={`app-modal-overlay fixed inset-0 backdrop-blur-md flex items-center justify-center z-50 p-4 ${
-            dark
-              ? "bg-black/70"
-              : "bg-[#171714]/60"
+          className={`fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 p-4 ${
+            dark ? "bg-black/70" : "bg-[#171714]/60"
           }`}
           onClick={() => setShowEqualModal(false)}
         >
@@ -2201,9 +1945,7 @@ function Create() {
 
                 <h3
                   className={`text-xl font-bold ${
-                    dark
-                      ? "text-white"
-                      : "text-[#171714]"
+                    dark ? "text-white" : "text-[#171714]"
                   }`}
                 >
                   Equal Split
@@ -2211,9 +1953,7 @@ function Create() {
 
                 <p
                   className={`text-sm mt-1 ${
-                    dark
-                      ? "text-white/55"
-                      : "text-[#7c766b]"
+                    dark ? "text-white/55" : "text-[#7c766b]"
                   }`}
                 >
                   Enter the number of winners (2-5)
@@ -2221,9 +1961,7 @@ function Create() {
               </div>
 
               <button
-                onClick={() =>
-                  setShowEqualModal(false)
-                }
+                onClick={() => setShowEqualModal(false)}
                 className={`w-9 h-9 rounded-xl border flex items-center justify-center transition ${
                   dark
                     ? "border-white/10 bg-[#151715] text-white/55 hover:text-white"
@@ -2239,19 +1977,13 @@ function Create() {
               min="2"
               max="5"
               value={winnerCount}
-              onChange={(e) =>
-                setWinnerCount(
-                  parseInt(e.target.value) || 2,
-                )
-              }
+              onChange={(e) => setWinnerCount(parseInt(e.target.value) || 2)}
               className={inputClass}
             />
 
             <div className="flex gap-3 mt-5">
               <button
-                onClick={() =>
-                  setShowEqualModal(false)
-                }
+                onClick={() => setShowEqualModal(false)}
                 className={`flex-1 px-4 py-3 rounded-xl border font-semibold transition ${
                   dark
                     ? "bg-[#151715] border-white/10 text-white/75 hover:bg-[#1b1d1b]"
@@ -2277,10 +2009,8 @@ function Create() {
       ========================================================== */}
       {showPercentModal && (
         <div
-          className={`app-modal-overlay fixed inset-0 backdrop-blur-md flex items-center justify-center z-50 p-4 ${
-            dark
-              ? "bg-black/70"
-              : "bg-[#171714]/60"
+          className={`fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 p-4 ${
+            dark ? "bg-black/70" : "bg-[#171714]/60"
           }`}
           onClick={() => setShowPercentModal(false)}
         >
@@ -2306,9 +2036,7 @@ function Create() {
 
                 <h3
                   className={`text-xl font-bold ${
-                    dark
-                      ? "text-white"
-                      : "text-[#171714]"
+                    dark ? "text-white" : "text-[#171714]"
                   }`}
                 >
                   Percentage Split
@@ -2316,9 +2044,7 @@ function Create() {
 
                 <p
                   className={`text-sm mt-1 ${
-                    dark
-                      ? "text-white/55"
-                      : "text-[#7c766b]"
+                    dark ? "text-white/55" : "text-[#7c766b]"
                   }`}
                 >
                   Select a preset or enter custom percentages
@@ -2326,9 +2052,7 @@ function Create() {
               </div>
 
               <button
-                onClick={() =>
-                  setShowPercentModal(false)
-                }
+                onClick={() => setShowPercentModal(false)}
                 className={`w-9 h-9 rounded-xl border flex items-center justify-center transition ${
                   dark
                     ? "border-white/10 bg-[#151715] text-white/55 hover:text-white"
@@ -2341,115 +2065,57 @@ function Create() {
 
             <div className="space-y-2.5 mb-5">
               <button
-                onClick={() =>
-                  handlePresetSelect([
-                    40,
-                    30,
-                    20,
-                    5,
-                    5,
-                  ])
-                }
+                onClick={() => handlePresetSelect([40, 30, 20, 5, 5])}
                 className={`w-full text-left px-4 py-3 rounded-xl border transition ${
                   dark
                     ? "bg-[#151715] border-white/10 text-white hover:border-[#D4AF37]"
                     : "bg-white border-[#ddd8ca] text-[#3e3b35] hover:border-[#c49b2c]"
                 }`}
               >
-                <span className="font-semibold">
-                  [40, 30, 20, 5, 5]
-                </span>{" "}
-                <span
-                  className={
-                    dark
-                      ? "text-white/45"
-                      : "text-[#888175]"
-                  }
-                >
+                <span className="font-semibold">[40, 30, 20, 5, 5]</span>{" "}
+                <span className={dark ? "text-white/45" : "text-[#888175]"}>
                   — 5 winners
                 </span>
               </button>
 
               <button
-                onClick={() =>
-                  handlePresetSelect([
-                    40,
-                    30,
-                    20,
-                    10,
-                  ])
-                }
+                onClick={() => handlePresetSelect([40, 30, 20, 10])}
                 className={`w-full text-left px-4 py-3 rounded-xl border transition ${
                   dark
                     ? "bg-[#151715] border-white/10 text-white hover:border-[#D4AF37]"
                     : "bg-white border-[#ddd8ca] text-[#3e3b35] hover:border-[#c49b2c]"
                 }`}
               >
-                <span className="font-semibold">
-                  [40, 30, 20, 10]
-                </span>{" "}
-                <span
-                  className={
-                    dark
-                      ? "text-white/45"
-                      : "text-[#888175]"
-                  }
-                >
+                <span className="font-semibold">[40, 30, 20, 10]</span>{" "}
+                <span className={dark ? "text-white/45" : "text-[#888175]"}>
                   — 4 winners
                 </span>
               </button>
 
               <button
-                onClick={() =>
-                  handlePresetSelect([
-                    50,
-                    30,
-                    20,
-                  ])
-                }
+                onClick={() => handlePresetSelect([50, 30, 20])}
                 className={`w-full text-left px-4 py-3 rounded-xl border transition ${
                   dark
                     ? "bg-[#151715] border-white/10 text-white hover:border-[#D4AF37]"
                     : "bg-white border-[#ddd8ca] text-[#3e3b35] hover:border-[#c49b2c]"
                 }`}
               >
-                <span className="font-semibold">
-                  [50, 30, 20]
-                </span>{" "}
-                <span
-                  className={
-                    dark
-                      ? "text-white/45"
-                      : "text-[#888175]"
-                  }
-                >
+                <span className="font-semibold">[50, 30, 20]</span>{" "}
+                <span className={dark ? "text-white/45" : "text-[#888175]"}>
                   — 3 winners
                 </span>
               </button>
 
               <button
-                onClick={() =>
-                  handlePresetSelect([
-                    50,
-                    50,
-                  ])
-                }
+                onClick={() => handlePresetSelect([50, 50])}
                 className={`w-full text-left px-4 py-3 rounded-xl border transition ${
                   dark
                     ? "bg-[#151715] border-white/10 text-white hover:border-[#D4AF37]"
                     : "bg-white border-[#ddd8ca] text-[#3e3b35] hover:border-[#c49b2c]"
                 }`}
               >
-                <span className="font-semibold">
-                  [50, 50]
-                </span>{" "}
-                <span
-                  className={
-                    dark
-                      ? "text-white/45"
-                      : "text-[#888175]"
-                  }
-                >
+                <span className="font-semibold">[50, 50]</span>{" "}
+                <span className={dark ? "text-white/45" : "text-[#888175]"}>
                   — 2 winners
                 </span>
               </button>
@@ -2468,15 +2134,9 @@ function Create() {
                 onChange={(e) => {
                   const values = e.target.value
                     .split(",")
-                    .map((v) =>
-                      parseInt(v.trim()),
-                    );
+                    .map((v) => parseInt(v.trim()));
 
-                  if (
-                    values.every(
-                      (v) => !isNaN(v),
-                    )
-                  ) {
+                  if (values.every((v) => !isNaN(v))) {
                     setPercentageArray(values);
                   }
                 }}
@@ -2486,9 +2146,7 @@ function Create() {
 
             <div className="flex gap-3">
               <button
-                onClick={() =>
-                  setShowPercentModal(false)
-                }
+                onClick={() => setShowPercentModal(false)}
                 className={`flex-1 px-4 py-3 rounded-xl border font-semibold transition ${
                   dark
                     ? "bg-[#151715] border-white/10 text-white/75 hover:bg-[#1b1d1b]"

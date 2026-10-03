@@ -616,8 +616,8 @@ const BountyDetail = () => {
         `${API_URL}/bounty/${id}/distribute`,
         {
           txHash: tx.hash,
-          blockchainId: bounty.blockchainId,
-          chainId: bounty.network,
+          blockchainId: Number(bounty.blockchainId),
+          chainId: Number(bounty.network),
           bountyContract:
             CONTRACT_ADDRESSES[bounty.network]?.bounty ||
             null,

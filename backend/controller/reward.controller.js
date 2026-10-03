@@ -17,11 +17,25 @@ const isAddress = (a) => typeof a === "string" && /^0x[a-fA-F0-9]{40}$/.test(a);
 const distributeRewards = async (req, res) => {
   const { id } = req.params;
   const { txHash, blockchainId, chainId, bountyContract } = req.body;
+  console.log("Distribute rewards request:", {
+    id,
+    txHash,
+    blockchainId,
+    chainId,
+    bountyContract,
+  });
 
   if (!isValidId(id)) {
     return res.status(400).json({ error: "Invalid bounty ID" });
   }
-  if (!txHash || !blockchainId || !chainId || !bountyContract) {
+
+  // Normalize chainId — accept both number and string
+  const chainIdNum = Number(chainId);
+  if (!Number.isFinite(chainIdNum) || chainIdNum <= 0) {
+    return res.status(400).json({ error: "Invalid chainId" });
+  }
+
+  if (!txHash || !blockchainId || !bountyContract) {
     return res.status(400).json({ error: "All fields required" });
   }
 
@@ -37,7 +51,12 @@ const distributeRewards = async (req, res) => {
     }
 
     // 🔥 STEP 1: receipt
-    const publicClient = getPublicClient(chainId);
+    const publicClient = getPublicClient(chainIdNum);
+    if (!publicClient) {
+      return res
+        .status(400)
+        .json({ error: `No RPC client configured for chain ${chainIdNum}` });
+    }
     const receipt = await publicClient.getTransactionReceipt({ hash: txHash });
 
     if (receipt.status !== "success") {
@@ -79,7 +98,7 @@ const distributeRewards = async (req, res) => {
     const rewardDocs = winnerDetails.map((w) => ({
       bountyId: bounty._id,
       blockchainId,
-      chainId,
+      chainId: chainIdNum,
       bountyContract,
       winnerAddress: w.winnerAddress,
       amount: w.amountWei,
@@ -134,7 +153,7 @@ const distributeRewards = async (req, res) => {
     return res.status(200).json({
       message: "Distribution synced from blockchain",
       winners: winnerDetails,
-      chainId,
+      chainId: chainIdNum,
       txHash,
     });
   } catch (err) {
@@ -219,7 +238,7 @@ const getClaimable = async (req, res) => {
     }
 
     // 🔥 Live contract read = authoritative claimable amount
-    const publicClient = getPublicClient(reward.chainId);
+    const publicClient = getPublicClient(Number(reward.chainId));
     const onChainAmount = await publicClient.readContract({
       address: reward.bountyContract,
       abi: BOUNTY_ABI,
@@ -270,7 +289,7 @@ const claimReward = async (req, res) => {
     }
 
     // 🔥 Verify the claim tx on-chain before mutating state
-    const publicClient = getPublicClient(reward.chainId);
+    const publicClient = getPublicClient(Number(reward.chainId));
     const receipt = await publicClient.getTransactionReceipt({ hash: txHash });
 
     if (receipt.status !== "success") {

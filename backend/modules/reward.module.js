@@ -9,8 +9,8 @@ const rewardSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
-    blockchainId: { type: String, required: true }, // on-chain bounty id
-    chainId: { type: Number, required: true },
+    blockchainId: { type: Number, required: true }, // on-chain bounty id
+    chainId: { type: String, required: true },
     bountyContract: { type: String, required: true },
 
     winnerAddress: {
