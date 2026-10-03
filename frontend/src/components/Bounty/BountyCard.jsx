@@ -388,34 +388,42 @@ const BountyCard = ({ bounty }) => {
         </div>
 
         {/* REWARD + DEADLINE */}
-        {/* in the REWARD + DEADLINE block */}
-        <div className="my-5 grid grid-cols-3 gap-3 rounded-xl ...">
+        {/* REWARD + DEADLINE */}
+        <div
+          className="
+    my-5 grid grid-cols-2 gap-3
+    rounded-xl
+
+    border border-slate-200
+    dark:border-white/[0.08]
+
+    bg-[#fbfaf6]
+    dark:bg-[#20231f]
+
+    p-3
+  "
+        >
           {/* REWARD */}
           <div className="min-w-0">
-            <p className="...">Reward</p>
-            <p className="...">{rewardDisplay}</p>
+            <p className="mb-1 text-[9px] font-semibold uppercase tracking-[0.12em] text-slate-400 dark:text-white/35">
+              Reward
+            </p>
+            <p
+              className="truncate text-sm font-bold tracking-[-0.01em] text-slate-900 dark:text-white sm:text-base"
+              title={rewardDisplay}
+            >
+              {rewardDisplay}
+            </p>
           </div>
 
           {/* DEADLINE */}
-          <div className="min-w-0 border-l ...">
-            <p className="...">
+          <div className="min-w-0 border-l border-slate-200 dark:border-white/[0.08] pl-3">
+            <p className="mb-1 flex items-center gap-1 text-[9px] font-semibold uppercase tracking-[0.12em] text-slate-400 dark:text-white/35">
               <FiCalendar size={10} />
               Deadline
             </p>
-            <p className="...">{deadline}</p>
-          </div>
-
-          {/* SUBMISSIONS */}
-          <div className="min-w-0 border-l ...">
-            <p className="...">
-              <FiUsers size={10} />
-              Submissions
-            </p>
             <p className="truncate text-sm font-semibold text-slate-700 dark:text-white/70">
-              {bounty.submissions?.count ?? 0}
-              {bounty.submissions?.maxSubmissions
-                ? ` / ${bounty.submissions.maxSubmissions}`
-                : ""}
+              {deadline}
             </p>
           </div>
         </div>
