@@ -19,7 +19,7 @@ import {
 } from "react-icons/fi";
 import NavBar from "../components/Layout/NavBar";
 import Footer from "../components/Layout/Footer";
-import { BOUNTY_ABI, CONTRACT_ADDRESSES } from "contract";
+import { getBountyContract } from "../utils/chains.address";
 import { useAccount, useChainId, useSwitchChain } from "wagmi";
 import { formatEther } from "viem";
 import { useBounty } from "../hooks/useBounty";
@@ -551,11 +551,18 @@ const BountyDetail = () => {
         tx = await assignMultipleWinners(blockchainId, valid, pcts);
       }
 
+      const bountyContract = getBountyContract(bounty.network);
+      if (!bountyContract) {
+        return showToast.error(
+          `Bounty contract not configured for chain ${bounty.network}`,
+        );
+      }
+
       await axios.post(`${API_URL}/bounty/${id}/distribute`, {
         txHash: tx.hash,
         blockchainId: Number(bounty.blockchainId),
         chainId: Number(bounty.network),
-        bountyContract: CONTRACT_ADDRESSES[bounty.network]?.bounty || null,
+        bountyContract,
       });
 
       showToast.success("Distributed!", {
@@ -1121,7 +1128,7 @@ const BountyDetail = () => {
           )}
 
           {/* ---------------- Submissions  ---------------- */}
-       
+
           {/* Submissions — creator only */}
           {allSubmissions.length > 0 && (
             <div className={cardClass}>

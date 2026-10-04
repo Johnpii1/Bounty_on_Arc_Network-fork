@@ -96,6 +96,15 @@ const bountySchema = new mongoose.Schema(
       default: null,
       index: true,
     },
+    bountyContract: {
+      type: String,
+      required: false, // will be required for on-chain bounties
+      trim: true,
+      validate: {
+        validator: (v) => !v || /^0x[a-fA-F0-9]{40}$/.test(v),
+        message: (props) => `${props.value} is not a valid contract address`,
+      },
+    },
     txHash: {
       type: String,
       default: null,

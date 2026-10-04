@@ -25,7 +25,7 @@ import { supportedChains } from "../rainbowChains";
 import { useBounty } from "../hooks/useBounty";
 import { listTokensForChain } from "../utils/enums";
 import { formatAmount } from "../utils/format";
-import { CONTRACT_ADDRESSES } from "../utils/chains.address";
+import { getBountyContract } from "../utils/chains.address";
 
 function Create() {
   const API_URL = import.meta.env.VITE_API_URL;
@@ -466,7 +466,15 @@ function Create() {
       return;
     }
 
-    const contractAddress = CONTRACT_ADDRESSES[selectedChainId]?.bounty;
+    const contractAddress = getBountyContract(selectedChainId);
+    if (!contractAddress) {
+      showToast.error(
+        `Contract not deployed on ${
+          supportedChains.find((c) => c.id === selectedChainId)?.name
+        }.`,
+      );
+      return;
+    }
 
     if (!contractAddress || contractAddress === "Loading...") {
       showToast.error(
@@ -562,6 +570,7 @@ function Create() {
         blockchainId,
         txHash: hash,
         isOnChain: true,
+        bountyContract: getBountyContract(selectedChainId), // ← add
         // creator: address,
       });
       console.log("posting sucess");

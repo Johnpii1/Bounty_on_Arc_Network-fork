@@ -15,3 +15,25 @@ export const NATIVE_TOKENS = {
     decimals: 18,
   },
 };
+
+
+/**
+ * Resolve the bounty contract address for a chain.
+ * Accepts number or string; returns undefined if not deployed.
+ */
+export const getBountyContract = (chainId) => {
+  if (chainId == null) return undefined;
+  const normalized = Number(chainId);
+  if (!Number.isFinite(normalized)) return undefined;
+  return CONTRACT_ADDRESSES[normalized]?.bounty;
+};
+
+/**
+ * Resolve the native token config for a chain.
+ */
+export const getNativeToken = (chainId) => {
+  if (chainId == null) return undefined;
+  const normalized = Number(chainId);
+  if (!Number.isFinite(normalized)) return undefined;
+  return NATIVE_TOKENS[normalized];
+};
