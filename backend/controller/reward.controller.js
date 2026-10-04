@@ -65,7 +65,7 @@ const distributeRewards = async (req, res) => {
       });
     }
 
-    // Guard: don't re-distribute the same bounty
+    // Guard: don't re-distribute the same bounty.
     if (bounty.rewardsAssignedOnChain) {
       return res.status(400).json({ error: "Rewards already distributed" });
     }
