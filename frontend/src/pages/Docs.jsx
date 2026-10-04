@@ -482,7 +482,7 @@ export default function Docs() {
             >
               <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#D4AF37]/30 bg-[#D4AF37]/10 px-3 py-1.5 text-xs font-semibold text-[#9B7610]">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#D4AF37]" />
-                BUILT ON ARC
+                BUILT ON ARC 
               </div>
 
               <h1 className="max-w-4xl text-4xl font-bold tracking-[-0.04em] text-black dark:text-white md:text-6xl">
@@ -539,7 +539,7 @@ export default function Docs() {
             >
               <SectionTitle
                 eyebrow="Overview"
-                title="How Happy Bounty Works"
+                title="How Happy Bounty Works."
               >
                 Happy Bounty connects people who need work completed with
                 contributors who have the skills to complete it.
