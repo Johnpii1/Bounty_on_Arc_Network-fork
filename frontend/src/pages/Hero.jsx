@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { useNav } from "../hooks/useNav";
 import {
   FiArrowUpRight,
   FiSend,
@@ -21,6 +22,7 @@ export default function Hero({ dark }) {
   const [displayText, setDisplayText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
   const visualRef = useRef(null);
+  const { handleNavigate } = useNav();
 
   /* =====================================================
      TYPING ANIMATION
@@ -364,6 +366,10 @@ export default function Hero({ dark }) {
             <div className="mt-6 flex w-full flex-wrap justify-center gap-3 sm:justify-start">
               <Link
                 to="/dashboard"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavigate("/dashboard");
+                }}
                 className={`
                   group relative overflow-hidden
                   rounded-lg
@@ -388,6 +394,10 @@ export default function Hero({ dark }) {
 
               <Link
                 to="/create"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavigate("/create");
+                }}
                 className={`
                   group flex items-center gap-2
                   rounded-lg
