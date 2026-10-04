@@ -6,6 +6,7 @@ import { showToast } from "../components/UI/Toast";
 import {
   FiActivity,
   FiArrowRight,
+  FiArrowUp,
   FiCheckCircle,
   FiChevronLeft,
   FiChevronRight,
@@ -27,6 +28,8 @@ function Dashboard({ dark, setDark }) {
   const [bounties, setBounties] = useState([]);
   const [filter, setFilter] = useState("all");
   const [pagination, setPagination] = useState(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [stats, setStats] = useState({
     completed: 0,
@@ -87,6 +90,31 @@ function Dashboard({ dark, setDark }) {
       loadDashboardStats();
     }
   }, [address, isConnected, currentPage, filter]);
+
+  /* =====================================================
+      SCROLL TO TOP BUTTON
+  ====================================================== */
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 500);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    handleScroll();
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
 
   const formatEarnings = (value) => {
     const num = Number(value) || 0;
@@ -782,6 +810,30 @@ function Dashboard({ dark, setDark }) {
       </main>
 
       <Footer />
+
+      {/* =====================================================
+          SCROLL TO TOP BUTTON
+      ====================================================== */}
+
+      <button
+        type="button"
+        onClick={scrollToTop}
+        aria-label="Scroll to top"
+        title="Back to top"
+        className={`group fixed bottom-7 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full border backdrop-blur-xl transition-all duration-500 sm:bottom-8 sm:right-8 ${
+          showScrollTop
+            ? "translate-y-0 scale-100 opacity-100"
+            : "pointer-events-none translate-y-5 scale-75 opacity-0"
+        } ${
+          dark
+            ? "border-white/[0.1] bg-[#111311]/90 text-white/70 shadow-[0_10px_35px_rgba(0,0,0,0.35)]"
+            : "border-black/[0.09] bg-white/90 text-black/60 shadow-[0_10px_35px_rgba(17,17,17,0.12)]"
+        } hover:-translate-y-1 hover:border-[#D4A017]/50 hover:bg-[#D4A017] hover:text-white hover:shadow-[0_12px_35px_rgba(212,160,23,0.3)]`}
+      >
+        <FiArrowUp className="text-lg transition-transform duration-300 group-hover:-translate-y-0.5" />
+
+        <span className="pointer-events-none absolute inset-0 rounded-full border border-[#D4A017]/0 transition-all duration-500 group-hover:scale-125 group-hover:border-[#D4A017]/20" />
+      </button>
 
       {/* =====================================================
           LOCAL ANIMATIONS
