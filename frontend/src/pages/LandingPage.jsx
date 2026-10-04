@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
+import { useNav } from "../hooks/useNav";
 import axios from "axios";
 import {
   FiZap,
@@ -17,7 +18,6 @@ import HowItWorks from "./Howitwork";
 import PlatformStats from "./PlatformStats";
 import Features from "./Features";
 import Testimonials from "./Testimonials";
-
 import CallToAction from "./CallToAction";
 import BuiltForWeb3 from "./BuiltForWeb3";
 import Footer from "../components/Layout/Footer";
@@ -26,6 +26,7 @@ import ScrollToTopButton from "../components/ScrollToTopButton";
 function LandingPage({ dark, setDark }) {
   const [featuredBounties, setFeaturedBounties] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { handleNavigate } = useNav();
 
   const [stats, setStats] = useState({
     totalBounties: 0,
@@ -48,7 +49,7 @@ function LandingPage({ dark, setDark }) {
   const statsRef = useRef(null);
   const testimonialsRef = useRef(null);
 
-  const API_URL = "https://fresh-bounty.onrender.com/api";
+  const API_URL = import.meta.env.VITE_API_URL;
 
   // HERO TEXT ROTATION
   useEffect(() => {
@@ -289,6 +290,10 @@ function LandingPage({ dark, setDark }) {
           {/* VIEW ALL */}
           <Link
             to="/dashboard"
+              onClick={(e) => {
+                e.preventDefault();
+                handleNavigate("/dashboard");
+              }}
             className={`
               group inline-flex w-fit items-center gap-2
               rounded-xl border px-4 py-2.5
@@ -501,6 +506,10 @@ function LandingPage({ dark, setDark }) {
 
               <Link
                 to="/dashboard"
+                  onClick={(e) => {
+                e.preventDefault();
+                handleNavigate("/dashboard");
+              }}
                 className={`
                   mt-6 inline-flex items-center gap-2
                   rounded-xl border px-5 py-2.5
