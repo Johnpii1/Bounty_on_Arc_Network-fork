@@ -47,8 +47,16 @@ const distributeRewards = async (req, res) => {
     return res.status(400).json({ error: "Invalid chainId" });
   }
 
-  if (!txHash || !blockchainId || !bountyContract) {
-    return res.status(400).json({ error: "All fields required" });
+  const contractAddress = bounty.bountyContract || bountyContract;
+
+  if (!contractAddress) {
+    return res.status(400).json({
+      error: "No contract address linked to this bounty",
+    });
+  }
+
+  if (!txHash || !blockchainId) {
+    return res.status(400).json({ error: "Missing txHash or blockchainId" });
   }
 
   try {
@@ -92,7 +100,7 @@ const distributeRewards = async (req, res) => {
     const winnerDetails = await Promise.all(
       winners.map(async (winner) => {
         const amountWei = await publicClient.readContract({
-          address: bountyContract,
+          address: contractAddress,
           abi: BOUNTY_ABI,
           functionName: "claimableRewards",
           args: [BigInt(blockchainId), winner],

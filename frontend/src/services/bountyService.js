@@ -1,13 +1,13 @@
 import { parseEther, formatEther } from "viem";
 import { BOUNTY_ABI } from "../utils/abi";
-import { CONTRACT_ADDRESSES } from "../utils/chains.address";
+import { getBountyContract as resolveBountyContract } from "../utils/chains.address";
 import { getPayoutType } from "../utils/enums";
 
 /**
  * Get contract address dynamically
  */
 export const getBountyContract = (chainId) => {
-  return CONTRACT_ADDRESSES[chainId]?.bounty;
+  return resolveBountyContract(chainId);
 };
 
 /* -------------------------------------------------------------------------- */
@@ -30,10 +30,10 @@ export const prepareCreateBountyTx = ({ bountyData, account, chainId }) => {
   const address = getBountyContract(chainId);
 
   // const tokenType = resolveTokenType(bountyData.token, chainId);
-  const payoutType = getPayoutType(
-    bountyData.winnersAllowed,
-    bountyData.payoutType,
-  );
+  const payoutType = getPayoutType({
+    winnersAllowed: bountyData.winnersAllowed,
+    payoutType: bountyData.payoutType,
+  });
   console.log(`Payout type: ${payoutType} (0 for single, 1 for multiple)`);
   // Contract fee is 7% (700 basis points). Keep in sync with FEE_PERCENT().
   const rewardWei = parseEther(bountyData.reward.toString());

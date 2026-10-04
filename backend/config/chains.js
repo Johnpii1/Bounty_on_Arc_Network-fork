@@ -56,7 +56,8 @@ const CHAINS = {
 };
 
 const getPublicClient = (chainId) => {
-  const config = CHAINS[chainId];
+  const normalized = Number(chainId);
+  const config = CHAINS[normalized];
 
   if (!config) {
     throw new Error(`Unsupported chainId: ${chainId}`);
@@ -64,7 +65,7 @@ const getPublicClient = (chainId) => {
 
   return createPublicClient({
     chain: config.chain,
-    transport: http(config.rpc),
+    transport: http(config.rpc ?? config.chain.rpcUrls.default.http[0]),
   });
 };
 
