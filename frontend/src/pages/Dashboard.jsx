@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAccount } from "wagmi";
@@ -31,12 +30,13 @@ function Dashboard({ dark, setDark }) {
   const [pagination, setPagination] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [showScrollTop, setShowScrollTop] = useState(false);
-
+  const [currentPage, setCurrentPage] = useState(1);
   const [stats, setStats] = useState({
     completed: 0,
     inProgress: 0,
     earnings: 0,
   });
+  const [enrolledBountyIds, setEnrolledBountyIds] = useState([]);
 
   const API_URL = import.meta.env.VITE_API_URL;
 
@@ -65,15 +65,18 @@ function Dashboard({ dark, setDark }) {
     }
   };
 
+  // const [rewards, setRewards] = useState([]);
+
   const loadDashboardStats = async () => {
     try {
       const { data } = await axios.get(userInfoApi);
 
       setStats({
-        completed: data.submissions?.accepted || 0,
+        completed: data.user?.tasksCompleted || 0,
         inProgress: data.submissions?.pending || 0,
         earnings: data.user?.totalEarnings || 0,
       });
+      setEnrolledBountyIds(data.enrolledBountyIds || []);
     } catch (err) {
       console.error("Error loading userInfo:", err);
       showToast.error("Couldn't fetch user info");
@@ -128,7 +131,7 @@ function Dashboard({ dark, setDark }) {
 
   const handleFilterChange = (status) => {
     setFilter(status);
-    setCurrentPage(0);
+    setCurrentPage(1);
   };
 
   const handleRefresh = async () => {
@@ -142,9 +145,7 @@ function Dashboard({ dark, setDark }) {
   return (
     <div
       className={`min-h-screen overflow-hidden transition-colors duration-500 ${
-        dark
-          ? "bg-[#080908] text-white"
-          : "bg-[#f6f5ef] text-[#111111]"
+        dark ? "bg-[#080908] text-white" : "bg-[#f6f5ef] text-[#111111]"
       }`}
     >
       <NavBar dark={dark} setDark={setDark} />
@@ -260,9 +261,7 @@ function Dashboard({ dark, setDark }) {
                 <Link
                   to="/create"
                   className={`group relative flex h-11 items-center gap-2 overflow-hidden rounded-xl px-5 text-sm font-bold shadow-[0_10px_30px_rgba(17,17,17,0.14)] transition-all duration-300 hover:-translate-y-1 hover:bg-[#B28B20] hover:text-white hover:shadow-[0_14px_35px_rgba(212,160,23,0.25)] ${
-                    dark
-                      ? "bg-[#D4A017] text-white"
-                      : "bg-gold-700 text-black"
+                    dark ? "bg-[#D4A017] text-white" : "bg-gold-700 text-black"
                   }`}
                 >
                   <span className="relative z-10 flex items-center gap-2">
@@ -394,7 +393,7 @@ function Dashboard({ dark, setDark }) {
                     dark ? "text-white/40" : "text-black/40"
                   }`}
                 >
-                  Completed Tasks
+                  Bounty Won
                 </p>
 
                 <p
@@ -454,7 +453,7 @@ function Dashboard({ dark, setDark }) {
                     dark ? "text-white/40" : "text-black/40"
                   }`}
                 >
-                  In Progress
+                  In Progress / Submitted
                 </p>
 
                 <p
@@ -661,9 +660,7 @@ function Dashboard({ dark, setDark }) {
 
                     <div
                       className={`mt-6 border-t pt-5 ${
-                        dark
-                          ? "border-white/[0.06]"
-                          : "border-black/[0.06]"
+                        dark ? "border-white/[0.06]" : "border-black/[0.06]"
                       }`}
                     >
                       <div className="flex items-center justify-between">
@@ -731,7 +728,11 @@ function Dashboard({ dark, setDark }) {
               <>
                 <div className="grid grid-cols-1 items-stretch gap-5 md:grid-cols-2">
                   {bounties.map((bounty) => (
-                    <BountyCard key={bounty._id} bounty={bounty} />
+                    <BountyCard
+                      key={bounty._id}
+                      bounty={bounty}
+                      enrolledBountyIds={enrolledBountyIds}
+                    />
                   ))}
                 </div>
 
@@ -751,9 +752,9 @@ function Dashboard({ dark, setDark }) {
                       <button
                         type="button"
                         onClick={() =>
-                          setCurrentPage((prev) => Math.max(0, prev - 1))
+                          setCurrentPage((prev) => Math.max(1, prev - 1))
                         }
-                        disabled={currentPage === 0}
+                        disabled={currentPage === 1}
                         aria-label="Previous page"
                         className={`flex h-9 w-9 items-center justify-center rounded-lg transition-all duration-200 hover:bg-[#D4A017] hover:text-white disabled:cursor-not-allowed disabled:opacity-20 disabled:hover:bg-transparent ${
                           dark
@@ -769,9 +770,7 @@ function Dashboard({ dark, setDark }) {
                           dark ? "text-white/45" : "text-black/45"
                         }`}
                       >
-                        <span className="text-[#D4A017]">
-                          {currentPage + 1}
-                        </span>
+                        <span className="text-[#D4A017]">{currentPage}</span>
 
                         <span
                           className={`mx-2 ${
@@ -788,10 +787,10 @@ function Dashboard({ dark, setDark }) {
                         type="button"
                         onClick={() =>
                           setCurrentPage((prev) =>
-                            Math.min(pagination.pages - 1, prev + 1),
+                            Math.min(pagination.pages, prev + 1),
                           )
                         }
-                        disabled={currentPage + 1 >= pagination.pages}
+                        disabled={currentPage >= pagination.pages}
                         aria-label="Next page"
                         className={`flex h-9 w-9 items-center justify-center rounded-lg transition-all duration-200 hover:bg-[#D4A017] hover:text-white disabled:cursor-not-allowed disabled:opacity-20 disabled:hover:bg-transparent ${
                           dark

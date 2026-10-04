@@ -1,4 +1,3 @@
-
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
@@ -8,17 +7,21 @@ import { useAccount } from "wagmi";
 import {
   FiArrowUpRight,
   FiCalendar,
+  FiUsers,
   FiCheckCircle,
   FiClock,
   FiLayers,
 } from "react-icons/fi";
 import { formatAmount } from "../../utils/format";
 
-const BountyCard = ({ bounty }) => {
+const BountyCard = ({ bounty, enrolledBountyIds = [] }) => {
   const navigate = useNavigate();
   const { address, isConnected } = useAccount();
   const [isEnrolling, setIsEnrolling] = useState(false);
-  const [isEnrolled, setIsEnrolled] = useState(false);
+  // const [isEnrolled, setIsEnrolled] = useState(false);
+  const [isEnrolledLocal, setIsEnrolledLocal] = useState(false);
+  const enrolledFromServer = enrolledBountyIds.includes(String(bounty._id));
+  const isEnrolled = enrolledFromServer || isEnrolledLocal;
 
   const API_URL = import.meta.env.VITE_API_URL;
 
@@ -92,8 +95,7 @@ const BountyCard = ({ bounty }) => {
   };
 
   const deadlineDate = new Date(bounty.deadline);
-  const sameYear =
-    deadlineDate.getFullYear() === new Date().getFullYear();
+  const sameYear = deadlineDate.getFullYear() === new Date().getFullYear();
 
   const deadline = deadlineDate.toLocaleDateString("en-US", {
     month: "short",
@@ -107,8 +109,7 @@ const BountyCard = ({ bounty }) => {
     bounty.token || "USDC"
   }`;
 
-  const description =
-    bounty.description || "No description provided";
+  const description = bounty.description || "No description provided";
 
   const handleEnroll = async (e) => {
     e.preventDefault();
@@ -120,18 +121,13 @@ const BountyCard = ({ bounty }) => {
 
     setIsEnrolling(true);
 
-    const loadingshowToast = showToast.loading(
-      "Enrolling in bounty..."
-    );
+    const loadingshowToast = showToast.loading("Enrolling in bounty...");
 
     try {
-      const response = await axios.post(
-        `${API_URL}/user/enrollment`,
-        {
-          bountyId: bounty._id,
-          user: address,
-        }
-      );
+      const response = await axios.post(`${API_URL}/user/enrollment`, {
+        bountyId: bounty._id,
+        user: address,
+      });
 
       if (response.status === 200 || response.status === 201) {
         showToast.success("Enrolled! Redirecting...", {
@@ -139,7 +135,7 @@ const BountyCard = ({ bounty }) => {
           duration: 2000,
         });
 
-        setIsEnrolled(true);
+        setIsEnrolledLocal(true);
         navigate(`/bounty/${bounty._id}`);
       }
     } catch (error) {
@@ -152,7 +148,7 @@ const BountyCard = ({ bounty }) => {
         {
           id: loadingshowToast,
           duration: 3000,
-        }
+        },
       );
     } finally {
       setIsEnrolling(false);
@@ -395,46 +391,28 @@ const BountyCard = ({ bounty }) => {
         </div>
 
         {/* REWARD + DEADLINE */}
+        {/* REWARD + DEADLINE */}
         <div
           className="
-            my-5 grid grid-cols-2 gap-3
-            rounded-xl
+    my-5 grid grid-cols-2 gap-3
+    rounded-xl
 
-            border border-slate-200
-            dark:border-white/[0.08]
+    border border-slate-200
+    dark:border-white/[0.08]
 
-            bg-[#fbfaf6]
-            dark:bg-[#20231f]
+    bg-[#fbfaf6]
+    dark:bg-[#20231f]
 
-            p-3
-          "
+    p-3
+  "
         >
           {/* REWARD */}
           <div className="min-w-0">
-            <p
-              className="
-                mb-1
-                text-[9px] font-semibold uppercase
-                tracking-[0.12em]
-
-                text-slate-400
-                dark:text-white/35
-              "
-            >
+            <p className="mb-1 text-[9px] font-semibold uppercase tracking-[0.12em] text-slate-400 dark:text-white/35">
               Reward
             </p>
-
             <p
-              className="
-                truncate
-                text-sm font-bold
-                tracking-[-0.01em]
-
-                text-slate-900
-                dark:text-white
-
-                sm:text-base
-              "
+              className="truncate text-sm font-bold tracking-[-0.01em] text-slate-900 dark:text-white sm:text-base"
               title={rewardDisplay}
             >
               {rewardDisplay}
@@ -442,40 +420,12 @@ const BountyCard = ({ bounty }) => {
           </div>
 
           {/* DEADLINE */}
-          <div
-            className="
-              min-w-0
-
-              border-l border-slate-200
-              dark:border-white/[0.08]
-
-              pl-3
-            "
-          >
-            <p
-              className="
-                mb-1 flex items-center gap-1
-
-                text-[9px] font-semibold uppercase
-                tracking-[0.12em]
-
-                text-slate-400
-                dark:text-white/35
-              "
-            >
+          <div className="min-w-0 border-l border-slate-200 dark:border-white/[0.08] pl-3">
+            <p className="mb-1 flex items-center gap-1 text-[9px] font-semibold uppercase tracking-[0.12em] text-slate-400 dark:text-white/35">
               <FiCalendar size={10} />
               Deadline
             </p>
-
-            <p
-              className="
-                truncate
-                text-sm font-semibold
-
-                text-slate-700
-                dark:text-white/70
-              "
-            >
+            <p className="truncate text-sm font-semibold text-slate-700 dark:text-white/70">
               {deadline}
             </p>
           </div>
@@ -574,63 +524,44 @@ const BountyCard = ({ bounty }) => {
                 "
               />
 
-              <span className="truncate">
-                Manage
-              </span>
+              <span className="truncate">Manage</span>
             </Link>
           ) : isEnrolled ? (
             /* ENROLLED */
-            <Link
-              to={`/bounty/${bounty._id}`}
+            <div
               className="
-                relative
-                flex min-w-0 items-center justify-center
-                gap-1.5 overflow-hidden rounded-xl
+      relative
+      flex min-w-0 items-center justify-center
+      gap-1.5 overflow-hidden rounded-xl
 
-                bg-[#d4af37]
-                dark:bg-[#e0bd45]
+      border border-[#d4af37]/30
+      dark:border-[#d4af37]/25
 
-                px-3 py-3
+      bg-[#f4ecd5]/60
+      dark:bg-[#d4af37]/[0.08]
 
-                text-xs font-bold
+      px-3 py-3
 
-                text-[#171714]
-                dark:text-[#171714]
+      text-xs font-semibold
 
-                shadow-sm
+      text-[#8f6c12]
+      dark:text-[#d4af37]/80
 
-                transition-all duration-300
+      cursor-default
 
-                hover:bg-[#c49b2c]
-                dark:hover:bg-[#d2ac2f]
-
-                active:scale-[0.98]
-
-                sm:text-sm
-              "
+      sm:text-sm
+    "
+              aria-label="You are enrolled in this bounty"
             >
-              <span
-                className="
-                  absolute bottom-0 left-0
-                  h-[2px] w-full
-
-                  bg-[#d4af37]
-                  dark:bg-[#171714]
-
-                  opacity-80
-                "
-              />
-
-              <span className="truncate">
-                Continue
-              </span>
-            </Link>
+              <FiCheckCircle size={14} className="shrink-0" />
+              <span className="truncate">Enrolled</span>
+            </div>
           ) : status === "active" ? (
             /* ACTIVE */
             <button
               onClick={handleEnroll}
               disabled={isEnrolling}
-              aria-busy={isEnrolling}
+              // aria-busy={isEnrolling}
               className="
                 relative
                 min-w-0 overflow-hidden rounded-xl
@@ -690,15 +621,11 @@ const BountyCard = ({ bounty }) => {
                     "
                   />
 
-                  <span className="truncate">
-                    Enrolling
-                  </span>
+                  <span className="truncate">Enrolling</span>
                 </span>
               ) : (
                 <span className="flex items-center justify-center gap-1.5">
-                  <span className="truncate">
-                    Start Task
-                  </span>
+                  <span className="truncate">Start Task</span>
 
                   <FiArrowUpRight
                     size={14}
@@ -716,24 +643,24 @@ const BountyCard = ({ bounty }) => {
             /* DISABLED */
             <button
               disabled
-              title={
-                status === "completed"
-                  ? "Bounty completed"
-                  : status === "cancelled"
-                    ? "Bounty cancelled"
-                    : status === "ended"
-                      ? "Bounty ended"
-                      : "Bounty not started yet"
-              }
-              aria-label={
-                status === "completed"
-                  ? "Bounty completed"
-                  : status === "cancelled"
-                    ? "Bounty cancelled"
-                    : status === "ended"
-                      ? "Bounty ended"
-                      : "Bounty not started yet"
-              }
+              // title={
+              //   status === "completed"
+              //     ? "Bounty completed"
+              //     : status === "cancelled"
+              //       ? "Bounty cancelled"
+              //       : status === "ended"
+              //         ? "Bounty ended"
+              //         : "Bounty not started yet"
+              // }
+              // aria-label={
+              //   status === "completed"
+              //     ? "Bounty completed"
+              //     : status === "cancelled"
+              //       ? "Bounty cancelled"
+              //       : status === "ended"
+              //         ? "Bounty ended"
+              //         : "Bounty not started yet"
+              // }
               className="
                 flex min-w-0 items-center justify-center
                 gap-1.5 overflow-hidden rounded-xl
@@ -757,15 +684,9 @@ const BountyCard = ({ bounty }) => {
               "
             >
               {status === "completed" ? (
-                <FiCheckCircle
-                  size={14}
-                  className="shrink-0"
-                />
+                <FiCheckCircle size={14} className="shrink-0" />
               ) : (
-                <FiClock
-                  size={14}
-                  className="shrink-0"
-                />
+                <FiClock size={14} className="shrink-0" />
               )}
 
               <span className="truncate">

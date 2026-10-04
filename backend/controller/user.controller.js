@@ -2,6 +2,7 @@ const { calculateBountyStatus } = require("../utils/bountyUtils");
 const User = require("../modules/user.module");
 const Bounty = require("../modules/bounty.module");
 const Submission = require("../modules/submission.module");
+const Enrollment = require("../modules/enrollment.module");
 
 const getOrCreateUserProfile = async (req, res) => {
   const wallet = req.params.wallet.toLowerCase();
@@ -43,9 +44,10 @@ const getUserDashboard = async (req, res) => {
       { new: true, upsert: true, setDefaultsOnInsert: true },
     );
 
-    const [createdBounties, submissions] = await Promise.all([
+    const [createdBounties, submissions, enrollments] = await Promise.all([
       Bounty.find({ creator: wallet }),
       Submission.find({ user: wallet }),
+      Enrollment.find({ user: wallet }),
     ]);
 
     const statuses = createdBounties.map((b) => calculateBountyStatus(b));
@@ -71,9 +73,22 @@ const getUserDashboard = async (req, res) => {
         walletAddress: wallet,
         reputationScore: user.reputationScore || 0,
         totalEarnings: totalEarnings.toString(),
+        tasksCompleted: user.stats?.tasksCompleted || 0,
       },
       bounties: bountyStats,
       submissions: submissionStats,
+      enrolledBountyIds: enrollments.map((e) => String(e.bountyId)),
+
+      // rewards: (user.claimedRewards || [])
+      //   .sort((a, b) => new Date(b.claimedAt) - new Date(a.claimedAt))
+      //   .slice(0, 20) // cap at 20 for the dashboard
+      //   .map((r) => ({
+      //     bountyId: r.bountyId,
+      //     bountyTitle: r.bountyTitle,
+      //     amount: r.amount,
+      //     amountFormatted: r.amountFormatted,
+      //     claimedAt: r.claimedAt,
+      //   })),
     });
   } catch (err) {
     console.error("Failed to fetch dashboard stats", err);

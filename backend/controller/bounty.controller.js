@@ -25,6 +25,7 @@ const createBounty = async (req, res) => {
       blockchainId,
       txHash,
       isOnChain,
+      bountyContract,
     } = req.body;
 
     if (!title) return res.status(400).json({ message: "Title is required" });
@@ -59,6 +60,7 @@ const createBounty = async (req, res) => {
       blockchainId: blockchainId ?? null,
       txHash: txHash ?? null,
       isOnChain: isOnChain ?? false,
+      bountyContract: bountyContract ?? null,
     });
 
     res.status(201).json({
@@ -68,6 +70,7 @@ const createBounty = async (req, res) => {
         title: bounty.title,
         creator: bounty.creator,
         blockchainId: bounty.blockchainId,
+        bountyContract: bounty.bountyContract,
       },
     });
   } catch (error) {
@@ -106,17 +109,31 @@ const getBounty = async (req, res) => {
       .sort({ submittedAt: -1 })
       .lean();
 
-    // bounty.status = bounty.currentStatus;
+    const isCreator =
+      req.query.wallet &&
+      bounty.creator?.toLowerCase() === req.query.wallet.toLowerCase();
+
+    // Public shape: addresses and timestamps only
+    const publicSubmissions = submissions.map((s) => ({
+      _id: s._id,
+      user: s.user,
+      submittedAt: s.submittedAt,
+      status: s.status,
+    }));
+
+    // Creator shape: full content
+    const creatorSubmissions = submissions;
 
     res.status(200).json({
       message: "Success",
       bounty: {
         ...bounty.toObject({ virtuals: true }),
-        status: bounty.currentStatus, // your virtual
+        status: bounty.currentStatus,
         submissions: {
           count: bounty.submissions?.count ?? submissions.length,
           maxSubmissions: bounty.submissions?.maxSubmissions ?? 100,
-          items: submissions,
+          items: isCreator ? creatorSubmissions : publicSubmissions,
+          isCreatorView: Boolean(isCreator),
         },
       },
     });
@@ -224,7 +241,7 @@ const deleteBounty = async (req, res) => {
   const bounty = await Bounty.findByIdAndDelete(req.params.id);
   if (!bounty) return res.status(404).json({ message: "Bounty not found" });
 
-  res.status(200).json({ message: "Deleted sucessfully" });
+  res.status(200).json({ message: "Deleted successfully" });
 };
 
 const bountyTags = async (req, res) => {

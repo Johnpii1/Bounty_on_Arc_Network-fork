@@ -1,16 +1,6 @@
 // utils/bountyUtils.js
 const { getDb } = require("../config/db");
 
-// function calculateBountyStatus(startDate, deadline) {
-//   const now = new Date();
-//   const start = new Date(startDate);
-//   const end = new Date(deadline);
-
-//   if (now < start) return "upcoming";
-//   if (now >= start && now <= end) return "active";
-//   return "completed";
-// }
-
 function calculateBountyStatus(bounty) {
   if (bounty.lifecycleStatus === "cancelled") return "cancelled";
   if (bounty.lifecycleStatus === "completed") return "completed";

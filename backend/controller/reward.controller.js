@@ -47,8 +47,8 @@ const distributeRewards = async (req, res) => {
     return res.status(400).json({ error: "Invalid chainId" });
   }
 
-  if (!txHash || !blockchainId || !bountyContract) {
-    return res.status(400).json({ error: "All fields required" });
+  if (!txHash || !blockchainId) {
+    return res.status(400).json({ error: "Missing txHash or blockchainId" });
   }
 
   try {
@@ -57,7 +57,15 @@ const distributeRewards = async (req, res) => {
       return res.status(404).json({ error: "Bounty not found" });
     }
 
-    // Guard: don't re-distribute the same bounty
+    const contractAddress = bounty.bountyContract || bountyContract;
+
+    if (!contractAddress) {
+      return res.status(400).json({
+        error: "No contract address linked to this bounty",
+      });
+    }
+
+    // Guard: don't re-distribute the same bounty.
     if (bounty.rewardsAssignedOnChain) {
       return res.status(400).json({ error: "Rewards already distributed" });
     }
@@ -92,7 +100,7 @@ const distributeRewards = async (req, res) => {
     const winnerDetails = await Promise.all(
       winners.map(async (winner) => {
         const amountWei = await publicClient.readContract({
-          address: bountyContract,
+          address: contractAddress,
           abi: BOUNTY_ABI,
           functionName: "claimableRewards",
           args: [BigInt(blockchainId), winner],
@@ -112,6 +120,7 @@ const distributeRewards = async (req, res) => {
       blockchainId,
       chainId: chainIdNum,
       bountyContract,
+      bountyTitle: bounty.title,
       winnerAddress: w.winnerAddress,
       amount: w.amountWei,
       amountFormatted: w.amountFormatted,
@@ -132,30 +141,29 @@ const distributeRewards = async (req, res) => {
 
     // 🔥 STEP 5: update Bounty summary + mark distributed
     bounty.rewardsAssignedOnChain = true;
-    bounty.winners = {
-      assignedCount: winnerDetails.length,
-      assignedAt: new Date(),
-      distributionTxHash: txHash,
-    };
+    bounty.distributionTxHash = txHash;
+    bounty.distributedAt = new Date();
+    bounty.assignedCount = winnerDetails.length;
+    bounty.winners.assigned = winnerDetails.map((w) => w.winnerAddress);
     await bounty.save();
 
-    // 🔥 STEP 6: update user earnings (numeric-safe)
+    // // 🔥 STEP 5: update Bounty summary + mark distributed
+    // bounty.rewardsAssignedOnChain = true;
+    // bounty.winners = {
+    //   assignedCount: winnerDetails.length,
+    //   assignedAt: new Date(),
+    //   distributionTxHash: txHash,
+    // };
+    // await bounty.save();
+
+    // 🔥 STEP 6: increment completed tasks for each winner
     await Promise.all(
       winnerDetails.map((w) =>
         User.updateOne(
           { walletAddress: w.winnerAddress },
           {
-            $inc: { totalEarningsWei: w.amountWei }, // store wei as string/decimal
-            $set: { lastUpdated: new Date() },
-            $push: {
-              earnedFrom: {
-                bountyId: bounty._id,
-                bountyTitle: bounty.title,
-                amountWei: w.amountWei,
-                amountFormatted: w.amountFormatted,
-                earnedAt: new Date(),
-              },
-            },
+            $inc: { "stats.tasksCompleted": 1 },
+            $set: { lastLogin: new Date() },
           },
           { upsert: true },
         ),
@@ -209,7 +217,7 @@ const getWinners = async (req, res) => {
       claimed,
       distributedAt: bounty.winners?.assignedAt || null,
       isDistributed: rewards.length > 0,
-      payoutType: bounty.winners?.payoutType || null,
+      payoutType: bounty.payoutType || null,
     });
   } catch (err) {
     console.error("Failed to fetch winners:", err);
@@ -328,21 +336,63 @@ const claimReward = async (req, res) => {
       // Someone else flipped it in between
       return res.status(400).json({ error: "Reward already claimed" });
     }
+    // 🔥 NEW: check whether every reward for this bounty has been claimed
+    const remaining = await Reward.countDocuments({
+      bountyId: id,
+      status: "assigned",
+    });
+
+    if (remaining === 0) {
+      await Bounty.updateOne(
+        { _id: id, lifecycleStatus: { $ne: "completed" } },
+        { $set: { lifecycleStatus: "completed" } },
+      );
+    }
 
     // Mirror into user's claimed history
+    // await User.updateOne(
+    //   { walletAddress: winnerAddress.toLowerCase() },
+    //   {
+    //     $push: {
+    //       claimedRewards: {
+    //         bountyId: id,
+    //         bountyTitle: updated.bountyTitle,
+    //         amountWei: updated.amount,
+    //         amountFormatted: updated.amountFormatted,
+    //         claimedAt: updated.claimedAt,
+    //         txHash,
+    //       },
+    //     },
+    //     $inc: { "stats.tasksCompleted": 1 },
+    //   },
+    //   { upsert: true },
+    // );
+
+    // Mirror into user's claimed history and increment total earnings
+    // NOTE: amountFormatted is a decimal string from formatEther.
+    // Number() is lossy for amounts below 1e-15 USDC. Our rewards are
+    // always >= 0.01 USDC, so this is safe. If sub-cent rewards are
+    // ever supported, store amounts as strings and sum on read.
+    const numericAmount = Number(updated.amountFormatted || "0");
+
     await User.updateOne(
       { walletAddress: winnerAddress.toLowerCase() },
       {
         $push: {
           claimedRewards: {
             bountyId: id,
-            bountyTitle: updated.bountyId?.title,
-            amountWei: updated.amount,
-            amountFormatted: updated.amountFormatted,
+            bountyTitle: updated.bountyTitle || "Untitled bounty",
+            amountWei: updated.amount, // ← was: amount
+            amountFormatted: updated.amountFormatted, // ← added
             claimedAt: updated.claimedAt,
             txHash,
           },
         },
+        $inc: {
+          totalEarnings: numericAmount, // ← dashboard reads this
+          // "stats.tasksCompleted": 1,
+        },
+        $set: { lastLogin: new Date() },
       },
       { upsert: true },
     );
