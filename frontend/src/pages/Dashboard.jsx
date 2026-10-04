@@ -28,9 +28,8 @@ function Dashboard({ dark, setDark }) {
   const [bounties, setBounties] = useState([]);
   const [filter, setFilter] = useState("all");
   const [pagination, setPagination] = useState(null);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [showScrollTop, setShowScrollTop] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const [stats, setStats] = useState({
     completed: 0,
     inProgress: 0,
