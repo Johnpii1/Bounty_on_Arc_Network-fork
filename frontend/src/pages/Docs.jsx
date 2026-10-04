@@ -292,7 +292,7 @@ export default function Docs() {
             <div className="h-5 w-px bg-black/10 dark:bg-white/10" />
 
             <a
-              href="https://github.com/"
+              href="https://github.com/Osfoce/Bounty_on_Arc_Network"
               target="_blank"
               rel="noreferrer"
               className="flex items-center gap-2 text-sm text-black/60 transition hover:text-black dark:text-white/60 dark:hover:text-white"
@@ -1005,37 +1005,58 @@ export default function Docs() {
             </section>
 
             {/* SMART CONTRACT */}
-            <section
-              id="smart-contract"
-              className="mt-28 scroll-mt-28 border-t border-black/[0.08] pt-20 dark:border-white/[0.08]"
-            >
-              <SectionTitle
-                eyebrow="Blockchain"
-                title="Smart Contract"
-              >
-                The smart contract handles the blockchain-side bounty and
-                reward logic. The exact deployed contract address should be
-                taken from the current Happy Bounty deployment configuration.
-              </SectionTitle>
+            {/* SMART CONTRACT */}
+<section
+  id="smart-contract"
+  className="mt-28 scroll-mt-28 border-t border-black/[0.08] pt-20 dark:border-white/[0.08]"
+>
+  <SectionTitle
+    eyebrow="Blockchain"
+    title="Smart Contract"
+  >
+    The smart contract handles the blockchain-side bounty and
+    reward logic. The exact deployed contract address should be
+    taken from the current Happy Bounty deployment configuration.
+  </SectionTitle>
 
-              <div className="overflow-hidden rounded-2xl border border-black/10 bg-[#0d0e0d] shadow-xl dark:border-white/10">
-                <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
-                  <div className="flex items-center gap-2">
-                    <FiCode size={15} className="text-[#D4AF37]" />
+  <div className="overflow-hidden rounded-2xl border border-black/10 bg-[#0d0e0d] shadow-xl dark:border-white/10">
+    <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+      <div className="flex items-center gap-2">
+        <FiCode size={15} className="text-[#D4AF37]" />
 
-                    <span className="text-xs text-white/50">
-                      bounty-example.json
-                    </span>
-                  </div>
+        <span className="text-xs text-white/50">
+          bounty-example.json
+        </span>
+      </div>
 
-                  <CopyButton text={codeExample} />
-                </div>
+      <CopyButton text={codeExample} />
+    </div>
 
-                <pre className="overflow-x-auto p-5 text-xs leading-7 text-white/80">
-                  <code>{codeExample}</code>
-                </pre>
-              </div>
-            </section>
+    <pre className="overflow-x-auto p-5 text-xs leading-7 text-white/80">
+      <code>{codeExample}</code>
+    </pre>
+  </div>
+
+  {/* VIEW SOURCE CODE */}
+  <div className="mt-4">
+    <a
+      href="https://github.com/Osfoce/Bounty_on_Arc_Network"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group inline-flex items-center gap-2 rounded-xl border border-[#D4AF37]/30 bg-[#D4AF37]/10 px-4 py-2.5 text-sm font-semibold text-[#9B7610] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#D4AF37] hover:bg-[#D4AF37]/15 hover:shadow-[0_8px_25px_rgba(212,175,55,0.12)] dark:text-[#D4AF37]"
+    >
+      <FiGithub size={16} />
+
+      <span>View Source Code</span>
+
+      <FiExternalLink
+        size={14}
+        className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+      />
+    </a>
+  </div>
+</section>
+
 
             {/* FAQ */}
             <section
@@ -1092,7 +1113,7 @@ export default function Docs() {
 
               <div className="grid gap-4 md:grid-cols-2">
                 <a
-                  href="https://github.com/"
+                  href="https://github.com/Osfoce/Bounty_on_Arc_Network"
                   target="_blank"
                   rel="noreferrer"
                   className="group rounded-2xl border border-black/[0.08] bg-white p-6 transition hover:-translate-y-1 hover:border-[#D4AF37]/50 dark:border-white/[0.08] dark:bg-[#111311]"
