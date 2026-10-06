@@ -669,7 +669,7 @@ function LandingPage({ dark, setDark }) {
       <LiveTricker />
 
       {/* =========================================
-          WHY FRESH BOUNTY
+          WHY HAPPY BOUNTY
       ========================================== */}
       <div>
         <Features />

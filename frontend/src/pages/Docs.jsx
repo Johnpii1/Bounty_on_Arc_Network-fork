@@ -1005,7 +1005,6 @@ export default function Docs() {
             </section>
 
             {/* SMART CONTRACT */}
-            {/* SMART CONTRACT */}
 <section
   id="smart-contract"
   className="mt-28 scroll-mt-28 border-t border-black/[0.08] pt-20 dark:border-white/[0.08]"
@@ -1040,7 +1039,7 @@ export default function Docs() {
   {/* VIEW SOURCE CODE */}
   <div className="mt-4">
     <a
-      href="https://github.com/Osfoce/Bounty_on_Arc_Network"
+      href="https://github.com/Osfoce/bounty-arc-solidity-contract"
       target="_blank"
       rel="noopener noreferrer"
       className="group inline-flex items-center gap-2 rounded-xl border border-[#D4AF37]/30 bg-[#D4AF37]/10 px-4 py-2.5 text-sm font-semibold text-[#9B7610] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#D4AF37] hover:bg-[#D4AF37]/15 hover:shadow-[0_8px_25px_rgba(212,175,55,0.12)] dark:text-[#D4AF37]"
