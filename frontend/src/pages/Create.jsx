@@ -459,7 +459,7 @@ function Create() {
 
     const selectedChainId = bountyData.network;
 
-    console.log("Selected chain ID:", selectedChainId);
+    // console.log("Selected chain ID:", selectedChainId);
 
     if (!selectedChainId) {
       showToast.error("Please select a network");
@@ -503,15 +503,15 @@ function Create() {
       }
     }
 
-    console.log("chain is correct");
+    // console.log("chain is correct");
 
     const finalWinnersAllowed = multipleWinner ? winnerCount : 1;
 
     const finalPayoutType = multipleWinner ? selectedPayoutType : "SINGLE";
 
-    console.log(
-      `Final payout type: ${finalPayoutType}, winners allowed: ${finalWinnersAllowed}`,
-    );
+    // console.log(
+    //   `Final payout type: ${finalPayoutType}, winners allowed: ${finalWinnersAllowed}`,
+    // );
 
     const finalPercentages =
       multipleWinner && selectedPayoutType === "MULTI_PERCENTAGE"
@@ -539,11 +539,11 @@ function Create() {
       let blockchainId =
         eventData?.bountyId != null ? Number(eventData.bountyId) : null;
 
-      console.log(
-        `Token type ${bountyData.token} reward ${bountyData.reward} total amount ${totalAmount} in wei`,
-      );
+      // console.log(
+      //   `Token type ${bountyData.token} reward ${bountyData.reward} total amount ${totalAmount} in wei`,
+      // );
 
-      console.log("Full eventData:", eventData);
+      // console.log("Full eventData:", eventData);
       // This blockchainId is currently causeing error on various networks...
       if (blockchainId === null || blockchainId === undefined) {
         // Fallback chain — handles Injective's sparse logs and Creditcoin's
@@ -564,7 +564,7 @@ function Create() {
         return;
       }
       // 8. Save to backend with blockchain info
-      console.log("posting to db");
+      // console.log("posting to db");
       const saveResponse = await axios.post(`${API_URL}/bounty/create`, {
         ...backendData,
         blockchainId,
@@ -573,7 +573,7 @@ function Create() {
         bountyContract: getBountyContract(selectedChainId), // ← add
         // creator: address,
       });
-      console.log("posting sucess");
+      // console.log("posting sucess");
 
       if (saveResponse.status === 201) {
         showToast.success("Bounty created on-chain and saved!");

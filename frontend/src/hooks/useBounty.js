@@ -114,8 +114,8 @@ export const useBounty = () => {
       // Wait for receipt using public client
       const receipt = await publicClient.waitForTransactionReceipt({ hash });
 
-      console.log("Receipt logs:", receipt.logs);
-      console.log("Full receipt:", receipt);
+      // console.log("Receipt logs:", receipt.logs);
+      // console.log("Full receipt:", receipt);
 
       if (receipt.status !== "success") {
         throw new Error("Transaction reverted");
@@ -176,8 +176,8 @@ export const useBounty = () => {
    */
 
   const fetchBountyIdFromTx = async (txHash) => {
-    console.log(`Fetching bountyId from txHash: ${txHash}`);
-    console.log(typeof txHash);
+    // console.log(`Fetching bountyId from txHash: ${txHash}`);
+    // console.log(typeof txHash);
 
     if (!txHash) {
       showToast.error("Transaction hash is required");
@@ -193,8 +193,8 @@ export const useBounty = () => {
         throw new Error("Transaction reverted");
       }
 
-      console.log("Receipt logs for bountyId fetch:", receipt.logs);
-      console.log("Full receipt for bountyId fetch:", receipt);
+      // console.log("Receipt logs for bountyId fetch:", receipt.logs);
+      // console.log("Full receipt for bountyId fetch:", receipt);
 
       // ---- Primary: parse the BountyCreated event ----
       try {
