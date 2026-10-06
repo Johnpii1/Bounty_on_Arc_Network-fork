@@ -14,7 +14,7 @@ const features = [
     icon: FiCode,
     title: "Built for Arc",
     description:
-      "Fresh Bounty is being shaped around Arc as the infrastructure for a focused on-chain bounty experience.",
+      "Happy Bounty is being shaped around Arc as the infrastructure for a focused on-chain bounty experience.",
   },
   {
     icon: FiDollarSign,
@@ -169,7 +169,7 @@ export default function BuiltForWeb3() {
               dark ? "text-white/55" : "text-[#77736b]"
             }`}
           >
-            Fresh Bounty combines bounty discovery, wallet interaction,
+            Happy Bounty combines bounty discovery, wallet interaction,
             and on-chain reward flows into a practical marketplace
             designed around Arc and USDC.
           </p>
