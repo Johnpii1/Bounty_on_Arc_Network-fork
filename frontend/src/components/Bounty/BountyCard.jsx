@@ -150,14 +150,6 @@ const BountyCard = ({ bounty, enrolledBountyIds = [] }) => {
 
   const description = bounty.description || "No description provided";
 
-  // Refresh the time remaining every minute to keep it up-to-date
-  // const [, forceTick] = useState(0);
-  //
-  // useEffect(() => {
-  // const id = setInterval(() => forceTick((t) => t + 1), 60000);
-  // return () => clearInterval(id);
-  // }, []);
-
   const handleEnroll = async (e) => {
     e.preventDefault();
 
@@ -361,17 +353,7 @@ const BountyCard = ({ bounty, enrolledBountyIds = [] }) => {
         </h3>
 
         {/* DESCRIPTION */}
-        <p
-          className="
-            min-w-0 min-h-[72px] overflow-hidden
-            text-sm leading-6
-
-            text-slate-500
-            dark:text-white/50
-
-            line-clamp-3
-          "
-        >
+        <p className="min-w-0 min-h-[72px] overflow-hidden text-sm leading-6 text-slate-500 dark:text-white/50 line-clamp-3 whitespace-pre-wrap">
           {description}
         </p>
 
