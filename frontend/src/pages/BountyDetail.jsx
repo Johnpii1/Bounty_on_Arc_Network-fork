@@ -925,9 +925,12 @@ const BountyDetail = () => {
               )}
 
               {/* Description */}
-              <p className="text-[#625e55] dark:text-white/65 mb-6 text-sm sm:text-base leading-relaxed">
+              <p className="text-[#625e55] dark:text-white/65 mb-6 text-sm sm:text-base leading-relaxed whitespace-pre-wrap">
                 {bounty.description}
               </p>
+
+              {/* Divider */}
+              <div className="my-6 border-t border-[#e7e3da] dark:border-white/10" />
 
               {/* Details grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-6">

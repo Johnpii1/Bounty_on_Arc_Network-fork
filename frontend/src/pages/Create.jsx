@@ -60,7 +60,7 @@ function Create() {
     title: "",
     description: "",
     category: "",
-    network: "",
+    network: supportedChains[0]?.id ?? "", // "5042",
     tags: [], // string for input (will convert later)
     startDate: "",
     deadline: "",
@@ -317,27 +317,6 @@ function Create() {
       `${percentageArray.length} winners selected with percentage split`,
     );
   };
-  // const handlePercentSplitConfirm = () => {
-  //   if (percentageArray.length === 0) {
-  //     showToast.error("Please select a preset or enter percentages");
-  //     return;
-  //   }
-
-  //   const total = percentageArray.reduce((sum, p) => sum + p, 0);
-
-  //   if (total !== 100) {
-  //     showToast.error("Percentages must sum to 100");
-  //     return;
-  //   }
-
-  //   setSelectedPayoutType("MULTI_PERCENTAGE");
-  //   setWinnerCount(percentageArray.length);
-  //   setShowPercentModal(false);
-
-  //   showToast.success(
-  //     `${percentageArray.length} winners selected with percentage split`,
-  //   );
-  // };
 
   const handlePresetSelect = (preset) => {
     setPercentageArray(preset);
@@ -833,12 +812,13 @@ function Create() {
                     </div>
 
                     <div>
-                      <h2 className="text-xl font-bold">Choose Network</h2>
+                      <h2 className="text-xl font-bold">Network</h2>
 
                       <p
                         className={`text-sm mt-1 ${dark ? "text-white/55" : "text-[#817b70]"}`}
                       >
-                        Select where your bounty will be created.
+                        Happy Bounty runs on Arc, where USDC is the native gas
+                        and reward asset.
                       </p>
                     </div>
                   </div>
@@ -846,23 +826,44 @@ function Create() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
                       <label
-                        className={`block text-xs font-semibold uppercase tracking-wider  mb-2.5 ${labelClass}`}
+                        className={`block text-xs font-semibold uppercase tracking-wider mb-2.5 ${labelClass}`}
                       >
                         Blockchain Network
                       </label>
-                      <select
-                        onChange={handleChainChange}
-                        value={bountyData.network}
-                        className={selectClass}
-                      >
-                        <option value="">Select Network</option>
 
-                        {supportedChains.map((chain) => (
-                          <option key={chain.id} value={chain.id}>
-                            {chain.name}
-                          </option>
-                        ))}
-                      </select>
+                      <div
+                        className={`flex items-center gap-3 w-full rounded-xl px-4 py-3 cursor-default ${
+                          dark
+                            ? "bg-[#111311] border border-white/10"
+                            : "bg-white border border-[#ddd9ce]"
+                        }`}
+                      >
+                        <div
+                          className={`flex h-6 w-6 items-center justify-center rounded-full shrink-0 ${
+                            dark
+                              ? "bg-[#D4AF37]/15 text-[#D4AF37]"
+                              : "bg-[#f4ecd5] text-[#8f6c12]"
+                          }`}
+                        >
+                          <FiShield size={13} />
+                        </div>
+
+                        <span
+                          className={`text-sm font-semibold ${
+                            dark ? "text-white" : "text-[#171714]"
+                          }`}
+                        >
+                          Arc
+                        </span>
+
+                        <span
+                          className={`ml-auto text-[10px] font-semibold uppercase tracking-wider ${
+                            dark ? "text-white/35" : "text-[#99958a]"
+                          }`}
+                        >
+                          USDC native
+                        </span>
+                      </div>
                     </div>
 
                     <div>
@@ -902,8 +903,9 @@ function Create() {
                     <FiShield className={`${goldTextClass} mt-0.5 shrink-0`} />
 
                     <p className={`text-xs leading-relaxed ${mutedClass}`}>
-                      Your selected network determines where the bounty contract
-                      transaction will be executed.
+                      Arc uses USDC to pay gas. That means the reward you set
+                      and the gas to create this bounty are paid in the same
+                      asset — no bridging, no second token.
                     </p>
                   </div>
                 </div>
@@ -970,7 +972,7 @@ function Create() {
                           updateBountyData("description", e.target.value)
                         }
                         className={`${inputClass} h-40 resize-none`}
-                        placeholder="Describe the task, requirements, deliverables, and expectations..."
+                        placeholder="Describe the task, requirements, deliverables, and expectations. Line breaks are preserved."
                       />
                     </div>
 
