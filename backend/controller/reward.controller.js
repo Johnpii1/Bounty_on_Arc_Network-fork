@@ -3,7 +3,8 @@ const { formatEther, parseEventLogs } = require("viem");
 
 const Bounty = require("../modules/bounty.module");
 const Reward = require("../modules/reward.module");
-const User = require("../modules/user.module"); // adjust path/name
+const User = require("../modules/user.module");
+const Submission = require("../modules/submission.module");
 const { getPublicClient } = require("../config/chains");
 const { BOUNTY_ABI } = require("../config/abi");
 
@@ -147,14 +148,25 @@ const distributeRewards = async (req, res) => {
     bounty.winners.assigned = winnerDetails.map((w) => w.winnerAddress);
     await bounty.save();
 
-    // // 🔥 STEP 5: update Bounty summary + mark distributed
-    // bounty.rewardsAssignedOnChain = true;
-    // bounty.winners = {
-    //   assignedCount: winnerDetails.length,
-    //   assignedAt: new Date(),
-    //   distributionTxHash: txHash,
-    // };
-    // await bounty.save();
+    // 🔥 STEP 5b: update submission statuses
+    // Winners → accepted, everyone else on this bounty → rejected
+    const winnerAddresses = winnerDetails.map((w) => w.winnerAddress);
+
+    await Submission.updateMany(
+      {
+        bountyId: bounty._id,
+        user: { $in: winnerAddresses },
+      },
+      { $set: { status: "accepted" } },
+    );
+
+    await Submission.updateMany(
+      {
+        bountyId: bounty._id,
+        user: { $nin: winnerAddresses },
+      },
+      { $set: { status: "rejected" } },
+    );
 
     // 🔥 STEP 6: increment completed tasks for each winner
     await Promise.all(

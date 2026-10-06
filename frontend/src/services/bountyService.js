@@ -34,7 +34,7 @@ export const prepareCreateBountyTx = ({ bountyData, account, chainId }) => {
     winnersAllowed: bountyData.winnersAllowed,
     payoutType: bountyData.payoutType,
   });
-  console.log(`Payout type: ${payoutType} (0 for single, 1 for multiple)`);
+  // console.log(`Payout type: ${payoutType} (0 for single, 1 for multiple)`);
   // Contract fee is 7% (700 basis points). Keep in sync with FEE_PERCENT().
   const rewardWei = parseEther(bountyData.reward.toString());
   const feeWei = (rewardWei * 700n) / 10000n;
@@ -67,9 +67,9 @@ export const prepareClaimTx = ({ bountyId, account, chainId }) => {
  * Read claimable reward (for viem OR wagmi)
  */
 export const getClaimableConfig = ({ bountyId, user, chainId }) => {
-  console.log(
-    `Getting claimable rewards for bountyId: ${bountyId}, user: ${user}, chainId: ${chainId}`,
-  );
+  // console.log(
+  //   `Getting claimable rewards for bountyId: ${bountyId}, user: ${user}, chainId: ${chainId}`,
+  // );
   return {
     address: getBountyContract(chainId),
     abi: BOUNTY_ABI,
