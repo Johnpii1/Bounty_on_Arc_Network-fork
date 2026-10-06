@@ -66,15 +66,25 @@ function LandingPage({ dark, setDark }) {
   useEffect(() => {
     const fetchFeaturedBounties = async () => {
       try {
-        const response = await axios.get(`${API_URL}/task`, {
+        const response = await axios.get(`${API_URL}/bounty/bounties`, {
           params: {
             status: "active",
             limit: 3,
-            page: 0,
+            page: 1,
           },
         });
 
-        setFeaturedBounties(response.data.bounties || []);
+        let bounties = response.data.bounties || [];
+
+        // 2. Fall back to recent if no active
+        if (bounties.length === 0) {
+          const recentRes = await axios.get(`${API_URL}/bounty/bounties`, {
+            params: { limit: 3, page: 1 }, // no status filter → newest first
+          });
+          bounties = recentRes.data.bounties || [];
+        }
+
+        setFeaturedBounties(bounties);
       } catch (err) {
         console.error("Error fetching featured bounties:", err);
       } finally {
@@ -84,7 +94,7 @@ function LandingPage({ dark, setDark }) {
 
     const fetchStats = async () => {
       try {
-        const allBounties = await axios.get(`${API_URL}/task`, {
+        const allBounties = await axios.get(`${API_URL}/bounty/bounties`, {
           params: {
             limit: 1,
           },
@@ -314,10 +324,10 @@ function LandingPage({ dark, setDark }) {
           {/* VIEW ALL */}
           <Link
             to="/dashboard"
-              onClick={(e) => {
-                e.preventDefault();
-                handleNavigate("/dashboard");
-              }}
+            onClick={(e) => {
+              e.preventDefault();
+              handleNavigate("/dashboard");
+            }}
             className={`
               group inline-flex w-fit items-center gap-2
               rounded-xl border px-4 py-2.5
@@ -530,10 +540,10 @@ function LandingPage({ dark, setDark }) {
 
               <Link
                 to="/dashboard"
-                  onClick={(e) => {
-                e.preventDefault();
-                handleNavigate("/dashboard");
-              }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavigate("/dashboard");
+                }}
                 className={`
                   mt-6 inline-flex items-center gap-2
                   rounded-xl border px-5 py-2.5

@@ -1,7 +1,7 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
-// import showToast from "react-hot-showToast";
+import { useNav } from "../../hooks/useNav";
 import { showToast } from "../UI/Toast";
 import { useAccount } from "wagmi";
 import {
@@ -15,7 +15,7 @@ import {
 import { formatAmount } from "../../utils/format";
 
 const BountyCard = ({ bounty, enrolledBountyIds = [] }) => {
-  const navigate = useNavigate();
+  const { handleNavigate } = useNav();
   const { address, isConnected } = useAccount();
   const [isEnrolling, setIsEnrolling] = useState(false);
   // const [isEnrolled, setIsEnrolled] = useState(false);
@@ -94,6 +94,45 @@ const BountyCard = ({ bounty, enrolledBountyIds = [] }) => {
     label: "Draft",
   };
 
+  const getTimeRemaining = (deadline) => {
+    if (!deadline) return null;
+
+    const now = new Date();
+    const end = new Date(deadline);
+    const diffMs = end - now;
+
+    // Already past
+    if (diffMs <= 0) return { past: true };
+
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    const diffHours = Math.floor(
+      (diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+    );
+    const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+    // More than 2 days away — show days only
+    if (diffDays >= 2) {
+      return { label: `${diffDays} days left`, urgent: false };
+    }
+
+    // 1 day exactly
+    if (diffDays === 1) {
+      return { label: `1 day left`, urgent: true };
+    }
+
+    // Less than 24 hours
+    if (diffHours >= 1) {
+      return {
+        label: `${diffHours}h ${diffMinutes}m left`,
+        urgent: true,
+      };
+    }
+
+    // Less than an hour
+    return { label: `${diffMinutes}m left`, urgent: true };
+  };
+
+  const timeRemaining = getTimeRemaining(bounty.deadline);
   const deadlineDate = new Date(bounty.deadline);
   const sameYear = deadlineDate.getFullYear() === new Date().getFullYear();
 
@@ -110,6 +149,14 @@ const BountyCard = ({ bounty, enrolledBountyIds = [] }) => {
   }`;
 
   const description = bounty.description || "No description provided";
+
+  // Refresh the time remaining every minute to keep it up-to-date
+  // const [, forceTick] = useState(0);
+  //
+  // useEffect(() => {
+  // const id = setInterval(() => forceTick((t) => t + 1), 60000);
+  // return () => clearInterval(id);
+  // }, []);
 
   const handleEnroll = async (e) => {
     e.preventDefault();
@@ -136,7 +183,8 @@ const BountyCard = ({ bounty, enrolledBountyIds = [] }) => {
         });
 
         setIsEnrolledLocal(true);
-        navigate(`/bounty/${bounty._id}`);
+        // navigate(`/bounty/${bounty._id}`);
+        handleNavigate(`/bounty/${bounty._id}`); // Ensure navigation is handled correctly
       }
     } catch (error) {
       console.error("Enrollment error:", error);
@@ -391,7 +439,6 @@ const BountyCard = ({ bounty, enrolledBountyIds = [] }) => {
         </div>
 
         {/* REWARD + DEADLINE */}
-        {/* REWARD + DEADLINE */}
         <div
           className="
     my-5 grid grid-cols-2 gap-3
@@ -420,14 +467,39 @@ const BountyCard = ({ bounty, enrolledBountyIds = [] }) => {
           </div>
 
           {/* DEADLINE */}
+          {/* DEADLINE */}
           <div className="min-w-0 border-l border-slate-200 dark:border-white/[0.08] pl-3">
             <p className="mb-1 flex items-center gap-1 text-[9px] font-semibold uppercase tracking-[0.12em] text-slate-400 dark:text-white/35">
               <FiCalendar size={10} />
               Deadline
             </p>
+
             <p className="truncate text-sm font-semibold text-slate-700 dark:text-white/70">
               {deadline}
             </p>
+
+            {timeRemaining?.label && (
+              <p
+                className={`
+        mt-0.5 text-[10px] font-medium
+        ${
+          timeRemaining.urgent
+            ? "text-red-600 dark:text-red-400"
+            : "text-[#8f6c12] dark:text-[#D4AF37]"
+        }
+      `}
+              >
+                {timeRemaining.label}
+              </p>
+            )}
+
+            {timeRemaining?.past &&
+              status !== "completed" &&
+              status !== "cancelled" && (
+                <p className="mt-0.5 text-[10px] font-medium text-slate-400 dark:text-white/35">
+                  Awaiting selection
+                </p>
+              )}
           </div>
         </div>
 
@@ -436,6 +508,10 @@ const BountyCard = ({ bounty, enrolledBountyIds = [] }) => {
           {/* VIEW DETAILS */}
           <Link
             to={`/bounty/${bounty._id}`}
+            onClick={(e) => {
+              e.preventDefault();
+              handleNavigate(`/bounty/${bounty._id}`);
+            }}
             className="
               group/details
               flex min-w-0 items-center justify-center
@@ -643,24 +719,6 @@ const BountyCard = ({ bounty, enrolledBountyIds = [] }) => {
             /* DISABLED */
             <button
               disabled
-              // title={
-              //   status === "completed"
-              //     ? "Bounty completed"
-              //     : status === "cancelled"
-              //       ? "Bounty cancelled"
-              //       : status === "ended"
-              //         ? "Bounty ended"
-              //         : "Bounty not started yet"
-              // }
-              // aria-label={
-              //   status === "completed"
-              //     ? "Bounty completed"
-              //     : status === "cancelled"
-              //       ? "Bounty cancelled"
-              //       : status === "ended"
-              //         ? "Bounty ended"
-              //         : "Bounty not started yet"
-              // }
               className="
                 flex min-w-0 items-center justify-center
                 gap-1.5 overflow-hidden rounded-xl
