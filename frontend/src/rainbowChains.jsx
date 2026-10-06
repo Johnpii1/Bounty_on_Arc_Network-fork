@@ -1,26 +1,26 @@
 // import { arcTestnet, arcMainnet } from "wagmi/chains";
 
-const arcTestnet = {
-  id: 5042002,
-  name: "Arc Testnet",
-  nativeCurrency: {
-    name: "USDC",
-    symbol: "USDC",
-    decimals: 18,
-  },
-  rpcUrls: {
-    default: {
-      http: ["https://rpc.testnet.arc.io"],
-    },
-  },
-  blockExplorers: {
-    default: {
-      name: "Arc Explorer",
-      url: "https://explorer.testnet.arc.io",
-    },
-  },
-  testnet: true,
-};
+// const arcTestnet = {
+//   id: 5042002,
+//   name: "Arc Testnet",
+//   nativeCurrency: {
+//     name: "USDC",
+//     symbol: "USDC",
+//     decimals: 18,
+//   },
+//   rpcUrls: {
+//     default: {
+//       http: ["https://rpc.testnet.arc.io"],
+//     },
+//   },
+//   blockExplorers: {
+//     default: {
+//       name: "Arc Explorer",
+//       url: "https://explorer.testnet.arc.io",
+//     },
+//   },
+//   testnet: true,
+// };
 
 const arcMainnet = {
   id: 5042,
@@ -44,4 +44,4 @@ const arcMainnet = {
   testnet: false,
 };
 
-export const supportedChains = [arcMainnet, arcTestnet];
+export const supportedChains = [arcMainnet];
