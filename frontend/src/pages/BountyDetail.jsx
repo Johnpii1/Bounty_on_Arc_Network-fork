@@ -91,6 +91,15 @@ const BountyDetail = () => {
 
   /* ---------------- Helpers ---------------- */
 
+  const getHostname = (url) => {
+    if (!url) return "";
+    try {
+      return new URL(url).hostname;
+    } catch {
+      return url;
+    }
+  };
+
   const winnerAddressesSet = new Set(
     [...(winnersData?.winners || []), ...(winnersData?.claimed || [])].map(
       (w) => w.address.toLowerCase(),
@@ -1003,12 +1012,11 @@ const BountyDetail = () => {
                       href={bounty.originLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[#9a7619] dark:text-[#D4AF37] hover:underline text-sm inline-flex items-center gap-1 break-all"
+                      className="text-[#9a7619] dark:text-[#D4AF37] hover:underline text-sm inline-flex items-center gap-1"
+                      title={bounty.originLink}
                     >
                       <FiLink size={12} />
-                      {bounty.originLink.length > 45
-                        ? bounty.originLink.slice(0, 45) + "..."
-                        : bounty.originLink}
+                      {getHostname(bounty.originLink)}
                     </a>
                   ) : (
                     <p className="text-[#99958a] dark:text-white/35 text-sm">
@@ -1358,13 +1366,14 @@ const BountyDetail = () => {
                         }`}
                       >
                         <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-start">
+                          {/* LEFT COLUMN — participant identity and content */}
                           <div className="min-w-0 flex-1">
+                            {/* Row 1: address + badges + timestamp */}
                             <div className="flex flex-wrap items-center gap-2 mb-2">
                               <span className="font-mono text-sm text-[#171714] dark:text-white font-semibold">
                                 {shortenAddress(submission.user)}
                               </span>
 
-                              {/* NEW: Winner badge — everyone sees it */}
                               {isWinner && (
                                 <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#8f6c12] dark:text-[#D4AF37] bg-[#f4ecd5] dark:bg-[#2b2510] border border-[#d4af37] dark:border-[#D4AF37]/50 px-2 py-0.5 rounded-full">
                                   <FiCheckCircle size={10} />
@@ -1389,48 +1398,63 @@ const BountyDetail = () => {
                               </span>
                             </div>
 
-                            {/* Creator-only: submission content */}
+                            {/* Row 2: creator-only submission content */}
                             {isCreator && (
                               <>
                                 <p className="text-sm text-[#4f4b43] dark:text-white/70 mb-2 leading-relaxed">
                                   {submission.description}
                                 </p>
+
                                 {submission.projectLink && (
                                   <a
                                     href={submission.projectLink}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex max-w-full items-center gap-1 text-xs text-[#9a7619] dark:text-[#D4AF37] hover:underline break-all"
+                                    className="inline-flex items-center gap-1 text-xs text-[#9a7619] dark:text-[#D4AF37] hover:underline"
+                                    title={submission.projectLink}
                                   >
-                                    {submission.projectLink}
-                                  </a>
-                                )}
-                                {submission.image && (
-                                  <a
-                                    href={submission.image}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-[#9a7619] dark:text-[#D4AF37] hover:underline"
-                                  >
-                                    View Image
+                                    <FiLink size={10} />
+                                    {(() => {
+                                      try {
+                                        return new URL(submission.projectLink)
+                                          .hostname;
+                                      } catch {
+                                        return submission.projectLink;
+                                      }
+                                    })()}
                                   </a>
                                 )}
                               </>
                             )}
                           </div>
 
-                          {/* Creator-only: select button */}
+                          {/* RIGHT COLUMN — creator-only actions */}
                           {isCreator && (
-                            <button
-                              onClick={() => toggleWinnerSelection(submission)}
-                              className={`shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
-                                selected
-                                  ? "bg-[#171714] dark:bg-[#D4AF37] text-[#d4af37] dark:text-[#171714] border border-[#171714] dark:border-[#D4AF37]"
-                                  : "bg-white dark:bg-[#1b1e1b] border border-[#d8d3c6] dark:border-white/15 text-[#4f4b43] dark:text-white/75 hover:border-[#c49b2c] dark:hover:border-[#D4AF37] hover:text-[#8f6c12] dark:hover:text-[#D4AF37]"
-                              }`}
-                            >
-                              {selected ? "Selected" : "Select"}
-                            </button>
+                            <div className="shrink-0 flex flex-col items-end gap-2">
+                              <button
+                                onClick={() =>
+                                  toggleWinnerSelection(submission)
+                                }
+                                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
+                                  selected
+                                    ? "bg-[#171714] dark:bg-[#D4AF37] text-[#d4af37] dark:text-[#171714] border border-[#171714] dark:border-[#D4AF37]"
+                                    : "bg-white dark:bg-[#1b1e1b] border border-[#d8d3c6] dark:border-white/15 text-[#4f4b43] dark:text-white/75 hover:border-[#c49b2c] dark:hover:border-[#D4AF37] hover:text-[#8f6c12] dark:hover:text-[#D4AF37]"
+                                }`}
+                              >
+                                {selected ? "Selected" : "Select"}
+                              </button>
+
+                              {submission.image && (
+                                <a
+                                  href={submission.image}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-[11px] font-medium text-[#9a7619] dark:text-[#D4AF37] hover:underline whitespace-nowrap"
+                                >
+                                  View Image
+                                </a>
+                              )}
+                            </div>
                           )}
                         </div>
                       </div>
