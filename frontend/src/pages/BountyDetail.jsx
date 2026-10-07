@@ -860,7 +860,6 @@ const BountyDetail = () => {
       <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-28">
         <div className="max-w-5xl mx-auto space-y-6">
           {/* Main card */}
-          {/* Main card */}
           <div className={cardClass}>
             <div className="absolute top-0 left-0 right-0 h-1 bg-[#D4AF37]" />
 
@@ -980,6 +979,26 @@ const BountyDetail = () => {
 
                   <p className="text-[#171714] dark:text-white/80 text-sm">
                     {bounty.category || "Uncategorized"}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-xs uppercase tracking-wider text-[#8b8579] dark:text-white/40 mb-1">
+                    Winner Type
+                  </p>
+
+                  <p className="text-[#171714] dark:text-white/80 text-sm">
+                    {bounty.payoutType === "SINGLE"
+                      ? "Single winner"
+                      : bounty.payoutType === "MULTI_EQUAL"
+                        ? `Equal split · ${bounty.winnersAllowed} winner${
+                            bounty.winnersAllowed > 1 ? "s" : ""
+                          }`
+                        : bounty.payoutType === "MULTI_PERCENTAGE"
+                          ? `Custom split · ${bounty.winnersAllowed} winner${
+                              bounty.winnersAllowed > 1 ? "s" : ""
+                            }`
+                          : "—"}
                   </p>
                 </div>
 
