@@ -1,4 +1,3 @@
-// BountyDetail.jsx
 import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -16,6 +15,7 @@ import {
   FiUsers,
   FiX,
   FiSearch,
+  FiCheckCircle,
 } from "react-icons/fi";
 import NavBar from "../components/Layout/NavBar";
 import Footer from "../components/Layout/Footer";
@@ -29,7 +29,7 @@ import { BountyDetailSkeleton } from "../components/UI/Skeleton";
 const BountyDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { address, isConnected } = useAccount();
+  const { address } = useAccount();
   const currentChainId = useChainId();
   const { switchChain } = useSwitchChain();
 
@@ -91,6 +91,12 @@ const BountyDetail = () => {
 
   /* ---------------- Helpers ---------------- */
 
+  const winnerAddressesSet = new Set(
+    [...(winnersData?.winners || []), ...(winnersData?.claimed || [])].map(
+      (w) => w.address.toLowerCase(),
+    ),
+  );
+
   const formatDate = (dateString) => {
     if (!dateString) return "Not set";
 
@@ -99,6 +105,32 @@ const BountyDetail = () => {
       month: "short",
       day: "numeric",
     });
+  };
+
+  const isValidUrl = (value) => {
+    if (!value) return "";
+
+    let url;
+    try {
+      url = new URL(value);
+    } catch {
+      return "Enter a full URL, e.g. https://github.com/user/repo";
+    }
+
+    if (url.protocol !== "http:" && url.protocol !== "https:") {
+      return "Only http:// and https:// links are allowed";
+    }
+
+    const hostname = url.hostname;
+    if (
+      !/^(?!-)[A-Za-z0-9-]{1,63}(?<!-)(\.(?!-)[A-Za-z0-9-]{1,63}(?<!-))*\.[A-Za-z]{2,}$/.test(
+        hostname,
+      )
+    ) {
+      return "Enter a valid domain, e.g. github.com or figma.com";
+    }
+
+    return "";
   };
 
   const formatDateTime = (dateString) => {
@@ -302,10 +334,6 @@ const BountyDetail = () => {
 
           await checkUserSubmission(address, id);
           await loadWinnersData(id);
-
-          // if (creator) {
-          //   await loadAllSubmissions(id);
-          // }
         }
 
         await loadComments(id);
@@ -322,6 +350,8 @@ const BountyDetail = () => {
   }, [id, navigate, address]);
 
   /* ---------------- Enrollment ---------------- */
+
+  const submissionLinkError = isValidUrl(submissionLink);
 
   const handleEnroll = async () => {
     if (!address) {
@@ -395,6 +425,12 @@ const BountyDetail = () => {
 
     if (!submissionDescription || !submissionLink) {
       return showToast.error("Please fill in description and link");
+    }
+
+    // NEW: validate the link
+    const urlErr = isValidUrl(submissionLink);
+    if (urlErr) {
+      return showToast.error(urlErr);
     }
 
     setSubmitting(true);
@@ -574,6 +610,7 @@ const BountyDetail = () => {
       setShowDistributeModal(false);
 
       await loadWinnersData(id);
+      await checkUserSubmission(address, id);
     } catch (err) {
       showToast.error(
         err.shortMessage || err.message || "Distribution failed",
@@ -814,10 +851,12 @@ const BountyDetail = () => {
       <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-28">
         <div className="max-w-5xl mx-auto space-y-6">
           {/* Main card */}
+          {/* Main card */}
           <div className={cardClass}>
             <div className="absolute top-0 left-0 right-0 h-1 bg-[#D4AF37]" />
 
             <div className="p-6 md:p-9">
+              {/* Title row */}
               <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6">
                 <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#171714] dark:text-white break-words">
                   {bounty.title}
@@ -832,10 +871,68 @@ const BountyDetail = () => {
                 </span>
               </div>
 
-              <p className="text-[#625e55] dark:text-white/65 mb-6 text-sm sm:text-base leading-relaxed">
+              {/* End-of-bounty banner */}
+              {(bounty.status === "completed" || bounty.status === "ended") && (
+                <div
+                  className={`
+          mb-6 flex items-start gap-3 rounded-2xl border p-4
+          ${
+            bounty.status === "completed"
+              ? "bg-[#f4ecd5] dark:bg-[#2b2510] border-[#d4af37] dark:border-[#D4AF37]/50"
+              : "bg-[#f2f0ea] dark:bg-[#1a1c1a] border-[#ddd8ca] dark:border-white/10"
+          }
+        `}
+                >
+                  <FiCheckCircle
+                    size={18}
+                    className={`
+            mt-0.5 shrink-0
+            ${
+              bounty.status === "completed"
+                ? "text-[#8f6c12] dark:text-[#D4AF37]"
+                : "text-[#777267] dark:text-white/55"
+            }
+          `}
+                  />
+
+                  <div>
+                    <p
+                      className={`
+              text-sm font-semibold
+              ${
+                bounty.status === "completed"
+                  ? "text-[#8f6c12] dark:text-[#D4AF37]"
+                  : "text-[#625e55] dark:text-white/65"
+              }
+            `}
+                    >
+                      {bounty.status === "completed"
+                        ? "This bounty has been completed"
+                        : "This bounty has ended"}
+                    </p>
+
+                    <p className="text-xs text-[#777267] dark:text-white/55 mt-1 leading-relaxed">
+                      {bounty.status === "completed"
+                        ? `${bounty.winners?.assigned?.length || 0} winner${
+                            (bounty.winners?.assigned?.length || 0) !== 1
+                              ? "s"
+                              : ""
+                          } selected. Rewards have been distributed and can now be claimed by the winners.`
+                        : "The submission period has closed. The creator has not yet selected winners."}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Description */}
+              <p className="text-[#625e55] dark:text-white/65 mb-6 text-sm sm:text-base leading-relaxed whitespace-pre-wrap">
                 {bounty.description}
               </p>
 
+              {/* Divider */}
+              <div className="my-6 border-t border-[#e7e3da] dark:border-white/10" />
+
+              {/* Details grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-6">
                 <div>
                   <p className="text-xs uppercase tracking-wider text-[#8b8579] dark:text-white/40 mb-1">
@@ -909,7 +1006,6 @@ const BountyDetail = () => {
                       className="text-[#9a7619] dark:text-[#D4AF37] hover:underline text-sm inline-flex items-center gap-1 break-all"
                     >
                       <FiLink size={12} />
-
                       {bounty.originLink.length > 45
                         ? bounty.originLink.slice(0, 45) + "..."
                         : bounty.originLink}
@@ -922,7 +1018,7 @@ const BountyDetail = () => {
                 </div>
               </div>
 
-              {/* Action buttons */}
+              {/* Action buttons row */}
               <div className="flex flex-wrap gap-3 pt-4 border-t border-[#e7e3da] dark:border-white/10">
                 {!isCreator && bounty.status === "active" && (
                   <>
@@ -993,7 +1089,7 @@ const BountyDetail = () => {
                   </button>
                 )}
 
-                {/* Submission status */}
+                {/* Submission status pill */}
                 {hasUserSubmitted && userSubmission && (
                   <div className="px-4 py-2.5 rounded-xl bg-[#f4ecd5] dark:bg-[#2b2510] border border-[#e5d9b8] dark:border-[#D4AF37]/30 text-[#8f6c12] dark:text-[#D4AF37] text-xs font-semibold flex items-center gap-2">
                     {userSubmission.status === "pending" && (
@@ -1013,12 +1109,68 @@ const BountyDetail = () => {
                     {userSubmission.status === "rejected" && (
                       <>
                         <FiX size={13} />
-                        Rejected
+                        Not Selected
                       </>
                     )}
                   </div>
                 )}
               </div>
+
+              {/* Creator: distribution unlock note */}
+              {isCreator && !winnersData?.isDistributed && (
+                <div className="mt-4 rounded-2xl bg-[#f7f5ed] dark:bg-[#151715] border border-[#e7e1d2] dark:border-white/10 p-4">
+                  <div className="flex items-start gap-3">
+                    <FiInfo
+                      className="text-[#b28b20] dark:text-[#D4AF37] mt-0.5 shrink-0"
+                      size={16}
+                    />
+
+                    <div className="space-y-1.5">
+                      <p className="text-xs leading-relaxed text-[#777267] dark:text-white/55">
+                        <strong className="text-[#8f6c12] dark:text-[#D4AF37]">
+                          Distribution unlocks after the deadline.
+                        </strong>{" "}
+                        You'll be able to select winners and distribute the
+                        reward once the bounty reaches{" "}
+                        {new Date(bounty.deadline).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                        .
+                      </p>
+
+                      {new Date(bounty.deadline) >= new Date() && (
+                        <p className="text-xs leading-relaxed text-[#99958a] dark:text-white/35">
+                          Time remaining:{" "}
+                          {Math.ceil(
+                            (new Date(bounty.deadline) - new Date()) /
+                              (1000 * 60 * 60 * 24),
+                          )}{" "}
+                          day
+                          {Math.ceil(
+                            (new Date(bounty.deadline) - new Date()) /
+                              (1000 * 60 * 60 * 24),
+                          ) !== 1
+                            ? "s"
+                            : ""}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Non-participant: submission closed note */}
+              {!isCreator &&
+                (bounty.status === "ended" || bounty.status === "completed") &&
+                !hasUserSubmitted && (
+                  <p className="mt-4 text-xs text-[#99958a] dark:text-white/45">
+                    {bounty.status === "completed"
+                      ? "This bounty has been completed. The submission period is closed."
+                      : "The submission period has closed. You can no longer submit to this bounty."}
+                  </p>
+                )}
             </div>
           </div>
 
@@ -1186,6 +1338,9 @@ const BountyDetail = () => {
                 <div className="space-y-3">
                   {allSubmissions.map((submission) => {
                     const selected = isCreator && isSelected(submission.user);
+                    const isWinner = winnerAddressesSet.has(
+                      submission.user.toLowerCase(),
+                    );
                     const selectionIndex = selectedWinners.findIndex(
                       (s) => s.address === submission.user.toLowerCase(),
                     );
@@ -1208,6 +1363,14 @@ const BountyDetail = () => {
                               <span className="font-mono text-sm text-[#171714] dark:text-white font-semibold">
                                 {shortenAddress(submission.user)}
                               </span>
+
+                              {/* NEW: Winner badge — everyone sees it */}
+                              {isWinner && (
+                                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#8f6c12] dark:text-[#D4AF37] bg-[#f4ecd5] dark:bg-[#2b2510] border border-[#d4af37] dark:border-[#D4AF37]/50 px-2 py-0.5 rounded-full">
+                                  <FiCheckCircle size={10} />
+                                  Winner
+                                </span>
+                              )}
 
                               {isCurrentUser && (
                                 <span className="text-[10px] font-bold text-[#8f6c12] dark:text-[#D4AF37] bg-[#f4ecd5] dark:bg-[#332b12] border border-[#e5d9b8] dark:border-[#D4AF37]/30 px-2 py-0.5 rounded-full">
@@ -1350,7 +1513,10 @@ const BountyDetail = () => {
       {showSubmitModal && (
         <div
           className="app-modal-overlay fixed inset-0 backdrop-blur-md flex items-center justify-center z-50 p-4"
-          onClick={() => setShowSubmitModal(false)}
+          onClick={() => {
+            setShowSubmitModal(false);
+            resetSubmissionForm();
+          }}
         >
           <div
             className="app-modal-panel bg-[#f9f8f3] dark:bg-[#111311] border border-[#ddd8ca] dark:border-white/10 rounded-3xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto"
@@ -1362,7 +1528,10 @@ const BountyDetail = () => {
               </h2>
 
               <button
-                onClick={() => setShowSubmitModal(false)}
+                onClick={() => {
+                  setShowSubmitModal(false);
+                  resetSubmissionForm();
+                }}
                 className="w-9 h-9 rounded-xl border border-[#ddd8ca] dark:border-white/10 bg-white dark:bg-[#151715] flex items-center justify-center text-[#777267] dark:text-white/50 hover:text-[#171714] dark:hover:text-white hover:border-[#c49b2c] dark:hover:border-[#D4AF37]/50 transition"
               >
                 <FiX size={16} />
@@ -1405,13 +1574,13 @@ const BountyDetail = () => {
                   Description
                 </label>
 
-                <input
-                  type="text"
+                <textarea
                   value={submissionDescription}
                   onChange={(e) => setSubmissionDescription(e.target.value)}
                   placeholder="What did you do?"
-                  className={inputClass}
-                  required
+                  rows={4}
+                  maxLength={5000}
+                  className={`${inputClass} resize-none leading-relaxed`}
                 />
               </div>
 
@@ -1424,10 +1593,19 @@ const BountyDetail = () => {
                   type="url"
                   value={submissionLink}
                   onChange={(e) => setSubmissionLink(e.target.value)}
-                  placeholder="https://..."
-                  className={inputClass}
-                  required
+                  placeholder="https://github.com/... or https://figma.com/..."
+                  className={`${inputClass} ${
+                    submissionLinkError
+                      ? "!border-red-500/60 focus:!border-red-500 focus:!ring-1 focus:!ring-red-500/50"
+                      : ""
+                  }`}
                 />
+
+                {submissionLinkError && submissionLink.length > 0 && (
+                  <p className="mt-1.5 text-xs text-red-500">
+                    {submissionLinkError}
+                  </p>
+                )}
               </div>
 
               <button
