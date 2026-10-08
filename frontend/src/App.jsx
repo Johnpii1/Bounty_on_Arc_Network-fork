@@ -4,6 +4,7 @@ import { useAccount } from "wagmi";
 
 import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
+import Analytics from "./pages/Analytics";
 import Profile from "./pages/Profile";
 import Create from "./pages/Create";
 import BountyDetail from "./pages/BountyDetail";
@@ -76,6 +77,15 @@ function App() {
             element={
               <RequireWallet>
                 <Dashboard dark={dark} setDark={setDark} />
+              </RequireWallet>
+            }
+          />
+
+          <Route
+            path="/analytics"
+            element={
+              <RequireWallet>
+                <Analytics dark={dark} setDark={setDark} />
               </RequireWallet>
             }
           />
