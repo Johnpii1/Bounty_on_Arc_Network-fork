@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
-import { useAccount } from "wagmi"; 
+import { useAccount } from "wagmi";
 
 import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
@@ -13,6 +13,7 @@ import FAQPage from "./pages/Faqs";
 import WhitepaperPage from "./pages/WhitePaper";
 import ContactUs from "./pages/ContactUs";
 import Docs from "./pages/Docs";
+import NotFound from "./pages/NotFound";
 
 import LoadingScreen from "./components/LoadingScreen";
 import { useTheme } from "./context/ThemeContext";
@@ -46,32 +47,22 @@ function App() {
             path="/"
             element={<LandingPage dark={dark} setDark={setDark} />}
           />
-
           <Route
             path="/faqs"
             element={<FAQPage dark={dark} setDark={setDark} />}
           />
-
           <Route
             path="/whitepaper"
             element={<WhitepaperPage dark={dark} setDark={setDark} />}
           />
-
           <Route
             path="/contact"
             element={<ContactUs dark={dark} setDark={setDark} />}
           />
-
           <Route
             path="/docs"
-            element={
-              <Docs
-                dark={dark}
-                setDark={setDark}
-              />
-            }
+            element={<Docs dark={dark} setDark={setDark} />}
           />
-
           <Route
             path="/dashboard"
             element={
@@ -80,7 +71,6 @@ function App() {
               </RequireWallet>
             }
           />
-
           <Route
             path="/analytics"
             element={
@@ -89,7 +79,6 @@ function App() {
               </RequireWallet>
             }
           />
-
           <Route
             path="/profile"
             element={
@@ -98,7 +87,6 @@ function App() {
               </RequireWallet>
             }
           />
-
           <Route
             path="/create"
             element={
@@ -107,7 +95,6 @@ function App() {
               </RequireWallet>
             }
           />
-
           <Route
             path="/bounty/:id"
             element={
@@ -116,7 +103,6 @@ function App() {
               </RequireWallet>
             }
           />
-
           <Route
             path="/admin-224466"
             element={
@@ -125,8 +111,10 @@ function App() {
               </RequireWallet>
             }
           />
-
-          <Route path="*" element={<h1>404 Not Found</h1>} />
+          <Route
+            path="*"
+            element={<NotFound dark={dark} setDark={setDark} />}
+          />{" "}
         </Routes>
       </BrowserRouter>
     </div>
