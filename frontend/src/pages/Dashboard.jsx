@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useAccount } from "wagmi";
 import axios from "axios";
 import { showToast } from "../components/UI/Toast";
+
 import {
   FiActivity,
   FiArrowRight,
@@ -24,17 +25,33 @@ import BountyCard from "../components/Bounty/BountyCard";
 function Dashboard({ dark, setDark }) {
   const { address, isConnected } = useAccount();
 
+  // Only these wallets can see the Admin Access button.
+  const ADMIN_ADDRESSES = [
+    "0x75DDb0a7161c717a0443967803c6516cf1e39cA6",
+    "0x579F49Af31375Da97b6Ba3cf0Aa4a887A0E6c98b",
+  ];
+
+  const isAuthorizedAdmin =
+    isConnected &&
+    !!address &&
+    ADMIN_ADDRESSES.some(
+      (adminAddress) =>
+        adminAddress.toLowerCase() === address.toLowerCase()
+    );
+
   const [loading, setLoading] = useState(true);
   const [bounties, setBounties] = useState([]);
   const [filter, setFilter] = useState("all");
   const [pagination, setPagination] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [showScrollTop, setShowScrollTop] = useState(false);
+
   const [stats, setStats] = useState({
     completed: 0,
     inProgress: 0,
     earnings: 0,
   });
+
   const [enrolledBountyIds, setEnrolledBountyIds] = useState([]);
 
   const API_URL = import.meta.env.VITE_API_URL;
@@ -75,6 +92,7 @@ function Dashboard({ dark, setDark }) {
         inProgress: data.submissions?.pending || 0,
         earnings: data.user?.totalEarnings || 0,
       });
+
       setEnrolledBountyIds(data.enrolledBountyIds || []);
     } catch (err) {
       console.error("Error loading userInfo:", err);
@@ -90,9 +108,11 @@ function Dashboard({ dark, setDark }) {
     }
   }, [address, isConnected, currentPage, filter]);
 
-  /* =====================================================
-      SCROLL TO TOP BUTTON
-  ====================================================== */
+  /*
+   * =====================================================
+   * SCROLL TO TOP BUTTON
+   * =====================================================
+   */
 
   useEffect(() => {
     const handleScroll = () => {
@@ -201,7 +221,6 @@ function Dashboard({ dark, setDark }) {
                 <div className="mb-4 flex items-center gap-2">
                   <span className="relative flex h-2 w-2">
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#D4A017] opacity-30" />
-
                     <span className="relative inline-flex h-2 w-2 rounded-full bg-[#D4A017] shadow-[0_0_12px_rgba(212,160,23,0.5)]" />
                   </span>
 
@@ -234,7 +253,7 @@ function Dashboard({ dark, setDark }) {
                 </p>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
                 {/* Refresh */}
 
                 <button
@@ -269,20 +288,34 @@ function Dashboard({ dark, setDark }) {
                   Analytics
                 </Link>
 
+                {/* Admin Access — only visible to approved wallets */}
+
+                {isAuthorizedAdmin && (
+                  <Link
+                    to="/admin-224466"
+                    className={`group flex h-11 items-center justify-center gap-2 rounded-xl border px-3 text-xs font-bold transition-all duration-300 hover:-translate-y-1 hover:border-[#D4A017]/50 hover:text-[#D4A017] sm:px-4 sm:text-sm ${
+                      dark
+                        ? "border-[#D4A017]/30 bg-[#111311]/90 text-[#D4A017]"
+                        : "border-[#D4A017]/30 bg-white/80 text-[#8b6508]"
+                    }`}
+                  >
+                    Admin
+                    <FiArrowRight className="text-sm transition-transform duration-300 group-hover:translate-x-1" />
+                  </Link>
+                )}
+
                 {/* Create */}
 
                 <Link
                   to="/create"
-                  className={`group relative flex h-11 min-w-0 max-w-full shrink items-center justify-center gap-1 overflow-hidden whitespace-nowrap rounded-xl px-2 sm:gap-2 sm:px-4 text-xs sm:text-sm font-bold shadow-[0_10px_30px_rgba(17,17,17,0.14)] transition-all duration-300 hover:-translate-y-1 hover:bg-[#B28B20] hover:text-white hover:shadow-[0_14px_35px_rgba(212,160,23,0.25)] ${
+                  className={`group relative flex h-11 min-w-0 max-w-full shrink items-center justify-center gap-1 overflow-hidden whitespace-nowrap rounded-xl px-2 text-xs font-bold shadow-[0_10px_30px_rgba(17,17,17,0.14)] transition-all duration-300 hover:-translate-y-1 hover:bg-[#B28B20] hover:text-white hover:shadow-[0_14px_35px_rgba(212,160,23,0.25)] sm:gap-2 sm:px-4 sm:text-sm ${
                     dark ? "bg-[#D4A017] text-white" : "bg-gold-700 text-black"
                   }`}
                 >
-                  <span className="relative z-10 flex min-w-0 items-center justify-center gap-1 sm:gap-2 whitespace-nowrap">
+                  <span className="relative z-10 flex min-w-0 items-center justify-center gap-1 whitespace-nowrap sm:gap-2">
                     <FiPlus className="shrink-0 text-sm sm:text-base" />
-
                     <span className="truncate">Create Bounty</span>
-
-                    <FiArrowRight className="shrink-0 text-xs sm:text-sm transition-transform duration-300 group-hover:translate-x-1" />
+                    <FiArrowRight className="shrink-0 text-xs transition-transform duration-300 group-hover:translate-x-1 sm:text-sm" />
                   </span>
 
                   <span className="absolute inset-0 -translate-x-full bg-[#B28B20] transition-transform duration-500 group-hover:translate-x-0" />
@@ -298,9 +331,7 @@ function Dashboard({ dark, setDark }) {
           ====================================================== */}
 
           <section className="mb-12 grid grid-cols-1 gap-4 md:grid-cols-3">
-            {/* =====================================================
-                EARNINGS
-            ====================================================== */}
+            {/* EARNINGS */}
 
             <div
               className={`group relative animate-[fadeInUp_0.7s_ease-out_0.1s_both] overflow-hidden rounded-2xl border shadow-[0_10px_35px_rgba(17,17,17,0.035)] transition-all duration-500 hover:-translate-y-2 hover:border-[#D4A017]/40 hover:shadow-[0_20px_50px_rgba(212,160,23,0.12)] ${
@@ -379,9 +410,7 @@ function Dashboard({ dark, setDark }) {
               </div>
             </div>
 
-            {/* =====================================================
-                COMPLETED
-            ====================================================== */}
+            {/* COMPLETED */}
 
             <div
               className={`group relative animate-[fadeInUp_0.7s_ease-out_0.2s_both] overflow-hidden rounded-2xl border shadow-[0_10px_35px_rgba(17,17,17,0.035)] transition-all duration-500 hover:-translate-y-2 hover:border-[#D4A017]/40 hover:shadow-[0_20px_50px_rgba(212,160,23,0.1)] ${
@@ -439,9 +468,7 @@ function Dashboard({ dark, setDark }) {
               </div>
             </div>
 
-            {/* =====================================================
-                IN PROGRESS
-            ====================================================== */}
+            {/* IN PROGRESS */}
 
             <div
               className={`group relative animate-[fadeInUp_0.7s_ease-out_0.3s_both] overflow-hidden rounded-2xl border shadow-[0_10px_35px_rgba(17,17,17,0.035)] transition-all duration-500 hover:-translate-y-2 hover:border-[#D4A017]/40 hover:shadow-[0_20px_50px_rgba(212,160,23,0.1)] ${
@@ -566,9 +593,7 @@ function Dashboard({ dark, setDark }) {
               </div>
             </div>
 
-            {/* =====================================================
-                CONTENT
-            ====================================================== */}
+            {/* CONTENT */}
 
             {loading ? (
               <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
@@ -751,9 +776,7 @@ function Dashboard({ dark, setDark }) {
                   ))}
                 </div>
 
-                {/* =================================================
-                    PAGINATION
-                ================================================== */}
+                {/* PAGINATION */}
 
                 {pagination && pagination.pages > 1 && (
                   <div className="mt-10 flex justify-center">
@@ -802,7 +825,7 @@ function Dashboard({ dark, setDark }) {
                         type="button"
                         onClick={() =>
                           setCurrentPage((prev) =>
-                            Math.min(pagination.pages, prev + 1),
+                            Math.min(pagination.pages, prev + 1)
                           )
                         }
                         disabled={currentPage >= pagination.pages}
