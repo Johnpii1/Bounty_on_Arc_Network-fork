@@ -234,7 +234,7 @@ function Dashboard({ dark, setDark }) {
                 </p>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {/* Refresh */}
 
                 <button
@@ -273,14 +273,16 @@ function Dashboard({ dark, setDark }) {
 
                 <Link
                   to="/create"
-                  className={`group relative flex h-11 items-center gap-2 overflow-hidden rounded-xl px-5 text-sm font-bold shadow-[0_10px_30px_rgba(17,17,17,0.14)] transition-all duration-300 hover:-translate-y-1 hover:bg-[#B28B20] hover:text-white hover:shadow-[0_14px_35px_rgba(212,160,23,0.25)] ${
+                  className={`group relative flex h-11 min-w-0 max-w-full shrink items-center justify-center gap-1 overflow-hidden whitespace-nowrap rounded-xl px-2 sm:gap-2 sm:px-4 text-xs sm:text-sm font-bold shadow-[0_10px_30px_rgba(17,17,17,0.14)] transition-all duration-300 hover:-translate-y-1 hover:bg-[#B28B20] hover:text-white hover:shadow-[0_14px_35px_rgba(212,160,23,0.25)] ${
                     dark ? "bg-[#D4A017] text-white" : "bg-gold-700 text-black"
                   }`}
                 >
-                  <span className="relative z-10 flex items-center gap-2">
-                    <FiPlus className="text-base" />
-                    Create Bounty
-                    <FiArrowRight className="text-sm transition-transform duration-300 group-hover:translate-x-1" />
+                  <span className="relative z-10 flex min-w-0 items-center justify-center gap-1 sm:gap-2 whitespace-nowrap">
+                    <FiPlus className="shrink-0 text-sm sm:text-base" />
+
+                    <span className="truncate">Create Bounty</span>
+
+                    <FiArrowRight className="shrink-0 text-xs sm:text-sm transition-transform duration-300 group-hover:translate-x-1" />
                   </span>
 
                   <span className="absolute inset-0 -translate-x-full bg-[#B28B20] transition-transform duration-500 group-hover:translate-x-0" />
