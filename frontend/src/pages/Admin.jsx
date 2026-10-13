@@ -7,29 +7,21 @@ import {
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
-import { formatEther } from "viem";
-import {
-  FiArrowLeft,
-  FiShield,
-  FiDollarSign,
-  FiUser,
-  FiAlertTriangle,
-  FiCheckCircle,
-  FiInfo,
-} from "react-icons/fi";
-import { showToast } from "../components/UI/Toast";
+import { formatEther, isAddress } from "viem";
 import {
   getBountyCounterConfig,
   getFeePercentConfig,
   getOwnerConfig,
   getTotalFeesConfig,
   prepareTransferOwnershipTx,
+  prepareWithdrawTx,
 } from "../services/bountyService";
 import { getBountyContract } from "../utils/chains.address";
-import { formatAmount } from "../utils/format";
+import Skeleton from "../components/UI/Skeleton";
 
 const ARC_MAINNET_ID = 5042;
 const GOLD = "#D4A017";
+const CONFIRM_TIMEOUT_MS = 6000; // #4 auto-revert confirmation state
 
 const shortAddress = (address) =>
   address ? `${address.slice(0, 6)}…${address.slice(-4)}` : "—";
@@ -42,12 +34,20 @@ function StatCard({ icon, label, value, note }) {
     <article className="min-w-0 rounded-2xl border border-[#e9e5da] bg-white p-4 shadow-[0_2px_10px_rgba(24,24,20,0.025)] transition-colors dark:border-white/10 dark:bg-[#141614] sm:p-5">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-xs font-medium text-[#77756d] dark:text-white/55 sm:text-sm">{label}</p>
-          <p className="mt-3 break-words text-2xl font-semibold tracking-tight text-[#171714] dark:text-white sm:text-3xl">{value}</p>
+          <p className="text-xs font-medium text-[#77756d] dark:text-white/55 sm:text-sm">
+            {label}
+          </p>
+          <p className="mt-3 break-words text-2xl font-semibold tracking-tight text-[#171714] dark:text-white sm:text-3xl">
+            {value}
+          </p>
         </div>
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#D4A017]/10 text-lg text-[#a77b08] dark:text-[#e3b52e]">{icon}</span>
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#D4A017]/10 text-lg text-[#a77b08] dark:text-[#e3b52e]">
+          {icon}
+        </span>
       </div>
-      {note && <p className="mt-3 text-xs text-[#8b887e] dark:text-white/45">{note}</p>}
+      {note && (
+        <p className="mt-3 text-xs text-[#8b887e] dark:text-white/45">{note}</p>
+      )}
     </article>
   );
 }
@@ -56,11 +56,51 @@ function SectionHeading({ eyebrow, title, children }) {
   return (
     <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
       <div>
-        {eyebrow && <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#a17a13]">{eyebrow}</p>}
-        <h2 className="text-base font-semibold text-[#171714] dark:text-white sm:text-lg">{title}</h2>
+        {eyebrow && (
+          <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#a17a13]">
+            {eyebrow}
+          </p>
+        )}
+        <h2 className="text-base font-semibold text-[#171714] dark:text-white sm:text-lg">
+          {title}
+        </h2>
       </div>
       {children}
     </div>
+  );
+}
+
+function MobileNav({ onNavigate }) {
+  return (
+    <nav className="flex items-center justify-between border-b border-[#e9e5da] bg-white px-4 py-3 dark:border-white/10 dark:bg-[#101210] lg:hidden">
+      <button
+        onClick={() => onNavigate("/")}
+        className="flex items-center gap-2"
+      >
+        <span
+          className="flex h-8 w-8 items-center justify-center rounded-full border-2 text-sm font-bold"
+          style={{ borderColor: GOLD, color: GOLD }}
+        >
+          H
+        </span>
+        <span className="text-sm font-bold">Happy Bounty</span>
+      </button>
+      <div className="flex items-center gap-1">
+        <button
+          onClick={() => onNavigate("/dashboard")}
+          className="rounded-lg px-3 py-2 text-xs font-medium text-[#656259] transition hover:bg-black/5 dark:text-white/65 dark:hover:bg-white/5"
+        >
+          Bounties
+        </button>
+        <button
+          onClick={() => onNavigate("/create")}
+          className="rounded-lg px-3 py-2 text-xs font-semibold text-[#171714] transition hover:brightness-95"
+          style={{ backgroundColor: GOLD }}
+        >
+          ＋ Create
+        </button>
+      </div>
+    </nav>
   );
 }
 
@@ -68,36 +108,51 @@ export default function AdminPage() {
   const navigate = useNavigate();
   const { address: connectedWallet } = useAccount();
   const chainId = useChainId();
-
-  const contractAddress = getBountyContract(chainId);
-
   const [withdrawAddress, setWithdrawAddress] = useState("");
   const [newOwnerAddress, setNewOwnerAddress] = useState("");
-  const [showWithdrawConfirm, setShowWithdrawConfirm] = useState(false);
+  const [formError, setFormError] = useState("");
 
-  /* ---------------- Reads ---------------- */
+  // #4 confirmation state for withdraw and transfer
+  const [confirmAction, setConfirmAction] = useState(null); // "withdraw" | "transfer" | null
 
-  const { data: ownerAddress, refetch: refetchOwner } = useReadContract({
-    ...(chainId ? getOwnerConfig({ chainId }) : {}),
-    query: { enabled: !!chainId && !!contractAddress },
+  const isArcMainnet = chainId === ARC_MAINNET_ID;
+  const contractAddress = getBountyContract(chainId);
+
+  const {
+    data: ownerAddress,
+    refetch: refetchOwner,
+    isLoading: ownerLoading,
+  } = useReadContract({
+    ...getOwnerConfig({ chainId }),
+    query: { enabled: isArcMainnet && !!contractAddress },
   });
-
-  const { data: totalFeesRaw, refetch: refetchFees } = useReadContract({
-    ...(chainId ? getTotalFeesConfig({ chainId }) : {}),
-    query: { enabled: !!chainId && !!contractAddress },
+  const {
+    data: totalFeesRaw,
+    refetch: refetchFees,
+    isLoading: feesLoading,
+  } = useReadContract({
+    ...getTotalFeesConfig({ chainId }),
+    query: { enabled: isArcMainnet && !!contractAddress },
   });
-
-  const { data: feePercentRaw } = useReadContract({
-    ...(chainId ? getFeePercentConfig({ chainId }) : {}),
-    query: { enabled: !!chainId && !!contractAddress },
+  const {
+    data: bountyCountRaw,
+    refetch: refetchBountyCount,
+    isLoading: bountyCountLoading,
+  } = useReadContract({
+    ...getBountyCounterConfig({ chainId }),
+    query: { enabled: isArcMainnet && !!contractAddress },
   });
+  const { data: feePercentRaw, isLoading: feePercentLoading } = useReadContract(
+    {
+      ...getFeePercentConfig({ chainId }),
+      query: { enabled: isArcMainnet && !!contractAddress },
+    },
+  );
 
   const isOwner =
-    connectedWallet &&
-    ownerAddress &&
+    !!connectedWallet &&
+    !!ownerAddress &&
     connectedWallet.toLowerCase() === ownerAddress.toLowerCase();
-
-  /* ---------------- Writes ---------------- */
 
   const {
     writeContract: writeWithdraw,
@@ -105,9 +160,10 @@ export default function AdminPage() {
     isPending: isWithdrawPending,
     error: withdrawError,
   } = useWriteContract();
-
-  const { isLoading: isWithdrawConfirming, isSuccess: isWithdrawSuccess } =
-    useWaitForTransactionReceipt({ hash: withdrawTxHash });
+  const { isLoading: isWithdrawConfirming, isSuccess: withdrawSuccess } =
+    useWaitForTransactionReceipt({
+      hash: withdrawTxHash,
+    });
 
   const {
     writeContract: writeTransfer,
@@ -115,9 +171,10 @@ export default function AdminPage() {
     isPending: isTransferPending,
     error: transferError,
   } = useWriteContract();
-
-  const { isLoading: isTransferConfirming, isSuccess: isTransferSuccess } =
-    useWaitForTransactionReceipt({ hash: transferTxHash });
+  const { isLoading: isTransferConfirming, isSuccess: transferSuccess } =
+    useWaitForTransactionReceipt({
+      hash: transferTxHash,
+    });
 
   const txLoading =
     isWithdrawPending ||
@@ -125,413 +182,519 @@ export default function AdminPage() {
     isTransferPending ||
     isTransferConfirming;
 
-  /* ---------------- Handlers ---------------- */
+  // #7 split refetch effect: withdraw only touches fees, transfer only touches owner
+  useEffect(() => {
+    if (withdrawSuccess) {
+      refetchFees();
+      setWithdrawAddress("");
+      setFormError(""); // #9 clear stale errors on success
+      setConfirmAction(null);
+    }
+  }, [withdrawSuccess, refetchFees]);
+
+  useEffect(() => {
+    if (transferSuccess) {
+      refetchOwner();
+      setNewOwnerAddress("");
+      setFormError(""); // #9 clear stale errors on success
+      setConfirmAction(null);
+    }
+  }, [transferSuccess, refetchOwner]);
+
+  // #4 auto-revert the confirmation state after a few seconds
+  useEffect(() => {
+    if (!confirmAction) return;
+    const timer = setTimeout(() => setConfirmAction(null), CONFIRM_TIMEOUT_MS);
+    return () => clearTimeout(timer);
+  }, [confirmAction]);
+
+  // #2 trim addresses before validation
+  const validateWithdraw = () => {
+    const trimmed = withdrawAddress.trim();
+    if (!isAddress(trimmed)) {
+      setFormError("Enter a valid recipient wallet address.");
+      return null;
+    }
+    if (!isOwner) {
+      setFormError("Connect the contract owner wallet to withdraw fees.");
+      return null;
+    }
+    return trimmed;
+  };
+
+  const validateTransfer = () => {
+    const trimmed = newOwnerAddress.trim();
+    if (!isAddress(trimmed)) {
+      setFormError("Enter a valid new owner wallet address.");
+      return null;
+    }
+    if (trimmed.toLowerCase() === ownerAddress?.toLowerCase()) {
+      setFormError("That address is already the contract owner.");
+      return null;
+    }
+    if (!isOwner) {
+      setFormError("Connect the contract owner wallet to transfer ownership.");
+      return null;
+    }
+    return trimmed;
+  };
+
+  const handleWithdrawClick = () => {
+    setFormError("");
+    if (!validateWithdraw()) return;
+    // #4 first click sets confirmation state; second click submits
+    if (confirmAction !== "withdraw") {
+      setConfirmAction("withdraw");
+      return;
+    }
+    handleWithdraw();
+  };
 
   const handleWithdraw = () => {
-    if (!withdrawAddress) return;
-    const config = prepareWithdrawTx({
-      recipient: withdrawAddress,
-      account: connectedWallet,
-      chainId,
-    });
-    writeWithdraw(config);
-    setShowWithdrawConfirm(false);
+    const trimmed = validateWithdraw();
+    if (!trimmed) return;
+    writeWithdraw(
+      prepareWithdrawTx({
+        recipient: trimmed,
+        account: connectedWallet,
+        chainId,
+      }),
+    );
+  };
+
+  const handleTransferClick = () => {
+    setFormError("");
+    if (!validateTransfer()) return;
+    if (confirmAction !== "transfer") {
+      setConfirmAction("transfer");
+      return;
+    }
+    handleTransferOwnership();
   };
 
   const handleTransferOwnership = () => {
-    if (!newOwnerAddress) return;
-    const config = prepareTransferOwnershipTx({
-      newOwner: newOwnerAddress,
-      account: connectedWallet,
-      chainId,
-    }));
+    const trimmed = validateTransfer();
+    if (!trimmed) return;
+    writeTransfer(
+      prepareTransferOwnershipTx({
+        newOwner: trimmed,
+        account: connectedWallet,
+        chainId,
+      }),
+    );
   };
 
-  /* ---------------- Post-transaction effects ---------------- */
+  const totalUsdcFees =
+    totalFeesRaw == null
+      ? "—"
+      : Number(formatEther(totalFeesRaw)).toLocaleString(undefined, {
+          maximumFractionDigits: 4,
+        });
 
-  useEffect(() => {
-    if (isWithdrawSuccess) {
-      showToast.success("Fees withdrawn");
-      refetchFees();
-      setWithdrawAddress("");
-    }
-  }, [isWithdrawSuccess]);
+  // #5 handle decimal fee percent cleanly
+  const rawFeePercent =
+    feePercentRaw == null ? null : Number(feePercentRaw) / 100;
+  const feePercent =
+    rawFeePercent == null
+      ? "—"
+      : Number.isInteger(rawFeePercent)
+        ? rawFeePercent.toString()
+        : rawFeePercent.toFixed(2);
 
-  useEffect(() => {
-    if (isTransferSuccess) {
-      showToast.success("Ownership transferred");
-      refetchOwner();
-      setNewOwnerAddress("");
-    }
-  }, [isTransferSuccess]);
+  // #11 gate the page in three explicit states with no flash
 
-  useEffect(() => {
-    if (withdrawError) {
-      showToast.error(withdrawError.shortMessage || "Withdraw failed");
-    }
-  }, [withdrawError]);
-
-  useEffect(() => {
-    if (transferError) {
-      showToast.error(transferError.shortMessage || "Transfer failed");
-    }
-  }, [transferError]);
-
-  /* ---------------- Formatting ---------------- */
-
-  const totalFees = totalFeesRaw
-    ? formatAmount(formatEther(totalFeesRaw))
-    : "0";
-  const feePercent = feePercentRaw ? Number(feePercentRaw) / 100 : 0;
-
-  /* ---------------- UI classes ---------------- */
-
-  const cardClass =
-    "relative overflow-hidden rounded-3xl border border-[#dedbd1] dark:border-white/10 bg-white dark:bg-[#111311] shadow-[0_18px_60px_rgba(34,31,24,0.07)] dark:shadow-[0_18px_60px_rgba(0,0,0,0.35)] transition-colors duration-300";
-
-  const inputClass =
-    "w-full bg-white dark:bg-[#111311] border border-[#ddd9ce] dark:border-white/10 rounded-xl px-4 py-3 text-[#171714] dark:text-white placeholder:text-[#99958a] dark:placeholder:text-white/35 outline-none transition focus:border-[#c49b2c] dark:focus:border-[#D4AF37] focus:ring-2 focus:ring-[#d4af37]/10";
-
-  /* ---------------- Loading / Access control ---------------- */
-
+  // State 1: wallet not connected
   if (!connectedWallet) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f7f6f0] dark:bg-[#080908] px-4">
-        <div className={cardClass}>
-          <div className="p-8 text-center max-w-md">
-            <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-[#f5f1e4] dark:bg-[#151715] border border-[#e5ddc8] dark:border-white/10 flex items-center justify-center text-[#b28b20] dark:text-[#D4AF37]">
-              <FiShield size={22} />
-            </div>
-            <h1 className="text-lg font-bold text-[#171714] dark:text-white">
-              Connect your wallet
-            </h1>
-            <p className="text-sm text-[#777267] dark:text-white/55 mt-1.5">
-              The admin panel is only accessible to the contract owner.
-            </p>
+      <main className="theme-page flex min-h-screen items-center justify-center bg-[#f7f6f0] px-5 text-[#171714] transition-colors duration-300 dark:bg-[#080908] dark:text-white">
+        <section className="w-full max-w-md rounded-3xl border border-[#e9e5da] bg-white p-8 text-center shadow-sm dark:border-white/10 dark:bg-[#141614]">
+          <div
+            className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl text-2xl font-bold"
+            style={{ backgroundColor: "rgba(212,160,23,.12)", color: GOLD }}
+          >
+            H
           </div>
-        </div>
-      </div>
+          <h1 className="mt-5 text-2xl font-semibold">Connect your wallet</h1>
+          <p className="mt-2 text-sm leading-6 text-[#77756d] dark:text-white/55">
+            The admin panel is only accessible to the contract owner. Connect
+            the owner wallet to continue.
+          </p>
+          <button
+            onClick={() => navigate("/")}
+            className="mt-6 rounded-xl px-5 py-3 text-sm font-semibold text-[#171714] transition hover:brightness-95"
+            style={{ backgroundColor: GOLD }}
+          >
+            Return home
+          </button>
+        </section>
+      </main>
     );
   }
 
-  if (ownerAddress === undefined) {
+  // State 2: owner address loading
+  if (ownerLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f7f6f0] dark:bg-[#080908] px-4">
-        <div className={cardClass}>
-          <div className="p-8 text-center max-w-md">
-            <div className="w-8 h-8 mx-auto rounded-full border-2 border-[#e5ddc8] dark:border-white/10 border-t-[#d4af37] animate-spin" />
-            <p className="text-sm text-[#777267] dark:text-white/55 mt-4">
-              Loading contract state...
-            </p>
-          </div>
-        </div>
-      </div>
+      <main className="theme-page flex min-h-screen items-center justify-center bg-[#f7f6f0] px-5 text-[#171714] transition-colors duration-300 dark:bg-[#080908] dark:text-white">
+        <section className="w-full max-w-md rounded-3xl border border-[#e9e5da] bg-white p-8 text-center shadow-sm dark:border-white/10 dark:bg-[#141614]">
+          <div
+            className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-[#e5ddc8] dark:border-white/10"
+            style={{ borderTopColor: GOLD }}
+          />
+          <p className="mt-4 text-sm text-[#77756d] dark:text-white/55">
+            Checking owner permissions…
+          </p>
+        </section>
+      </main>
     );
   }
 
+  // State 3: connected but not owner
   if (!isOwner) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f7f6f0] dark:bg-[#080908] px-4">
-        <div className={cardClass}>
-          <div className="p-8 text-center max-w-md">
-            <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-[#fbe9e7] dark:bg-[#351b1b] border border-[#ef9a9a] dark:border-[#c62828]/40 flex items-center justify-center text-[#c62828] dark:text-[#ef9a9a]">
-              <FiAlertTriangle size={22} />
-            </div>
-            <h1 className="text-lg font-bold text-[#171714] dark:text-white">
-              Access denied
-            </h1>
-            <p className="text-sm text-[#777267] dark:text-white/55 mt-1.5">
-              Only the contract owner can access this page.
-            </p>
-            <button
-              onClick={() => navigate("/")}
-              className="mt-6 px-5 py-2.5 rounded-xl bg-[#171714] dark:bg-[#D4AF37] text-[#d4af37] dark:text-[#171714] font-semibold text-sm hover:bg-[#292922] dark:hover:bg-[#B8962E] transition"
-            >
-              Back to Home
-            </button>
+      <main className="theme-page flex min-h-screen items-center justify-center bg-[#f7f6f0] px-5 text-[#171714] transition-colors duration-300 dark:bg-[#080908] dark:text-white">
+        <section className="w-full max-w-md rounded-3xl border border-[#e9e5da] bg-white p-8 text-center shadow-sm dark:border-white/10 dark:bg-[#141614]">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-red-500/10 text-2xl text-red-500">
+            !
           </div>
-        </div>
-      </div>
+          <h1 className="mt-5 text-2xl font-semibold">Access restricted</h1>
+          <p className="mt-2 text-sm leading-6 text-[#77756d] dark:text-white/55">
+            Only the contract owner can access administration controls.
+          </p>
+          <button
+            onClick={() => navigate("/")}
+            className="mt-6 rounded-xl px-5 py-3 text-sm font-semibold text-[#171714] transition hover:brightness-95"
+            style={{ backgroundColor: GOLD }}
+          >
+            Return home
+          </button>
+        </section>
+      </main>
     );
   }
 
-  /* ---------------- Main ---------------- */
-
+  // Main render — owner is confirmed
   return (
-    <div
-      className="min-h-screen bg-[#f7f6f0] dark:bg-[#080908] text-[#171714] dark:text-white transition-colors duration-300 py-8 pt-28"
-      style={{
-        backgroundImage: `
-          linear-gradient(rgba(112,105,88,0.035) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(112,105,88,0.035) 1px, transparent 1px)
-        `,
-        backgroundSize: "56px 28px",
-      }}
-    >
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
-        {/* Back button */}
-        <div className="mb-8">
+    <main className="theme-page min-h-screen bg-[#f7f6f0] text-[#171714] transition-colors duration-300 dark:bg-[#080908] dark:text-white">
+      {/* #5 mobile nav — visible only below lg breakpoint */}
+      <MobileNav onNavigate={navigate} />
+
+      <div className="mx-auto flex min-h-screen max-w-[1600px]">
+        <aside className="hidden w-[230px] shrink-0 border-r border-[#e9e5da] bg-white/70 px-4 py-6 dark:border-white/10 dark:bg-[#101210] lg:flex lg:flex-col">
           <button
-            onClick={() => navigate(-1)}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-[#111311] border border-[#dcd8ce] dark:border-white/10 text-[#4f4b43] dark:text-white/70 text-sm font-semibold hover:border-[#b28b20] dark:hover:border-[#D4AF37]/50 transition"
+            onClick={() => navigate("/")}
+            className="mb-10 flex items-center gap-3 px-2 text-left"
           >
-            <FiArrowLeft size={16} />
-            Back
-          </button>
-        </div>
-
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#171714] dark:bg-[#151715] text-[#d4af37]">
-              <FiShield size={17} />
-            </div>
-            <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#8b8679] dark:text-white/50">
-              Contract Admin
-            </span>
-          </div>
-
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-            Admin Panel
-          </h1>
-          <p className="text-sm text-[#777267] dark:text-white/55 mt-2">
-            Manage protocol fees and contract ownership.
-          </p>
-        </div>
-
-        {/* Stats row */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <div className={cardClass}>
-            <div className="absolute top-0 left-0 right-0 h-1 bg-[#d4af37]" />
-            <div className="p-5">
-              <div className="flex items-center gap-2 mb-2">
-                <FiUser
-                  size={14}
-                  className="text-[#b28b20] dark:text-[#D4AF37]"
-                />
-                <p className="text-xs uppercase tracking-wider text-[#8b8579] dark:text-white/40">
-                  Owner
-                </p>
-              </div>
-              <p className="font-mono text-sm font-semibold break-all">
-                {ownerAddress.slice(0, 10)}...{ownerAddress.slice(-8)}
-              </p>
-              <p className="text-[10px] text-[#99958a] dark:text-white/35 mt-1">
-                You are the owner
-              </p>
-            </div>
-          </div>
-
-          <div className={cardClass}>
-            <div className="absolute top-0 left-0 right-0 h-1 bg-[#d4af37]" />
-            <div className="p-5">
-              <div className="flex items-center gap-2 mb-2">
-                <FiInfo
-                  size={14}
-                  className="text-[#b28b20] dark:text-[#D4AF37]"
-                />
-                <p className="text-xs uppercase tracking-wider text-[#8b8579] dark:text-white/40">
-                  Protocol fee
-                </p>
-              </div>
-              <p className="text-2xl font-bold text-[#8f6c12] dark:text-[#D4AF37]">
-                {feePercent}%
-              </p>
-              <p className="text-[10px] text-[#99958a] dark:text-white/35 mt-1">
-                Per bounty reward
-              </p>
-            </div>
-          </div>
-
-          <div className={cardClass}>
-            <div className="absolute top-0 left-0 right-0 h-1 bg-[#d4af37]" />
-            <div className="p-5">
-              <div className="flex items-center gap-2 mb-2">
-                <FiDollarSign
-                  size={14}
-                  className="text-[#b28b20] dark:text-[#D4AF37]"
-                />
-                <p className="text-xs uppercase tracking-wider text-[#8b8579] dark:text-white/40">
-                  Fees collected
-                </p>
-              </div>
-              <p className="text-2xl font-bold text-[#8f6c12] dark:text-[#D4AF37]">
-                {totalFees} USDC
-              </p>
-              <p className="text-[10px] text-[#99958a] dark:text-white/35 mt-1">
-                Available to withdraw
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Withdraw card */}
-        <div className={cardClass}>
-          <div className="absolute top-0 left-0 right-0 h-1 bg-[#d4af37]" />
-          <div className="p-6 md:p-8">
-            <div className="flex items-start gap-3 mb-6">
-              <div className="w-10 h-10 rounded-2xl bg-[#f5f1e4] dark:bg-[#151715] border border-[#e5ddc8] dark:border-white/10 flex items-center justify-center text-[#b28b20] dark:text-[#D4AF37] shrink-0">
-                <FiDollarSign size={17} />
-              </div>
-              <div>
-                <h2 className="text-lg font-bold">Withdraw fees</h2>
-                <p className="text-sm text-[#777267] dark:text-white/55 mt-0.5">
-                  Transfer accumulated protocol fees to any address.
-                </p>
-              </div>
-            </div>
-
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[#6f6a60] dark:text-white/45 mb-2.5">
-              Recipient address
-            </label>
-            <input
-              type="text"
-              placeholder="0x..."
-              value={withdrawAddress}
-              onChange={(e) => setWithdrawAddress(e.target.value)}
-              className={`${inputClass} font-mono`}
-            />
-
-            <div className="mt-5 flex flex-wrap items-center gap-3">
-              <button
-                onClick={() => setShowWithdrawConfirm(true)}
-                disabled={
-                  txLoading ||
-                  !withdrawAddress ||
-                  Number(totalFees.replace(/,/g, "")) === 0
-                }
-                className="px-5 py-2.5 rounded-xl bg-[#d4af37] dark:bg-[#e0bd45] text-[#171714] font-semibold hover:bg-[#c49b2c] dark:hover:bg-[#d2ac2f] transition disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {txLoading ? "Processing..." : "Withdraw"}
-              </button>
-
-              {Number(totalFees.replace(/,/g, "")) === 0 && (
-                <p className="text-xs text-[#99958a] dark:text-white/40">
-                  No fees accumulated yet.
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Transfer ownership card */}
-        <div className={`${cardClass} mt-6`}>
-          <div className="absolute top-0 left-0 right-0 h-1 bg-[#c62828]" />
-          <div className="p-6 md:p-8">
-            <div className="flex items-start gap-3 mb-6">
-              <div className="w-10 h-10 rounded-2xl bg-[#fbe9e7] dark:bg-[#351b1b] border border-[#ef9a9a] dark:border-[#c62828]/40 flex items-center justify-center text-[#c62828] dark:text-[#ef9a9a] shrink-0">
-                <FiAlertTriangle size={17} />
-              </div>
-              <div>
-                <h2 className="text-lg font-bold">Transfer ownership</h2>
-                <p className="text-sm text-[#777267] dark:text-white/55 mt-0.5">
-                  Hand over admin rights to another address.
-                </p>
-              </div>
-            </div>
-
-            <div className="mb-5 rounded-2xl bg-[#fbe9e7] dark:bg-[#351b1b] border border-[#ef9a9a] dark:border-[#c62828]/40 p-4">
-              <p className="text-xs leading-relaxed text-[#c62828] dark:text-[#ef9a9a]">
-                <strong>This action is irreversible.</strong> Once you transfer
-                ownership, you will not be able to withdraw fees or assign
-                winners on any bounty again. Double-check the address before
-                confirming.
-              </p>
-            </div>
-
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[#6f6a60] dark:text-white/45 mb-2.5">
-              New owner address
-            </label>
-            <input
-              type="text"
-              placeholder="0x..."
-              value={newOwnerAddress}
-              onChange={(e) => setNewOwnerAddress(e.target.value)}
-              className={`${inputClass} font-mono`}
-            />
-
-            <button
-              onClick={handleTransferOwnership}
-              disabled={txLoading || !newOwnerAddress}
-              className="mt-5 px-5 py-2.5 rounded-xl bg-[#171714] dark:bg-[#D4AF37] text-[#d4af37] dark:text-[#171714] font-semibold hover:bg-[#292922] dark:hover:bg-[#B8962E] transition disabled:opacity-50 disabled:cursor-not-allowed"
+            <span
+              className="flex h-10 w-10 items-center justify-center rounded-full border-2 text-lg font-bold"
+              style={{ borderColor: GOLD, color: GOLD }}
             >
-              {txLoading ? "Processing..." : "Transfer Ownership"}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Withdraw confirmation modal */}
-      {showWithdrawConfirm && (
-        <div
-          className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 p-4 bg-[#171714]/60 dark:bg-black/70"
-          onClick={() => setShowWithdrawConfirm(false)}
-        >
-          <div
-            className="bg-[#f9f8f3] dark:bg-[#111311] border border-[#ddd8ca] dark:border-white/10 rounded-3xl w-full max-w-md p-6 shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
+              H
+            </span>
+            <span>
+              <span className="block text-sm font-bold">Happy Bounty</span>
+              <span className="block text-[11px] text-[#8b887e] dark:text-white/45">
+                on Arc
+              </span>
+            </span>
+          </button>
+          <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#969287]">
+            Workspace
+          </p>
+          <button
+            className="flex items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold"
+            style={{ backgroundColor: "rgba(212,160,23,.12)", color: GOLD }}
           >
-            <div className="flex items-start gap-3 mb-5">
-              <div className="w-10 h-10 rounded-xl bg-[#f1ead4] dark:bg-[#D4AF37]/10 flex items-center justify-center text-[#a17a17] dark:text-[#D4AF37] shrink-0">
-                <FiCheckCircle size={18} />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold">Confirm withdrawal</h3>
-                <p className="text-sm text-[#7c766b] dark:text-white/55 mt-1">
-                  This will transfer all accumulated fees to the recipient
-                  below.
-                </p>
-              </div>
+            <span>▦</span> Admin overview
+          </button>
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="mt-1 flex items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-[#656259] transition hover:bg-black/5 dark:text-white/65 dark:hover:bg-white/5"
+          >
+            <span>◫</span> Bounties
+          </button>
+          <button
+            onClick={() => navigate("/create")}
+            className="flex items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-[#656259] transition hover:bg-black/5 dark:text-white/65 dark:hover:bg-white/5"
+          >
+            <span>＋</span> Create bounty
+          </button>
+          <div className="mt-auto rounded-2xl border border-[#e9e5da] p-3 dark:border-white/10">
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-emerald-500" />
+              <span className="text-xs font-semibold">Arc Mainnet</span>
             </div>
+            <p className="mt-2 break-all text-[10px] leading-4 text-[#8b887e] dark:text-white/45">
+              {contractAddress || "Contract unavailable on this network"}
+            </p>
+          </div>
+        </aside>
 
-            <div className="rounded-2xl bg-[#fbfaf6] dark:bg-[#151715] border border-[#e7e3da] dark:border-white/10 p-4 mb-5">
-              <p className="text-xs uppercase tracking-wider text-[#8b8579] dark:text-white/40 mb-2">
-                Recipient
+        <div className="min-w-0 flex-1 px-4 py-5 sm:px-6 sm:py-7 lg:px-8">
+          <header className="mb-7 flex flex-wrap items-center justify-between gap-4 border-b border-[#e9e5da] pb-6 dark:border-white/10">
+            <div>
+              <button
+                onClick={() => navigate(-1)}
+                className="mb-3 text-xs font-medium text-[#8b887e] transition hover:text-[#a17a13]"
+              >
+                ← Back
+              </button>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#a17a13]">
+                Happy Bounty / Control center
               </p>
-              <p className="font-mono text-sm break-all">{withdrawAddress}</p>
+              <h1 className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl">
+                Admin dashboard
+              </h1>
+              <p className="mt-2 text-sm text-[#77756d] dark:text-white/50">
+                Manage contract fees and ownership from one place.
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="rounded-full border border-[#e9e5da] bg-white px-3 py-2 text-xs font-medium dark:border-white/10 dark:bg-[#141614]">
+                <span className="mr-2 inline-block h-2 w-2 rounded-full bg-emerald-500" />
+                Arc Mainnet
+              </span>
+              <button
+                onClick={() => navigate("/create")}
+                className="rounded-xl px-4 py-2.5 text-sm font-semibold shadow-sm transition hover:brightness-95"
+                style={{ backgroundColor: GOLD, color: "#171714" }}
+              >
+                ＋ Create bounty
+              </button>
+            </div>
+          </header>
 
-              <div className="mt-3 pt-3 border-t border-[#e7e3da] dark:border-white/10">
-                <p className="text-xs uppercase tracking-wider text-[#8b8579] dark:text-white/40 mb-2">
-                  Amount
+          {!isArcMainnet && (
+            <div className="mb-6 rounded-2xl border border-amber-400/40 bg-amber-50 p-4 text-sm text-amber-900 dark:bg-amber-500/10 dark:text-amber-200">
+              <p className="font-semibold">Switch to Arc Mainnet</p>
+              <p className="mt-1 opacity-80">
+                Admin contract actions are disabled on other networks. Connect
+                to Arc Mainnet (chain ID {ARC_MAINNET_ID}) to continue.
+              </p>
+            </div>
+          )}
+
+          <section className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <StatCard
+              icon="▤"
+              label="Total bounties"
+              value={bountyCountLoading ? "…" : formatNumber(bountyCountRaw)}
+              note="Read from the Arc Mainnet contract"
+            />
+            <StatCard
+              icon="$"
+              label="Total fees collected"
+              value={
+                feesLoading
+                  ? "…"
+                  : totalUsdcFees === "—"
+                    ? "—"
+                    : `${totalUsdcFees} USDC`
+              }
+              note="Native USDC-denominated contract balance"
+            />
+            <StatCard
+              icon="％"
+              label="Platform fee"
+              value={feePercentLoading ? "…" : `${feePercent}%`}
+              note="Configured on the bounty contract"
+            />
+            <StatCard
+              icon="◎"
+              label="Contract owner"
+              value={ownerLoading ? "…" : shortAddress(ownerAddress)}
+              note={
+                connectedWallet
+                  ? `Connected wallet: ${shortAddress(connectedWallet)}`
+                  : "Wallet not connected"
+              }
+            />
+          </section>
+
+          <section className="mb-6 grid grid-cols-1 gap-5 xl:grid-cols-[1.15fr_.85fr]">
+            <article className="rounded-2xl border border-[#e9e5da] bg-white p-5 shadow-[0_2px_10px_rgba(24,24,20,0.025)] dark:border-white/10 dark:bg-[#141614] sm:p-6">
+              <SectionHeading eyebrow="Treasury" title="Withdraw USDC fees" />
+              <p className="mb-5 max-w-xl text-sm leading-6 text-[#77756d] dark:text-white/50">
+                Send collected native USDC to a wallet address. This action
+                requires the contract owner wallet and a transaction
+                confirmation.
+              </p>
+              <label
+                htmlFor="withdraw-address"
+                className="mb-2 block text-xs font-semibold text-[#555249] dark:text-white/70"
+              >
+                Recipient wallet address
+              </label>
+              <input
+                id="withdraw-address"
+                value={withdrawAddress}
+                onChange={(event) => {
+                  setWithdrawAddress(event.target.value);
+                  setFormError("");
+                  setConfirmAction(null);
+                }}
+                placeholder="0x…"
+                autoComplete="off"
+                className="w-full rounded-xl border border-[#e3dfd3] bg-[#fcfbf7] px-4 py-3 text-sm outline-none transition placeholder:text-[#aaa69a] focus:border-[#D4A017] dark:border-white/10 dark:bg-[#0d0f0d] dark:text-white dark:placeholder:text-white/25"
+              />
+              <div className="mt-4 flex flex-wrap items-center gap-3">
+                <button
+                  onClick={handleWithdrawClick}
+                  disabled={
+                    !isArcMainnet || !isOwner || txLoading || !withdrawAddress
+                  }
+                  className="rounded-xl px-5 py-3 text-sm font-semibold transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-40"
+                  style={{
+                    backgroundColor:
+                      confirmAction === "withdraw" ? "#c04a1f" : GOLD,
+                    color: "#171714",
+                  }}
+                >
+                  {txLoading
+                    ? "Transaction pending…"
+                    : confirmAction === "withdraw"
+                      ? "Click again to confirm"
+                      : "Withdraw USDC"}
+                </button>
+                <span className="text-xs text-[#8b887e] dark:text-white/45">
+                  USDC only · Arc Mainnet
+                </span>
+              </div>
+            </article>
+
+            <article className="rounded-2xl border border-[#e9e5da] bg-white p-5 shadow-[0_2px_10px_rgba(24,24,20,0.025)] dark:border-white/10 dark:bg-[#141614] sm:p-6">
+              <SectionHeading eyebrow="Security" title="Ownership" />
+              <div className="rounded-xl bg-[#f7f6f0] p-4 dark:bg-[#0d0f0d]">
+                <p className="text-xs text-[#8b887e] dark:text-white/45">
+                  Current contract owner
                 </p>
-                <p className="text-lg font-bold text-[#8f6c12] dark:text-[#D4AF37]">
-                  {totalFees} USDC
+                <p className="mt-2 break-all font-mono text-sm">
+                  {ownerAddress}
                 </p>
               </div>
-            </div>
-
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowWithdrawConfirm(false)}
-                className="flex-1 px-4 py-3 rounded-xl bg-white dark:bg-[#151715] border border-[#d9d4c8] dark:border-white/10 text-[#555047] dark:text-white/70 font-semibold hover:bg-[#f4f2ec] dark:hover:bg-[#1b1e1b] transition"
+              <label
+                htmlFor="new-owner-address"
+                className="mb-2 mt-5 block text-xs font-semibold text-[#555249] dark:text-white/70"
               >
-                Cancel
-              </button>
+                New owner address
+              </label>
+              <input
+                id="new-owner-address"
+                value={newOwnerAddress}
+                onChange={(event) => {
+                  setNewOwnerAddress(event.target.value);
+                  setFormError("");
+                  setConfirmAction(null);
+                }}
+                placeholder="0x…"
+                autoComplete="off"
+                className="w-full rounded-xl border border-[#e3dfd3] bg-[#fcfbf7] px-4 py-3 text-sm outline-none transition placeholder:text-[#aaa69a] focus:border-[#D4A017] dark:border-white/10 dark:bg-[#0d0f0d] dark:text-white dark:placeholder:text-white/25"
+              />
               <button
-                onClick={handleWithdraw}
-                className="flex-1 px-4 py-3 rounded-xl bg-[#171714] dark:bg-[#D4AF37] text-[#d4af37] dark:text-[#171714] font-semibold hover:bg-[#292922] dark:hover:bg-[#B8962E] transition"
+                onClick={handleTransferClick}
+                disabled={
+                  !isArcMainnet || !isOwner || txLoading || !newOwnerAddress
+                }
+                className="mt-3 w-full rounded-xl border px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-40"
+                style={
+                  confirmAction === "transfer"
+                    ? {
+                        borderColor: "#c04a1f",
+                        backgroundColor: "rgba(192,74,31,0.08)",
+                        color: "#c04a1f",
+                      }
+                    : {
+                        borderColor: "rgba(212,160,23,0.5)",
+                        color: "#87620a",
+                      }
+                }
               >
-                Confirm
+                {txLoading
+                  ? "Transaction pending…"
+                  : confirmAction === "transfer"
+                    ? "Click again to confirm transfer"
+                    : "Transfer ownership"}
               </button>
-            </div>
-          </div>
-        </div>
-      )}
+              <p className="mt-3 text-xs leading-5 text-[#8b887e] dark:text-white/45">
+                Warning: ownership transfer is a sensitive on-chain action.
+                Verify the address before confirming.
+              </p>
+            </article>
+          </section>
 
-      {/* Loading overlay */}
-      {txLoading && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md bg-[#171714]/40 dark:bg-black/60">
-          <div className="bg-[#f9f8f3] dark:bg-[#111311] border border-[#ddd8ca] dark:border-white/10 rounded-3xl w-full max-w-sm p-6 shadow-2xl">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full border-2 border-[#e5ddc8] dark:border-white/10 border-t-[#d4af37] animate-spin" />
+          {(formError || withdrawError || transferError) && (
+            <div
+              role="alert"
+              className="mb-5 rounded-xl border border-red-300/60 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-300"
+            >
+              {formError ||
+                withdrawError?.shortMessage ||
+                transferError?.shortMessage ||
+                "Transaction failed. Please check your wallet and try again."}
+            </div>
+          )}
+          {(withdrawSuccess || transferSuccess) && (
+            <div
+              role="status"
+              className="mb-5 rounded-xl border border-emerald-300/60 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300"
+            >
+              {withdrawSuccess
+                ? "USDC withdrawal confirmed on-chain."
+                : "Ownership transfer confirmed on-chain."}
+            </div>
+          )}
+
+          <section className="rounded-2xl border border-[#e9e5da] bg-white p-5 dark:border-white/10 dark:bg-[#141614] sm:p-6">
+            <SectionHeading
+              eyebrow="Network status"
+              title="Contract connection"
+            />
+            <div className="grid gap-4 sm:grid-cols-3">
               <div>
-                <p className="text-sm font-semibold">Transaction pending</p>
-                <p className="text-xs text-[#777267] dark:text-white/55 mt-0.5">
-                  Confirm it in your wallet
+                <p className="text-xs text-[#8b887e] dark:text-white/45">
+                  Network
+                </p>
+                <p className="mt-1 text-sm font-semibold">
+                  {isArcMainnet
+                    ? "Arc Mainnet"
+                    : `Unsupported network · ${chainId ?? "not connected"}`}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-[#8b887e] dark:text-white/45">
+                  Contract
+                </p>
+                <p className="mt-1 break-all font-mono text-xs">
+                  {contractAddress || "No contract configured for this network"}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-[#8b887e] dark:text-white/45">
+                  Owner permissions
+                </p>
+                <p className="mt-1 text-sm font-semibold">
+                  {isOwner ? "Owner access verified" : "Owner wallet required"}
                 </p>
               </div>
             </div>
-          </div>
+          </section>
+
+          {txLoading && (
+            <div className="app-modal-overlay fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md">
+              <div className="app-modal-panel w-full max-w-sm rounded-2xl border border-[#ddd8ca] bg-[#f9f8f3] p-6 dark:border-white/10 dark:bg-[#111311]">
+                <div className="mb-5 flex items-center gap-3">
+                  <Skeleton className="h-10 w-10 rounded-xl" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-4 w-2/3" />
+                    <Skeleton className="h-3 w-1/2" />
+                  </div>
+                </div>
+                <Skeleton className="h-2 w-full rounded-full" />
+                <p className="mt-4 text-sm font-medium text-[#625e55] dark:text-white/60">
+                  Transaction pending. Confirm it in your wallet.
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </main>
