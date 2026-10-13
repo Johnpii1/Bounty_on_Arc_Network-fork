@@ -255,6 +255,20 @@ function Dashboard({ dark, setDark }) {
                   Refresh
                 </button>
 
+                {/* Analytics */}
+
+                <Link
+                  to="/analytics"
+                  className={`group flex h-11 items-center gap-2 rounded-xl border px-4 text-sm font-semibold transition-all duration-300 hover:-translate-y-1 hover:border-[#D4A017]/50 hover:text-[#D4A017] ${
+                    dark
+                      ? "border-white/[0.08] bg-[#111311]/90 text-white/60"
+                      : "border-black/[0.09] bg-white/80 text-black/60"
+                  }`}
+                >
+                  <FiTrendingUp className="text-base" />
+                  Analytics
+                </Link>
+
                 {/* Create */}
 
                 <Link
