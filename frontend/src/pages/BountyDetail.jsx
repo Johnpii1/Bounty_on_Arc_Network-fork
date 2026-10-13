@@ -16,6 +16,9 @@ import {
   FiX,
   FiSearch,
   FiCheckCircle,
+  FiCopy,
+  FiChevronDown,
+  FiChevronUp,
 } from "react-icons/fi";
 import NavBar from "../components/Layout/NavBar";
 import Footer from "../components/Layout/Footer";
@@ -56,6 +59,7 @@ const BountyDetail = () => {
   const [hasUserClaimedOffChain, setHasUserClaimedOffChain] = useState(false);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
+  const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [showDistributeModal, setShowDistributeModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -155,6 +159,16 @@ const BountyDetail = () => {
 
   const shortenAddress = (addr) =>
     addr ? `${addr.slice(0, 6)}...${addr.slice(-4)}` : "";
+
+  const copyAddress = async (addr) => {
+    if (!addr) return;
+    try {
+      await navigator.clipboard.writeText(addr);
+      showToast.success("Wallet address copied");
+    } catch {
+      showToast.error("Could not copy address");
+    }
+  };
 
   const compressImage = (file, maxWidth = 1024, quality = 0.7) =>
     new Promise((resolve, reject) => {
@@ -933,9 +947,29 @@ const BountyDetail = () => {
               )}
 
               {/* Description */}
-              <p className="text-[#625e55] dark:text-white/65 mb-6 text-sm sm:text-base leading-relaxed whitespace-pre-wrap">
-                {bounty.description}
-              </p>
+              <section className="mb-6 rounded-2xl border border-[#e7e3da] dark:border-white/10 bg-[#fbfaf6] dark:bg-[#151715] p-4 sm:p-5">
+                <div className="flex items-center justify-between gap-3 mb-3">
+                  <h2 className="text-sm font-bold uppercase tracking-wider text-[#8b8579] dark:text-white/50">
+                    About this bounty
+                  </h2>
+                  {String(bounty.description || "").length > 420 && (
+                    <button
+                      type="button"
+                      onClick={() => setDescriptionExpanded((expanded) => !expanded)}
+                      aria-expanded={descriptionExpanded}
+                      className="shrink-0 inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-[#9a7619] dark:text-[#D4AF37] hover:underline"
+                    >
+                      {descriptionExpanded ? "Show less" : "Read full description"}
+                      {descriptionExpanded ? <FiChevronUp size={14} /> : <FiChevronDown size={14} />}
+                    </button>
+                  )}
+                </div>
+                <p
+                  className={`text-[#625e55] dark:text-white/70 text-sm sm:text-base leading-7 whitespace-pre-wrap break-words ${descriptionExpanded ? "" : "line-clamp-5"}`}
+                >
+                  {bounty.description || "No description provided."}
+                </p>
+              </section>
 
               {/* Divider */}
               <div className="my-6 border-t border-[#e7e3da] dark:border-white/10" />
@@ -967,9 +1001,22 @@ const BountyDetail = () => {
                     Creator
                   </p>
 
-                  <p className="text-[#171714] dark:text-white/75 font-mono text-sm">
-                    {shortenAddress(bounty.creator)}
-                  </p>
+                  <div className="flex items-center gap-2 min-w-0">
+                    <p className="text-[#171714] dark:text-white/75 font-mono text-sm truncate" title={bounty.creator}>
+                      {shortenAddress(bounty.creator)}
+                    </p>
+                    {bounty.creator && (
+                      <button
+                        type="button"
+                        onClick={() => copyAddress(bounty.creator)}
+                        aria-label="Copy creator wallet address"
+                        title="Copy full wallet address"
+                        className="shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-lg border border-[#dedbd1] dark:border-white/10 bg-white dark:bg-[#111311] text-[#8f6c12] dark:text-[#D4AF37] hover:border-[#c49b2c] dark:hover:border-[#D4AF37]/50 transition"
+                      >
+                        <FiCopy size={14} />
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 <div>
