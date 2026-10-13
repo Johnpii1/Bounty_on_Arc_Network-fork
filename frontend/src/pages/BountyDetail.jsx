@@ -984,6 +984,26 @@ const BountyDetail = () => {
 
                 <div>
                   <p className="text-xs uppercase tracking-wider text-[#8b8579] dark:text-white/40 mb-1">
+                    Posted
+                  </p>
+
+                  <p className="text-[#171714] dark:text-white/80 text-sm">
+                    {formatDate(bounty.createdAt || bounty.created_at)}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-xs uppercase tracking-wider text-[#8b8579] dark:text-white/40 mb-1">
+                    Submissions
+                  </p>
+
+                  <p className="text-[#171714] dark:text-white/80 text-sm">
+                    {allSubmissions.length} {allSubmissions.length === 1 ? "submission" : "submissions"}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-xs uppercase tracking-wider text-[#8b8579] dark:text-white/40 mb-1">
                     Winner Type
                   </p>
 
