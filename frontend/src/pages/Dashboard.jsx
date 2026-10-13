@@ -6,6 +6,7 @@ import { showToast } from "../components/UI/Toast";
 import {
   FiActivity,
   FiArrowRight,
+  FiArrowUp,
   FiCheckCircle,
   FiChevronLeft,
   FiChevronRight,
@@ -28,6 +29,7 @@ function Dashboard({ dark, setDark }) {
   const [filter, setFilter] = useState("all");
   const [pagination, setPagination] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const [stats, setStats] = useState({
     completed: 0,
     inProgress: 0,
@@ -87,6 +89,31 @@ function Dashboard({ dark, setDark }) {
       loadDashboardStats();
     }
   }, [address, isConnected, currentPage, filter]);
+
+  /* =====================================================
+      SCROLL TO TOP BUTTON
+  ====================================================== */
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 500);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    handleScroll();
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
 
   const formatEarnings = (value) => {
     const num = Number(value) || 0;
@@ -207,7 +234,7 @@ function Dashboard({ dark, setDark }) {
                 </p>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {/* Refresh */}
 
                 <button
@@ -228,18 +255,34 @@ function Dashboard({ dark, setDark }) {
                   Refresh
                 </button>
 
+                {/* Analytics */}
+
+                <Link
+                  to="/analytics"
+                  className={`group flex h-11 items-center gap-2 rounded-xl border px-4 text-sm font-semibold transition-all duration-300 hover:-translate-y-1 hover:border-[#D4A017]/50 hover:text-[#D4A017] ${
+                    dark
+                      ? "border-white/[0.08] bg-[#111311]/90 text-white/60"
+                      : "border-black/[0.09] bg-white/80 text-black/60"
+                  }`}
+                >
+                  <FiTrendingUp className="text-base" />
+                  Analytics
+                </Link>
+
                 {/* Create */}
 
                 <Link
                   to="/create"
-                  className={`group relative flex h-11 items-center gap-2 overflow-hidden rounded-xl px-5 text-sm font-bold shadow-[0_10px_30px_rgba(17,17,17,0.14)] transition-all duration-300 hover:-translate-y-1 hover:bg-[#B28B20] hover:text-white hover:shadow-[0_14px_35px_rgba(212,160,23,0.25)] ${
+                  className={`group relative flex h-11 min-w-0 max-w-full shrink items-center justify-center gap-1 overflow-hidden whitespace-nowrap rounded-xl px-2 sm:gap-2 sm:px-4 text-xs sm:text-sm font-bold shadow-[0_10px_30px_rgba(17,17,17,0.14)] transition-all duration-300 hover:-translate-y-1 hover:bg-[#B28B20] hover:text-white hover:shadow-[0_14px_35px_rgba(212,160,23,0.25)] ${
                     dark ? "bg-[#D4A017] text-white" : "bg-gold-700 text-black"
                   }`}
                 >
-                  <span className="relative z-10 flex items-center gap-2">
-                    <FiPlus className="text-base" />
-                    Create Bounty
-                    <FiArrowRight className="text-sm transition-transform duration-300 group-hover:translate-x-1" />
+                  <span className="relative z-10 flex min-w-0 items-center justify-center gap-1 sm:gap-2 whitespace-nowrap">
+                    <FiPlus className="shrink-0 text-sm sm:text-base" />
+
+                    <span className="truncate">Create Bounty</span>
+
+                    <FiArrowRight className="shrink-0 text-xs sm:text-sm transition-transform duration-300 group-hover:translate-x-1" />
                   </span>
 
                   <span className="absolute inset-0 -translate-x-full bg-[#B28B20] transition-transform duration-500 group-hover:translate-x-0" />
@@ -528,7 +571,7 @@ function Dashboard({ dark, setDark }) {
             ====================================================== */}
 
             {loading ? (
-              <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
                 {[1, 2, 3, 4, 5, 6].map((item) => (
                   <div
                     key={item}
@@ -698,7 +741,7 @@ function Dashboard({ dark, setDark }) {
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-1 items-stretch gap-5 md:grid-cols-2">
+                <div className="grid grid-cols-1 items-stretch gap-5 md:grid-cols-3">
                   {bounties.map((bounty) => (
                     <BountyCard
                       key={bounty._id}
@@ -782,6 +825,30 @@ function Dashboard({ dark, setDark }) {
       </main>
 
       <Footer />
+
+      {/* =====================================================
+          SCROLL TO TOP BUTTON
+      ====================================================== */}
+
+      <button
+        type="button"
+        onClick={scrollToTop}
+        aria-label="Scroll to top"
+        title="Back to top"
+        className={`group fixed bottom-7 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full border backdrop-blur-xl transition-all duration-500 sm:bottom-8 sm:right-8 ${
+          showScrollTop
+            ? "translate-y-0 scale-100 opacity-100"
+            : "pointer-events-none translate-y-5 scale-75 opacity-0"
+        } ${
+          dark
+            ? "border-white/[0.1] bg-[#111311]/90 text-white/70 shadow-[0_10px_35px_rgba(0,0,0,0.35)]"
+            : "border-black/[0.09] bg-white/90 text-black/60 shadow-[0_10px_35px_rgba(17,17,17,0.12)]"
+        } hover:-translate-y-1 hover:border-[#D4A017]/50 hover:bg-[#D4A017] hover:text-white hover:shadow-[0_12px_35px_rgba(212,160,23,0.3)]`}
+      >
+        <FiArrowUp className="text-lg transition-transform duration-300 group-hover:-translate-y-0.5" />
+
+        <span className="pointer-events-none absolute inset-0 rounded-full border border-[#D4A017]/0 transition-all duration-500 group-hover:scale-125 group-hover:border-[#D4A017]/20" />
+      </button>
 
       {/* =====================================================
           LOCAL ANIMATIONS

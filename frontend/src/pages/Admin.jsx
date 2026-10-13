@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   useAccount,
   useChainId,
   useReadContract,
-  useWriteContract,
   useWaitForTransactionReceipt,
+  useWriteContract,
 } from "wagmi";
 import { formatEther } from "viem";
 import {
@@ -19,14 +19,50 @@ import {
 } from "react-icons/fi";
 import { showToast } from "../components/UI/Toast";
 import {
+  getBountyCounterConfig,
+  getFeePercentConfig,
   getOwnerConfig,
   getTotalFeesConfig,
-  getFeePercentConfig,
-  prepareWithdrawTx,
   prepareTransferOwnershipTx,
 } from "../services/bountyService";
 import { getBountyContract } from "../utils/chains.address";
 import { formatAmount } from "../utils/format";
+
+const ARC_MAINNET_ID = 5042;
+const GOLD = "#D4A017";
+
+const shortAddress = (address) =>
+  address ? `${address.slice(0, 6)}…${address.slice(-4)}` : "—";
+
+const formatNumber = (value) =>
+  value == null ? "—" : Number(value).toLocaleString();
+
+function StatCard({ icon, label, value, note }) {
+  return (
+    <article className="min-w-0 rounded-2xl border border-[#e9e5da] bg-white p-4 shadow-[0_2px_10px_rgba(24,24,20,0.025)] transition-colors dark:border-white/10 dark:bg-[#141614] sm:p-5">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-xs font-medium text-[#77756d] dark:text-white/55 sm:text-sm">{label}</p>
+          <p className="mt-3 break-words text-2xl font-semibold tracking-tight text-[#171714] dark:text-white sm:text-3xl">{value}</p>
+        </div>
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#D4A017]/10 text-lg text-[#a77b08] dark:text-[#e3b52e]">{icon}</span>
+      </div>
+      {note && <p className="mt-3 text-xs text-[#8b887e] dark:text-white/45">{note}</p>}
+    </article>
+  );
+}
+
+function SectionHeading({ eyebrow, title, children }) {
+  return (
+    <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+      <div>
+        {eyebrow && <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#a17a13]">{eyebrow}</p>}
+        <h2 className="text-base font-semibold text-[#171714] dark:text-white sm:text-lg">{title}</h2>
+      </div>
+      {children}
+    </div>
+  );
+}
 
 export default function AdminPage() {
   const navigate = useNavigate();
@@ -108,8 +144,7 @@ export default function AdminPage() {
       newOwner: newOwnerAddress,
       account: connectedWallet,
       chainId,
-    });
-    writeTransfer(config);
+    }));
   };
 
   /* ---------------- Post-transaction effects ---------------- */
@@ -498,7 +533,7 @@ export default function AdminPage() {
             </div>
           </div>
         </div>
-      )}
-    </div>
+      </div>
+    </main>
   );
 }

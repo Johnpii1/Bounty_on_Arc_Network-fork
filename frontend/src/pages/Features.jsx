@@ -249,7 +249,7 @@ function Features() {
     dark ? "text-white/50" : "text-[#77736b]"
   }`}
 >
-  Fresh Bounty connects creators and contributors through on-chain
+  Happy Bounty connects creators and contributors through on-chain
   opportunities, with Arc and USDC powering a faster way to fund,
   complete, and reward Web3 work.
 </p>

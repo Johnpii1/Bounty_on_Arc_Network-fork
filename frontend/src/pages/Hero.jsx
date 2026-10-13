@@ -8,7 +8,7 @@ import {
   FiPlus,
   FiZap,
 } from "react-icons/fi";
-import Usdc from "../assets/images/usdc.png";
+import ArcLogo from "../assets/images/GradientLogo.png";
 
 const heroMessages = [
   "Earn USDC.",
@@ -471,9 +471,7 @@ export default function Hero({ dark }) {
             "
           >
             <div className="usdc-scene relative flex h-[350px] w-full max-w-[560px] items-center justify-center sm:h-[450px] lg:h-[520px]">
-              {/* =================================================
-                  ARC LABEL
-              ================================================= */}
+              {/* ARC LABEL */}
               <div className="arc-visual-badge">
                 <span className="arc-badge-dot" />
 
@@ -488,36 +486,52 @@ export default function Hero({ dark }) {
               {/* LARGE SOFT GOLD GLOW */}
               <div className="visual-glow absolute h-[230px] w-[230px] rounded-full bg-[#D4AF37]/10 blur-[90px] sm:h-[320px] sm:w-[320px]" />
 
-              {/* =================================================
-                  ORBITS
-              ================================================= */}
+              {/* ARC LOGO */}
+              <div className="arc-logo-element" aria-hidden="true">
+                <div className="arc-logo-halo" />
+
+                <div className="arc-logo-container">
+                  <img
+                    src={ArcLogo}
+                    alt="Arc"
+                    draggable="false"
+                    className="arc-logo-image"
+                  />
+                </div>
+              </div>
+
+              {/* ORBITS */}
               <div className="usdc-orbit usdc-orbit-main" />
               <div className="usdc-orbit usdc-orbit-secondary" />
 
-              {/* =================================================
-                  BACK COIN — LEFT
-              ================================================= */}
+              {/* BACK COIN — LEFT */}
               <div className="floating-coin coin-left">
-                <img src={Usdc} alt="USDC" draggable="false" />
+                <img
+                  src={ArcLogo}
+                  alt="Arc"
+                  draggable="false"
+                />
               </div>
 
-              {/* =================================================
-                  BACK COIN — TOP RIGHT
-              ================================================= */}
+              {/* BACK COIN — TOP RIGHT */}
               <div className="floating-coin coin-top">
-                <img src={Usdc} alt="USDC" draggable="false" />
+                <img
+                  src={ArcLogo}
+                  alt="Arc"
+                  draggable="false"
+                />
               </div>
 
-              {/* =================================================
-                  BACK COIN — BOTTOM RIGHT
-              ================================================= */}
+              {/* BACK COIN — BOTTOM RIGHT */}
               <div className="floating-coin coin-bottom">
-                <img src={Usdc} alt="USDC" draggable="false" />
+                <img
+                  src={ArcLogo}
+                  alt="Arc"
+                  draggable="false"
+                />
               </div>
 
-              {/* =================================================
-                  MAIN FLOATING CARD
-              ================================================= */}
+              {/* MAIN FLOATING CARD */}
               <div className="hero-finance-card">
                 {/* ARC CARD TOP LABEL */}
                 <div className="arc-card-label">
@@ -529,18 +543,28 @@ export default function Hero({ dark }) {
                 <div className="finance-card-top">
                   <div className="finance-user">
                     <div className="finance-avatar">
-                      <img src={Usdc} alt="USDC" draggable="false" />
+                      <img
+                        src={ArcLogo}
+                        alt="Arc"
+                        draggable="false"
+                      />
                     </div>
 
                     <div>
-                      <span className="finance-small-text">Welcome back</span>
+                      <span className="finance-small-text">
+                        Welcome back
+                      </span>
 
                       <strong>ARC Wallet</strong>
                     </div>
                   </div>
 
                   <div className="finance-usdc-badge">
-                    <img src={Usdc} alt="USDC" draggable="false" />
+                    <img
+                      src={ArcLogo}
+                      alt="Arc"
+                      draggable="false"
+                    />
 
                     <span>USDC</span>
                   </div>
@@ -608,12 +632,14 @@ export default function Hero({ dark }) {
                 </div>
               </div>
 
-              {/* =================================================
-                  FRONT FLOATING MINI CARD
-              ================================================= */}
+              {/* FRONT FLOATING MINI CARD */}
               <div className="mini-usdc-card">
                 <div className="mini-usdc-icon">
-                  <img src={Usdc} alt="USDC" draggable="false" />
+                  <img
+                    src={ArcLogo}
+                    alt="Arc"
+                    draggable="false"
+                  />
                 </div>
 
                 <div className="mini-usdc-content">
@@ -624,17 +650,13 @@ export default function Hero({ dark }) {
                 <span className="mini-usdc-arrow">↗</span>
               </div>
 
-              {/* =================================================
-                  ARC FLOATING CHIP
-              ================================================= */}
+              {/* ARC FLOATING CHIP */}
               <div className="arc-floating-chip">
                 <FiZap />
                 <span>ARC</span>
               </div>
 
-              {/* =================================================
-                  SMALL FLOATING DOTS
-              ================================================= */}
+              {/* SMALL FLOATING DOTS */}
               <span className="visual-dot visual-dot-one" />
               <span className="visual-dot visual-dot-two" />
               <span className="visual-dot visual-dot-three" />
@@ -710,58 +732,140 @@ export default function Hero({ dark }) {
         }
 
         /* =====================================================
+           ARC LOGO
+        ===================================================== */
+
+        .arc-logo-element {
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          z-index: 3;
+          width: 185px;
+          height: 185px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          pointer-events: none;
+          transform: translate(-50%, -50%) translateZ(5px);
+          animation: arcLogoFloat 5s ease-in-out infinite;
+        }
+
+        .arc-logo-halo {
+          position: absolute;
+          inset: 8px;
+          border-radius: 50%;
+          background: radial-gradient(
+            circle,
+            rgba(212,175,55,0.13) 0%,
+            rgba(212,175,55,0.05) 42%,
+            transparent 72%
+          );
+          filter: blur(18px);
+          animation: arcLogoHalo 4.5s ease-in-out infinite;
+        }
+
+        .arc-logo-container {
+          position: relative;
+          z-index: 2;
+          width: 135px;
+          height: 135px;
+          padding: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          background: ${dark ? "rgba(8,9,8,0.48)" : "rgba(246,245,239,0.42)"};
+          border: 1px solid ${dark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)"};
+          box-shadow:
+            0 0 35px rgba(212,175,55,0.08),
+            inset 0 1px 0 rgba(255,255,255,0.10);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+        }
+
+        .arc-logo-image {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          filter: drop-shadow(0 12px 20px rgba(0,0,0,0.18));
+          animation: arcLogoPulse 4.5s ease-in-out infinite;
+        }
+
+        @keyframes arcLogoFloat {
+          0%, 100% {
+            transform:
+              translate(-50%, -50%)
+              translateZ(5px)
+              translateY(0);
+          }
+
+          50% {
+            transform:
+              translate(-50%, -50%)
+              translateZ(5px)
+              translateY(-8px);
+          }
+        }
+
+        @keyframes arcLogoHalo {
+          0%, 100% {
+            transform: scale(0.88);
+            opacity: 0.55;
+          }
+
+          50% {
+            transform: scale(1.08);
+            opacity: 1;
+          }
+        }
+
+        @keyframes arcLogoPulse {
+          0%, 100% {
+            transform: scale(0.96);
+          }
+
+          50% {
+            transform: scale(1.03);
+          }
+        }
+
+        /* =====================================================
            ARC VISUAL BADGE
         ===================================================== */
 
         .arc-visual-badge {
           position: absolute;
-
           z-index: 30;
-
           top: 3%;
           left: 50%;
-
           display: flex;
           align-items: center;
           gap: 8px;
-
           padding: 8px 13px;
-
           border-radius: 999px;
-
           background:
             ${dark ? "rgba(18,18,15,0.92)" : "rgba(255,255,255,0.92)"};
-
           border: 1px solid rgba(212,175,55,0.30);
-
           box-shadow:
             0 12px 30px rgba(0,0,0,0.12),
             0 0 25px rgba(212,175,55,0.06);
-
           backdrop-filter: blur(16px);
           -webkit-backdrop-filter: blur(16px);
-
           transform:
             translateX(-50%)
             translateZ(90px);
-
           animation:
             arcBadgeFloat 4.5s ease-in-out infinite;
-
           white-space: nowrap;
         }
 
         .arc-badge-dot {
           width: 7px;
           height: 7px;
-
           border-radius: 50%;
-
           background: #D4AF37;
-
           box-shadow:
             0 0 12px rgba(212,175,55,0.75);
-
           animation:
             arcPulse 2s ease-in-out infinite;
         }
@@ -769,7 +873,6 @@ export default function Hero({ dark }) {
         .arc-badge-icon {
           width: 14px;
           height: 14px;
-
           color: #D4AF37;
         }
 
@@ -781,19 +884,15 @@ export default function Hero({ dark }) {
 
         .arc-badge-text strong {
           color: ${dark ? "#ffffff" : "#111111"};
-
           font-size: 11px;
           font-weight: 900;
-
           letter-spacing: 0.08em;
         }
 
         .arc-badge-text span {
           color: ${dark ? "rgba(255,255,255,0.42)" : "rgba(0,0,0,0.45)"};
-
           font-size: 7px;
           font-weight: 800;
-
           letter-spacing: 0.12em;
         }
 
@@ -835,11 +934,8 @@ export default function Hero({ dark }) {
           position: absolute;
           left: 50%;
           top: 50%;
-
           border-radius: 50%;
-
           pointer-events: none;
-
           transform:
             translate(-50%, -50%);
         }
@@ -847,15 +943,12 @@ export default function Hero({ dark }) {
         .usdc-orbit-main {
           width: 460px;
           height: 285px;
-
           border:
             1px solid
             rgba(212, 175, 55, 0.20);
-
           box-shadow:
             0 0 25px rgba(212, 175, 55, 0.05),
             inset 0 0 25px rgba(212, 175, 55, 0.025);
-
           transform:
             translate(-50%, -50%)
             rotate(-10deg);
@@ -864,11 +957,9 @@ export default function Hero({ dark }) {
         .usdc-orbit-secondary {
           width: 380px;
           height: 225px;
-
           border:
             1px solid
             rgba(212, 175, 55, 0.09);
-
           transform:
             translate(-50%, -50%)
             rotate(12deg);
@@ -881,14 +972,10 @@ export default function Hero({ dark }) {
         .hero-finance-card {
           position: relative;
           z-index: 10;
-
           width: min(430px, 78%);
           min-height: 305px;
-
           padding: 22px;
-
           border-radius: 25px;
-
           background:
             linear-gradient(
               145deg,
@@ -897,25 +984,19 @@ export default function Hero({ dark }) {
               ${dark ? "rgba(15,15,13,0.91)" : "rgba(249,247,237,0.91)"}
               100%
             );
-
           border: 1px solid
             ${dark ? "rgba(212,175,55,0.25)" : "rgba(212,175,55,0.22)"};
-
           box-shadow:
             0 35px 80px rgba(0, 0, 0, 0.24),
             0 15px 35px rgba(0, 0, 0, 0.10),
             inset 0 1px 0 rgba(255, 255, 255, 0.10);
-
           backdrop-filter: blur(20px);
           -webkit-backdrop-filter: blur(20px);
-
           transform:
             translateZ(40px)
             rotate(-3deg);
-
           animation:
             financeCardFloat 5s ease-in-out infinite;
-
           transition:
             transform 400ms ease,
             box-shadow 400ms ease;
@@ -926,7 +1007,6 @@ export default function Hero({ dark }) {
             translateZ(55px)
             rotate(-1deg)
             translateY(-5px);
-
           box-shadow:
             0 45px 95px rgba(0, 0, 0, 0.30),
             0 20px 40px rgba(0, 0, 0, 0.12),
@@ -958,30 +1038,21 @@ export default function Hero({ dark }) {
           display: flex;
           align-items: center;
           gap: 6px;
-
           width: fit-content;
-
           margin-bottom: 12px;
-
           color: #D4AF37;
-
           font-size: 7px;
           font-weight: 900;
-
           letter-spacing: 0.15em;
         }
 
         .arc-card-pulse {
           width: 5px;
           height: 5px;
-
           border-radius: 50%;
-
           background: #D4AF37;
-
           box-shadow:
             0 0 9px rgba(212,175,55,0.7);
-
           animation:
             arcPulse 2s ease-in-out infinite;
         }
@@ -1007,47 +1078,36 @@ export default function Hero({ dark }) {
           display: flex;
           align-items: center;
           justify-content: center;
-
           width: 42px;
           height: 42px;
-
           border-radius: 50%;
-
           background:
             ${dark ? "rgba(212,175,55,0.10)" : "rgba(212,175,55,0.12)"};
-
           border:
             1px solid
             rgba(212, 175, 55, 0.25);
-
           overflow: hidden;
         }
 
         .finance-avatar img {
           width: 30px;
           height: 30px;
-
           object-fit: contain;
         }
 
         .finance-small-text {
           display: block;
-
           margin-bottom: 2px;
-
           font-size: 10px;
           font-weight: 600;
-
           color:
             ${dark ? "rgba(255,255,255,0.42)" : "rgba(0,0,0,0.45)"};
         }
 
         .finance-user strong {
           display: block;
-
           font-size: 14px;
           font-weight: 800;
-
           color:
             ${dark ? "#ffffff" : "#171717"};
         }
@@ -1056,21 +1116,15 @@ export default function Hero({ dark }) {
           display: flex;
           align-items: center;
           gap: 6px;
-
           padding: 7px 10px;
-
           border-radius: 999px;
-
           background:
             rgba(212, 175, 55, 0.10);
-
           border:
             1px solid
             rgba(212, 175, 55, 0.18);
-
           color:
             ${dark ? "#D4AF37" : "#8f741d"};
-
           font-size: 10px;
           font-weight: 800;
         }
@@ -1078,7 +1132,6 @@ export default function Hero({ dark }) {
         .finance-usdc-badge img {
           width: 20px;
           height: 20px;
-
           object-fit: contain;
         }
 
@@ -1088,18 +1141,14 @@ export default function Hero({ dark }) {
 
         .finance-balance-area {
           position: relative;
-
           margin-top: 25px;
         }
 
         .finance-balance-label {
           display: block;
-
           margin-bottom: 5px;
-
           font-size: 10px;
           font-weight: 600;
-
           color:
             ${dark ? "rgba(255,255,255,0.42)" : "rgba(0,0,0,0.45)"};
         }
@@ -1107,30 +1156,23 @@ export default function Hero({ dark }) {
         .finance-balance {
           display: flex;
           align-items: baseline;
-
           color:
             ${dark ? "#ffffff" : "#111111"};
-
           font-size: clamp(30px, 4vw, 43px);
           font-weight: 900;
-
           letter-spacing: -2px;
           line-height: 1;
         }
 
         .finance-balance > span {
           margin-right: 2px;
-
           font-size: 22px;
-
           color: #D4AF37;
         }
 
         .finance-balance small {
           font-size: 18px;
-
           letter-spacing: -1px;
-
           opacity: 0.55;
         }
 
@@ -1138,11 +1180,8 @@ export default function Hero({ dark }) {
           display: flex;
           align-items: center;
           gap: 4px;
-
           margin-top: 9px;
-
           color: #D4AF37;
-
           font-size: 11px;
           font-weight: 800;
         }
@@ -1157,14 +1196,10 @@ export default function Hero({ dark }) {
 
         .finance-chart {
           position: relative;
-
           width: 100%;
           height: 45px;
-
           margin-top: 13px;
-
           overflow: hidden;
-
           border-bottom:
             1px solid
             ${dark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)"};
@@ -1172,19 +1207,14 @@ export default function Hero({ dark }) {
 
         .chart-line {
           position: absolute;
-
           left: -5%;
           bottom: -12px;
-
           width: 110%;
           height: 50px;
-
           border-top:
             2px solid
             rgba(212, 175, 55, 0.65);
-
           border-radius: 50%;
-
           transform:
             rotate(-4deg)
             scaleY(1.1);
@@ -1192,14 +1222,10 @@ export default function Hero({ dark }) {
 
         .chart-point {
           position: absolute;
-
           width: 6px;
           height: 6px;
-
           border-radius: 50%;
-
           background: #D4AF37;
-
           box-shadow:
             0 0 10px rgba(212, 175, 55, 0.5);
         }
@@ -1240,12 +1266,9 @@ export default function Hero({ dark }) {
 
         .finance-actions {
           display: grid;
-
           grid-template-columns:
             repeat(3, 1fr);
-
           gap: 8px;
-
           margin-top: 15px;
         }
 
@@ -1253,23 +1276,16 @@ export default function Hero({ dark }) {
           display: flex;
           align-items: center;
           justify-content: center;
-
           gap: 6px;
-
           min-height: 40px;
-
           border-radius: 11px;
-
           background:
             ${dark ? "rgba(255,255,255,0.045)" : "rgba(0,0,0,0.035)"};
-
           border:
             1px solid
             ${dark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)"};
-
           color:
             ${dark ? "rgba(255,255,255,0.75)" : "rgba(0,0,0,0.70)"};
-
           transition:
             all 250ms ease;
         }
@@ -1277,23 +1293,18 @@ export default function Hero({ dark }) {
         .finance-action:hover {
           transform:
             translateY(-2px);
-
           border-color:
             rgba(212, 175, 55, 0.25);
-
           color:
             #D4AF37;
-
           background:
             rgba(212, 175, 55, 0.07);
         }
 
         .finance-action span {
           display: flex;
-
           align-items: center;
           justify-content: center;
-
           font-size: 13px;
         }
 
@@ -1310,15 +1321,11 @@ export default function Hero({ dark }) {
           display: flex;
           align-items: center;
           gap: 7px;
-
           margin-top: 10px;
-
           color:
             ${dark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.38)"};
-
           font-size: 6px;
           font-weight: 900;
-
           letter-spacing: 0.15em;
         }
 
@@ -1329,29 +1336,23 @@ export default function Hero({ dark }) {
         .arc-footer-line {
           width: 28px;
           height: 1px;
-
           background:
             rgba(212,175,55,0.30);
         }
 
         /* =====================================================
-           FLOATING USDC COINS
+           FLOATING ARC LOGOS
         ===================================================== */
 
         .floating-coin {
           position: absolute;
-
           z-index: 14;
-
           display: flex;
           align-items: center;
           justify-content: center;
-
           width: 66px;
           height: 66px;
-
           transform-style: preserve-3d;
-
           filter:
             drop-shadow(
               0 15px 18px rgba(0, 0, 0, 0.18)
@@ -1359,21 +1360,18 @@ export default function Hero({ dark }) {
             drop-shadow(
               0 0 20px rgba(212, 175, 55, 0.14)
             );
-
           pointer-events: none;
         }
 
         .floating-coin img {
           width: 100%;
           height: 100%;
-
           object-fit: contain;
         }
 
         .coin-left {
           left: 4%;
           top: 30%;
-
           animation:
             coinFloatLeft 5s ease-in-out infinite;
         }
@@ -1381,10 +1379,8 @@ export default function Hero({ dark }) {
         .coin-top {
           right: 8%;
           top: 8%;
-
           width: 58px;
           height: 58px;
-
           animation:
             coinFloatTop 4.5s ease-in-out infinite;
         }
@@ -1392,10 +1388,8 @@ export default function Hero({ dark }) {
         .coin-bottom {
           right: 7%;
           bottom: 10%;
-
           width: 70px;
           height: 70px;
-
           animation:
             coinFloatBottom 5.5s ease-in-out infinite;
         }
@@ -1446,48 +1440,34 @@ export default function Hero({ dark }) {
         }
 
         /* =====================================================
-           MINI USDC CARD
+           MINI ARC CARD
         ===================================================== */
 
         .mini-usdc-card {
           position: absolute;
-
           z-index: 18;
-
           right: 4%;
           bottom: 13%;
-
           display: flex;
           align-items: center;
-
           gap: 10px;
-
           min-width: 180px;
-
           padding: 10px 12px;
-
           border-radius: 14px;
-
           background:
             ${dark ? "rgba(20,20,17,0.94)" : "rgba(255,255,255,0.94)"};
-
           border:
             1px solid
             rgba(212, 175, 55, 0.20);
-
           box-shadow:
             0 18px 35px rgba(0, 0, 0, 0.16);
-
           backdrop-filter: blur(15px);
           -webkit-backdrop-filter: blur(15px);
-
           transform:
             translateZ(70px)
             rotate(3deg);
-
           animation:
             miniCardFloat 4.5s ease-in-out infinite;
-
           transition:
             transform 300ms ease;
         }
@@ -1520,17 +1500,12 @@ export default function Hero({ dark }) {
           display: flex;
           align-items: center;
           justify-content: center;
-
           width: 38px;
           height: 38px;
-
           flex-shrink: 0;
-
           border-radius: 11px;
-
           background:
             rgba(212, 175, 55, 0.10);
-
           border:
             1px solid
             rgba(212, 175, 55, 0.16);
@@ -1539,40 +1514,33 @@ export default function Hero({ dark }) {
         .mini-usdc-icon img {
           width: 27px;
           height: 27px;
-
           object-fit: contain;
         }
 
         .mini-usdc-content {
           display: flex;
           flex-direction: column;
-
           min-width: 0;
         }
 
         .mini-usdc-content span {
           font-size: 8px;
           font-weight: 700;
-
           color:
             ${dark ? "rgba(255,255,255,0.42)" : "rgba(0,0,0,0.45)"};
         }
 
         .mini-usdc-content strong {
           margin-top: 2px;
-
           font-size: 13px;
           font-weight: 900;
-
           color: #D4AF37;
         }
 
         .mini-usdc-arrow {
           margin-left: auto;
-
           font-size: 17px;
           font-weight: 900;
-
           color: #D4AF37;
         }
 
@@ -1582,44 +1550,30 @@ export default function Hero({ dark }) {
 
         .arc-floating-chip {
           position: absolute;
-
           z-index: 24;
-
           left: 7%;
           bottom: 16%;
-
           display: flex;
           align-items: center;
           gap: 5px;
-
           padding: 7px 10px;
-
           border-radius: 999px;
-
           background:
             ${dark ? "rgba(18,18,15,0.92)" : "rgba(255,255,255,0.94)"};
-
           border:
             1px solid
             rgba(212,175,55,0.22);
-
           box-shadow:
             0 12px 28px rgba(0,0,0,0.12);
-
           color: #D4AF37;
-
           font-size: 8px;
           font-weight: 900;
-
           letter-spacing: 0.08em;
-
           backdrop-filter: blur(12px);
           -webkit-backdrop-filter: blur(12px);
-
           transform:
             translateZ(80px)
             rotate(-4deg);
-
           animation:
             arcChipFloat 4s ease-in-out infinite;
         }
@@ -1652,16 +1606,11 @@ export default function Hero({ dark }) {
 
         .visual-dot {
           position: absolute;
-
           z-index: 5;
-
           width: 5px;
           height: 5px;
-
           border-radius: 50%;
-
           background: #D4AF37;
-
           box-shadow:
             0 0 14px rgba(212, 175, 55, 0.65);
         }
@@ -1669,7 +1618,6 @@ export default function Hero({ dark }) {
         .visual-dot-one {
           left: 17%;
           top: 18%;
-
           animation:
             smallDotOne 4s ease-in-out infinite;
         }
@@ -1677,10 +1625,8 @@ export default function Hero({ dark }) {
         .visual-dot-two {
           right: 18%;
           top: 31%;
-
           width: 4px;
           height: 4px;
-
           animation:
             smallDotTwo 4.5s ease-in-out infinite;
         }
@@ -1688,10 +1634,8 @@ export default function Hero({ dark }) {
         .visual-dot-three {
           left: 25%;
           bottom: 19%;
-
           width: 4px;
           height: 4px;
-
           animation:
             smallDotThree 5s ease-in-out infinite;
         }
@@ -1699,10 +1643,8 @@ export default function Hero({ dark }) {
         .visual-dot-four {
           right: 28%;
           bottom: 24%;
-
           width: 6px;
           height: 6px;
-
           animation:
             smallDotFour 4.2s ease-in-out infinite;
         }
@@ -1786,6 +1728,17 @@ export default function Hero({ dark }) {
             height: 200px;
           }
 
+          .arc-logo-element {
+            width: 165px;
+            height: 165px;
+          }
+
+          .arc-logo-container {
+            width: 120px;
+            height: 120px;
+            padding: 18px;
+          }
+
           .coin-left {
             left: 1%;
           }
@@ -1820,7 +1773,6 @@ export default function Hero({ dark }) {
 
           .usdc-scene {
             height: 350px;
-
             transform:
               scale(0.74)
               rotateX(var(--rotate-x))
@@ -1830,9 +1782,7 @@ export default function Hero({ dark }) {
           .hero-finance-card {
             width: 410px;
             min-height: 300px;
-
             padding: 20px;
-
             border-radius: 22px;
           }
 
@@ -1844,6 +1794,17 @@ export default function Hero({ dark }) {
           .usdc-orbit-secondary {
             width: 325px;
             height: 195px;
+          }
+
+          .arc-logo-element {
+            width: 155px;
+            height: 155px;
+          }
+
+          .arc-logo-container {
+            width: 112px;
+            height: 112px;
+            padding: 17px;
           }
 
           .floating-coin {
@@ -1859,7 +1820,6 @@ export default function Hero({ dark }) {
           .coin-top {
             right: 0%;
             top: 9%;
-
             width: 52px;
             height: 52px;
           }
@@ -1867,7 +1827,6 @@ export default function Hero({ dark }) {
           .coin-bottom {
             right: 0%;
             bottom: 8%;
-
             width: 58px;
             height: 58px;
           }
@@ -1875,15 +1834,12 @@ export default function Hero({ dark }) {
           .mini-usdc-card {
             right: 0%;
             bottom: 11%;
-
             min-width: 165px;
-
             padding: 9px 10px;
           }
 
           .arc-visual-badge {
             top: 1%;
-
             padding:
               7px 10px;
           }
@@ -1914,7 +1870,6 @@ export default function Hero({ dark }) {
 
           .usdc-scene {
             height: 320px;
-
             transform:
               scale(0.65)
               rotateX(var(--rotate-x))
@@ -1971,6 +1926,9 @@ export default function Hero({ dark }) {
           .visual-dot,
           .arc-visual-badge,
           .arc-floating-chip,
+          .arc-logo-element,
+          .arc-logo-halo,
+          .arc-logo-image,
           .arc-badge-dot,
           .arc-card-pulse {
             animation: none !important;

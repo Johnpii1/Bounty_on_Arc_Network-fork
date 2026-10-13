@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import {
   FaTwitter,
@@ -11,6 +10,7 @@ import {
   FiDollarSign,
 } from "react-icons/fi";
 import HappyBounty from "../../assets/images/happy-bounty-logo.png";
+import { Link } from "react-router-dom";
 
 function Footer() {
   const [dark, setDark] = useState(
@@ -94,7 +94,7 @@ function Footer() {
             MAIN FOOTER
         ====================================================== */}
 
-        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-3">
 
           {/* =====================================================
               BRAND
@@ -188,70 +188,6 @@ function Footer() {
           </div>
 
           {/* =====================================================
-              PLATFORM
-          ====================================================== */}
-
-          <div>
-            <h4
-              className={`mb-5 text-xs font-bold uppercase tracking-[0.16em] transition-colors duration-300 ${
-                dark ? "text-white" : "text-[#111111]"
-              }`}
-            >
-              Platform
-            </h4>
-
-            <ul className="space-y-3 text-sm">
-              <li>
-                <a
-                  href="/dashboard"
-                  className={`group flex w-fit items-center gap-2 transition-all duration-200 hover:translate-x-1 hover:text-[#D4AF37] ${
-                    dark ? "text-white/45" : "text-black/45"
-                  }`}
-                >
-                  <span className="h-px w-0 bg-[#D4AF37] transition-all duration-200 group-hover:w-3" />
-                  Browse Bounties
-                </a>
-              </li>
-
-              <li>
-                <a
-                  href="/dashboard"
-                  className={`group flex w-fit items-center gap-2 transition-all duration-200 hover:translate-x-1 hover:text-[#D4AF37] ${
-                    dark ? "text-white/45" : "text-black/45"
-                  }`}
-                >
-                  <span className="h-px w-0 bg-[#D4AF37] transition-all duration-200 group-hover:w-3" />
-                  Categories
-                </a>
-              </li>
-
-              <li>
-                <a
-                  href="/leaderboard"
-                  className={`group flex w-fit items-center gap-2 transition-all duration-200 hover:translate-x-1 hover:text-[#D4AF37] ${
-                    dark ? "text-white/45" : "text-black/45"
-                  }`}
-                >
-                  <span className="h-px w-0 bg-[#D4AF37] transition-all duration-200 group-hover:w-3" />
-                  Leaderboard
-                </a>
-              </li>
-
-              <li>
-                <a
-                  href="/rewards"
-                  className={`group flex w-fit items-center gap-2 transition-all duration-200 hover:translate-x-1 hover:text-[#D4AF37] ${
-                    dark ? "text-white/45" : "text-black/45"
-                  }`}
-                >
-                  <span className="h-px w-0 bg-[#D4AF37] transition-all duration-200 group-hover:w-3" />
-                  Rewards
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* =====================================================
               RESOURCES
           ====================================================== */}
 
@@ -265,53 +201,59 @@ function Footer() {
             </h4>
 
             <ul className="space-y-3 text-sm">
+
+              {/* Documentation */}
               <li>
-                <a
-                  href="#"
+                <Link
+                  to="/docs"
                   className={`group flex w-fit items-center gap-2 transition-all duration-200 hover:translate-x-1 hover:text-[#D4AF37] ${
                     dark ? "text-white/45" : "text-black/45"
                   }`}
                 >
                   <span className="h-px w-0 bg-[#D4AF37] transition-all duration-200 group-hover:w-3" />
                   Documentation
-                </a>
+                </Link>
               </li>
 
+              {/* FAQ */}
               <li>
-                <a
-                  href="#"
+                <Link
+                  to="/faqs"
                   className={`group flex w-fit items-center gap-2 transition-all duration-200 hover:translate-x-1 hover:text-[#D4AF37] ${
                     dark ? "text-white/45" : "text-black/45"
                   }`}
                 >
                   <span className="h-px w-0 bg-[#D4AF37] transition-all duration-200 group-hover:w-3" />
-                  Blog
-                </a>
+                  FAQ
+                </Link>
               </li>
 
+              {/* White Paper */}
               <li>
-                <a
-                  href="#"
+                <Link
+                  to="/whitepaper"
                   className={`group flex w-fit items-center gap-2 transition-all duration-200 hover:translate-x-1 hover:text-[#D4AF37] ${
                     dark ? "text-white/45" : "text-black/45"
                   }`}
                 >
                   <span className="h-px w-0 bg-[#D4AF37] transition-all duration-200 group-hover:w-3" />
-                  Help Center
-                </a>
+                  White Paper
+                </Link>
               </li>
 
+              {/* Contact Us */}
               <li>
-                <a
-                  href="#"
+                <Link
+                  to="/contact"
                   className={`group flex w-fit items-center gap-2 transition-all duration-200 hover:translate-x-1 hover:text-[#D4AF37] ${
                     dark ? "text-white/45" : "text-black/45"
                   }`}
                 >
                   <span className="h-px w-0 bg-[#D4AF37] transition-all duration-200 group-hover:w-3" />
-                  Community
-                </a>
+                  Contact Us
+                </Link>
               </li>
+
             </ul>
           </div>
 
@@ -379,6 +321,7 @@ function Footer() {
               >
                 <FaGithub className="text-base transition-transform duration-300 group-hover:scale-110" />
               </a>
+
             </div>
           </div>
         </div>

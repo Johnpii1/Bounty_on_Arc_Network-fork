@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Usdc from "../assets/images/usdc.png";
+import Gradient from "../assets/images/GradientLogo.png";
 
 function LoadingScreen({ onComplete }) {
   const [progress, setProgress] = useState(0);
@@ -258,7 +258,7 @@ function LoadingScreen({ onComplete }) {
         <div className="loading-center absolute inset-0" />
 
         {/* =================================================
-            FLOATING USDC COINS
+            FLOATING Gradient COINS
         ================================================= */}
 
         {floatingCoins.map((coin, index) => (
@@ -272,7 +272,7 @@ function LoadingScreen({ onComplete }) {
             }}
           >
             <img
-              src={Usdc}
+              src={Gradient}
               alt=""
               aria-hidden="true"
               draggable="false"
@@ -306,7 +306,7 @@ function LoadingScreen({ onComplete }) {
 
       <div className="relative z-10 flex w-full max-w-md flex-col items-center px-6">
         {/* =================================================
-            USDC VISUAL
+            Gradient  VISUAL
         ================================================= */}
 
         <div className="relative mb-8 flex h-32 w-32 items-center justify-center">
@@ -322,12 +322,12 @@ function LoadingScreen({ onComplete }) {
 
           <div className="loading-coin-glow absolute h-24 w-24 rounded-full blur-2xl" />
 
-          {/* USDC image */}
+          {/* Gradient  image */}
 
           <div className="relative z-10 animate-[coinFloat_4s_ease-in-out_infinite]">
             <img
-              src={Usdc}
-              alt="USDC"
+              src={Gradient }
+              alt="Gradient"
               className="h-20 w-20 select-none object-contain drop-shadow-[0_12px_20px_rgba(39,117,202,0.14)]"
               draggable="false"
             />

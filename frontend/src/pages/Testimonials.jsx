@@ -269,7 +269,7 @@ function Testimonials() {
                 dark ? "text-white/55" : "text-[#77736b]"
               }`}
             >
-              Fresh Bounty is designed for creators who need quality work and
+              Happy Bounty is designed for creators who need quality work and
               contributors looking for meaningful Web3 opportunities with
               transparent reward flows.
             </p>
